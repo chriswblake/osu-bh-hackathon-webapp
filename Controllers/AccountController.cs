@@ -32,7 +32,7 @@ namespace HackathonWebApp.Controllers
         {
             return View();
         }
-        public ViewResult CreateUser() => View();
+        public ViewResult Create() => View();
         public IActionResult AccessDenied()
         {
             return View();
@@ -40,7 +40,7 @@ namespace HackathonWebApp.Controllers
 
         // Methods
         [HttpPost]
-        public async Task<IActionResult> CreateUser(User user)
+        public async Task<IActionResult> Create(User user)
         {
             if (ModelState.IsValid)
             {
