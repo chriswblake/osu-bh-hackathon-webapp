@@ -1,14 +1,17 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Dynamic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using HackathonWebApp.Models;
 
 namespace HackathonWebApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         // Fields
@@ -22,10 +25,13 @@ namespace HackathonWebApp.Controllers
             this.userManager = userManager;
         }
 
-        // Views - Users
-        public ViewResult AllUsers()
+        // Views
+        public ViewResult Index()
         {
-            return View(this.userManager.Users);
+            dynamic model = new ExpandoObject();
+            model.Roles = roleManager.Roles;
+            model.Users = userManager.Users;
+            return View(model);
         }
     public IActionResult CreateRole() => View();
         

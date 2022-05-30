@@ -1,11 +1,17 @@
-﻿@model IEnumerable<ApplicationRole>
-  
-<h1 class="bg-info text-white">All Roles</h1>
+﻿@model dynamic
+@{
+    ViewBag.Title = "Admin";
+    var roles = Model.Roles;
+    var users = Model.Users;
+}
+
+
+<h1 class="bg-info text-white">Roles</h1>
 <a asp-action="CreateRole" class="btn btn-secondary">Create a Role</a>
   
 <table class="table table-sm table-bordered table-bordered">
     <tr><th>ID</th><th>Name</th><th>Users</th><th>Update</th><th>Delete</th></tr>
-    @foreach (var role in Model)
+    @foreach (ApplicationRole role in roles)
     {
         <tr>
             <td>@role.Id</td>
@@ -19,6 +25,21 @@
                     </button>
                 </form>
             </td>
+        </tr>
+    }
+</table>
+
+<h1 class="bg-info text-white">Users</h1>
+<table class="table table-sm table-bordered table-bordered">
+    <tr>
+        <th>UserName</th>
+        <th>Email</th>
+    </tr>
+    @foreach (ApplicationUser user in users)
+    {
+        <tr>
+            <td>@user.UserName</td>
+            <td>@user.Email</td>
         </tr>
     }
 </table>
