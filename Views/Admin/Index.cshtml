@@ -34,12 +34,14 @@
     <tr>
         <th>UserName</th>
         <th>Email</th>
+        <th>Roles</th>
     </tr>
     @foreach (ApplicationUser user in users)
     {
         <tr>
             <td>@user.UserName</td>
             <td>@user.Email</td>
+            <td i-user="@user.Id"></td>
         </tr>
     }
 </table>
