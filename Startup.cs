@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HackathonWebApp.Settings;
 using HackathonWebApp.Models;
 
 namespace HackathonWebApp
@@ -25,12 +24,17 @@ namespace HackathonWebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var mongoDbSettings = Configuration.GetSection(nameof(MongoDbConfig)).Get<MongoDbConfig>();
+            // Load URL to NOSQL database (MongoDB)
+            string MONGODB_URL = null;
+            if (MONGODB_URL == null)
+                MONGODB_URL = Configuration.GetValue<string>("MONGODB_URL");
+            if (MONGODB_URL == null)
+                MONGODB_URL = Environment.GetEnvironmentVariable("MONGODB_URL");
+            if (MONGODB_URL == null)
+                throw new ArgumentNullException("Missing Setting: MONGODB_URL");
+
             services.AddIdentity<ApplicationUser, ApplicationRole>()
-            .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>
-            (
-                mongoDbSettings.Host, mongoDbSettings.Name
-            );
+            .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid> (MONGODB_URL, "Identity");
             services.AddControllersWithViews();
         }
 
