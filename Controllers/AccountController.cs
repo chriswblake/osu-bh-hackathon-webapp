@@ -20,11 +20,44 @@ namespace HackathonWebApp.Controllers
             this.signInManager = signInManager;
         }
 
-        // Methods - Login/Logout
+        // Views
         public IActionResult Login()
         {
             return View();
         }
+        public ViewResult CreateUser() => View();
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        // Methods
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(User user)
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser appUser = new ApplicationUser
+                {
+                    UserName = user.Name,
+                    Email = user.Email
+                };
+
+                // Create User
+                IdentityResult result = await userManager.CreateAsync(appUser, user.Password);
+
+                // Inform User
+                if (result.Succeeded)
+                    ViewBag.Message = "User Created Successfully";
+                else
+                {
+                    foreach (IdentityError error in result.Errors)
+                        ModelState.AddModelError("", error.Description);
+                }
+            }
+            return View(user);
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -46,17 +79,12 @@ namespace HackathonWebApp.Controllers
 
             return View();
         }
+        
         [Authorize]
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
-        }
-
-        // Access Denied
-        public IActionResult AccessDenied()
-        {
-            return View();
         }
     }
 }
