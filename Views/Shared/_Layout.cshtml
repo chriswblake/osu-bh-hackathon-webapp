@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -28,8 +28,16 @@
                             if (User?.Identity?.IsAuthenticated ?? false)
                             {
                                 <li class="nav-item">
-                                    <u>Welcome: @User.Identity.Name</u>
+                                    <a class="nav-link text-dark" asp-controller="Account" asp-action="Index">@User.Identity.Name</a>
+                                </li>
+                                <li class="nav-item">
                                     <a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Logout</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
                                 </li>
                             }
                         }
