@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -27,10 +27,7 @@ namespace HackathonWebApp.Controllers
         {
             return View(this.userManager.Users);
         }
-
-        // Views - Roles
-        public ViewResult Index() => View(roleManager.Roles);
-        public IActionResult CreateRole() => View();
+    public IActionResult CreateRole() => View();
         
 
         // Methods - Roles
