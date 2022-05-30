@@ -9,26 +9,33 @@ using HackathonWebApp.Models;
 
 namespace HackathonWebApp.Controllers
 {
-    public class RoleController : Controller
+    public class AdminController : Controller
     {
         // Fields
         private RoleManager<ApplicationRole> roleManager;
         private UserManager<ApplicationUser> userManager;
 
         // Constructors
-        public RoleController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
+        public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
         }
 
-        // Views
-        public ViewResult Index() => View(roleManager.Roles);
-        public IActionResult Create() => View();
+        // Views - Users
+        public ViewResult AllUsers()
+        {
+            return View(this.userManager.Users);
+        }
 
-        // Methods
+        // Views - Roles
+        public ViewResult Index() => View(roleManager.Roles);
+        public IActionResult CreateRole() => View();
+        
+
+        // Methods - Roles
         [HttpPost]
-        public async Task<IActionResult> Create([Required] string name)
+        public async Task<IActionResult> CreateRole([Required] string name)
         {
             if (ModelState.IsValid)
             {
@@ -41,7 +48,7 @@ namespace HackathonWebApp.Controllers
             return View(name);
         }
         [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> DeleteRole(string id)
         {
             ApplicationRole role = await roleManager.FindByIdAsync(id);
             if (role != null)
@@ -56,7 +63,7 @@ namespace HackathonWebApp.Controllers
                 ModelState.AddModelError("", "No role found");
             return View("Index", roleManager.Roles);
         }
-        public async Task<IActionResult> Update(string id)
+        public async Task<IActionResult> UpdateRole(string id)
         {
             ApplicationRole role = await roleManager.FindByIdAsync(id);
             List<ApplicationUser> members = new List<ApplicationUser>();
@@ -74,7 +81,7 @@ namespace HackathonWebApp.Controllers
             });
         }
         [HttpPost]
-        public async Task<IActionResult> Update(RoleModification model)
+        public async Task<IActionResult> UpdateRole(RoleModification model)
         {
             IdentityResult result;
             if (ModelState.IsValid)
@@ -104,7 +111,7 @@ namespace HackathonWebApp.Controllers
             if (ModelState.IsValid)
                 return RedirectToAction(nameof(Index));
             else
-                return await Update(model.RoleId);
+                return await UpdateRole(model.RoleId);
         }
 
 
