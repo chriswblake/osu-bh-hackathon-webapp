@@ -28,6 +28,11 @@ namespace HackathonWebApp.Controllers
             return View();
         }
 
+        public IActionResult Sponsors()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
