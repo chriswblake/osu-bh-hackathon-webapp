@@ -1,21 +1,107 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
+﻿/* Color Codes
+-------------------------------------------------- */
+:root {
+    --bh-dark-green: #05322B;
+    --bh-green: #018374;
+    --bh-light-green: #02BC94;
 
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+    --bh-dark-green-gray: #22302D;
+    
+    --bh-gray: #949494;
+    --bh-light-gray: #D0D0D0;
+
+    --bh-dark-gold: #DB831F;
+    --bh-gold: #FDB714;
+
+    --bh-dark-teal: #00A579;
+    --bh-teal: #00A6B8;
+
+    --osu-orange: #FE5C00;
 }
 
-/* Provide sufficient contrast against white background */
-a {
-  color: #0366d6;
+.osu-orange { color: var(--osu-orange)}
+
+/* General
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+body {
+    margin: 0;
+    margin-bottom: 60px;
+    padding: 0;
+    background: var(--bh-dark-green-gray);
+}
+
+/* Links */
+    a {
+      color: var(--bh-light-green);
+    }
+
+    a:hover {
+      color: var(--osu-orange);
+      text-decoration: none;
+    }
+
+/* Sections */
+    section {
+        border: 0px solid red;
+    }
+    section.first-section {
+        padding-top: 1em;
+        padding-bottom: 2em;
+    }
+    section.diagonal-section {
+        transform: skewY(-2deg);
+        transform-origin: top left;
+    }
+    section .diagonal-section-content {
+        padding: 1em 0 1em 0;
+        transform: skewY(2deg);
+        -ms-transform: skewY(2deg);
+        -webkit-transform: skewY(2deg);
+    }
+
+/* Buttons */
+    .btn-primary {
+      color: #fff;
+      background-color: var(--bh-green);
+      border-color: var(--bh-light-green);
+    }
+    .btn-primary:hover {
+        color: #fff;
+        background-color: var(--bh-teal);
+        border-color: var(--bh-dark-teal);
+    }
+
+/** Images */
+    .img-box {
+        display: inline-block;
+        border-radius: 2em;
+        overflow: hidden;
+        margin: 1em;
+    }
+    .img-box img {
+        width:100%;
+    }
+    .img-box div {
+        text-align: center;
+        padding: 1em;
+    }
+
+/* Header Nav Bar
+-------------------------------------------------- */
+nav {
+    border-bottom: 1px solid #e5e5e5;
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+    background-color: white;
+}
+.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
@@ -26,46 +112,22 @@ a {
 
 /* Sticky footer styles
 -------------------------------------------------- */
-html {
-  font-size: 14px;
+footer {
+    font-size: 16px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    border-top: 1px solid #e5e5e5;
+    padding: 1.2em;
+}
+footer a {
+    color: var(--osu-orange)
 }
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    footer {
+        font-size: 16px;
+    }
 }
 
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
-}
 
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
-}
-
-/* Sticky footer styles
--------------------------------------------------- */
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
-}
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
-}
