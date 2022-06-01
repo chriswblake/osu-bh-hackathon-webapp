@@ -91,6 +91,46 @@ body {
         padding: 1em;
     }
 
+/** Person Cards */
+    .person-card {
+        height: 100%;
+        margin-bottom: 1em;
+    }
+
+    .person-card img {
+        border-top-right-radius: 2em;
+        border-top-left-radius: 2em;
+        border: 1px solid #eee;
+    }
+
+    .person-card div {
+        height: auto;
+        background: black;
+        border-bottom-right-radius: 2em;
+        border-bottom-left-radius: 2em;
+        padding: 5px;
+    }
+
+    .person-card h3 {
+        padding: 0.5em;
+        margin: 0;
+        color: var(--osu-orange)
+    }
+
+    .person-card h5 {
+        color: var(--bh-green);
+    }
+
+    .person-card h6 {
+        color: white;
+    }
+
+    person-card .social-tags {
+        padding-bottom: 0.5em;
+        color: var(--osu-orange)
+    }
+    
+
 /* Header Nav Bar
 -------------------------------------------------- */
 nav {
