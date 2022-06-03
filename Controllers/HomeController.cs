@@ -23,6 +23,11 @@ namespace HackathonWebApp.Controllers
             return View();
         }
 
+        public IActionResult FAQs()
+        {
+            return View();
+        }
+
         public IActionResult Selection()
         {
             return View();
