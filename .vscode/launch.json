@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch (prod db)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/HackathonWebApp.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_URLS": "https://*:5001",
+                "ASPNETCORE_ENVIRONMENT": "Production"
+            },
+            "envFile": "${workspaceFolder}/prod.env"
+        },
+        {
+            "name": "Launch (dev db)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/HackathonWebApp.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "env": {
+                "ASPNETCORE_URLS": "https://*:5001",
+                "ASPNETCORE_ENVIRONMENT": "Development",
+            },
+            "envFile": "${workspaceFolder}/develop.env"
+        }
+    ]
+}
