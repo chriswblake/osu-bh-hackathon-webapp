@@ -3,52 +3,74 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - HackathonWebApp</title>
+    <title>@ViewData["Title"] - BH/OSU Hackathon</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="~/img/favicon_io/favicon.ico">
 </head>
 <body>
+    <!-- Navigation Bar-->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HackathonWebApp</a>
+                <!-- Logos -->
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index" style="white-space:nowrap;">
+                    <img src="~/img/osu_logo.svg" style="height:2em"/> + <img src="~/img/bh_logo.png" style="height:2em"/>
+                </a>
+
+                <!-- Menu Button -->
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+                <!-- Links -->
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="FAQs">FAQs</a>
                         </li>
-                        
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Selection">Selection</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Sponsors">Sponsors</a>
+                        </li>
+                        @*<li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Prizes">Prizes</a>
+                        </li>*@
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Team">Team</a>
+                        </li>
+
                         @{
                             if (User?.IsInRole("Admin") ?? false)
                             {
-                                <li>
-                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Admin</a>
-                                </li>
+                                                                            <li>
+                                                                                <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin</a>
+                                                                            </li>
                             }
                         }
 
                         @{
                             if (User?.Identity?.IsAuthenticated ?? false)
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Account" asp-action="Index">@User.Identity.Name</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Logout</a>
-                                </li>
+                                                                            <li class="nav-item">
+                                                                                <a class="nav-link" asp-controller="Account" asp-action="Index">@User.Identity.Name</a>
+                                                                            </li>
+                                                                            <li class="nav-item">
+                                                                                <a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Logout</a>
+                                                                            </li>
                             }
                             else
                             {
-                                <li class="nav-item">
-                                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
-                                </li>
+                                                                            <li class="nav-item">
+                                                                                <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
+                                                                            </li>
                             }
                         }
                     </ul>
@@ -56,20 +78,33 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2022 - HackathonWebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+    <!-- Content Body -->
+	<div id="particles-js"></div>
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    @{
+        int year = DateTime.Now.Year;
+    }
+    <footer style="background-color: black; text-align:center;">
+        <div style="color: white;">
+			Copyright &copy; Oklahoma State University @year<br/>
+			Copyright &copy; Baker Hughes @year<br/>
+			<a href="https://github.com/chriswblake/osu-bh-hackathon-webapp"><i class="fab fa-github"></i></a>
+			<a href="https://www.linkedin.com/company/bakerhughes"><i class="fab fa-linkedin"></i></a>
+		</div>
     </footer>
+
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- Particle library -->
+	<script src="~/js/particles/particles.js"></script>
+	<script src="~/js/particles/app.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
