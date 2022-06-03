@@ -150,21 +150,37 @@ body {
 /* Header Nav Bar
 -------------------------------------------------- */
 nav {
-    border-bottom: 1px solid #e5e5e5;
-    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-    background-color: white;
+    color: var(--bh-light-gray);
 }
+
+nav a {
+    color: var(--bh-light-gray);
+}
+
 .navbar-brand {
     white-space: normal;
     text-align: center;
     word-break: break-all;
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+.navbar-toggler {
+    border-color: #333;
+    background-color: var(--osu-orange);
 }
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(0, 0, 0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e")
+}
+
+@media (max-width: 575px) {
+    nav {
+        background-color: #00000055;
+        text-align: center;
+        font-size: x-large;
+    }
+
+}
+
 
 /* Sticky footer styles
 -------------------------------------------------- */
