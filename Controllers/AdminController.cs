@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using HackathonWebApp.Models;
+using MongoDB.Driver;
+using MongoDB.Bson;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace HackathonWebApp.Controllers
 {
@@ -17,26 +21,32 @@ namespace HackathonWebApp.Controllers
         // Fields
         private RoleManager<ApplicationRole> roleManager;
         private UserManager<ApplicationUser> userManager;
+        private IMongoCollection<Sponsor> sponsorCollection;
 
         // Constructors
-        public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
+        public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IMongoClient client)
         {
+            // Identity
             this.roleManager = roleManager;
             this.userManager = userManager;
+
+            // Hackathon DBs
+            var database = client.GetDatabase("Hackathon");
+            this.sponsorCollection = database.GetCollection<Sponsor>("Sponsor");
         }
 
-        // Views
+        // Main View
         public ViewResult Index()
         {
             dynamic model = new ExpandoObject();
             model.Roles = roleManager.Roles;
             model.Users = userManager.Users;
+            model.Sponsors = sponsorCollection.Find(s => true).ToList<Sponsor>();
             return View(model);
         }
-    public IActionResult CreateRole() => View();
-        
 
         // Methods - Roles
+        public IActionResult CreateRole() => View();
         [HttpPost]
         public async Task<IActionResult> CreateRole([Required] string name)
         {
@@ -117,6 +127,103 @@ namespace HackathonWebApp.Controllers
                 return await UpdateRole(model.RoleId);
         }
 
+        // Methods - Sponsor
+        public IActionResult CreateSponsor() => View();
+        [HttpPost]
+        public async Task<IActionResult> CreateSponsor(Sponsor model, IFormFile Logo)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {   // Save logo into string of model
+                    if (Logo != null)
+                    {
+                        MemoryStream memoryStream = new MemoryStream();
+                        Logo.OpenReadStream().CopyTo(memoryStream);
+                        model.Logo = Convert.ToBase64String(memoryStream.ToArray());
+                    }
+                    else
+                    {
+                        model.Logo = "";
+                    }
+
+                    // Create the sponsor
+                    await sponsorCollection.InsertOneAsync(model);
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteSponsor(string id)
+        {
+            try
+            { 
+                // Delete the sponsor
+                await sponsorCollection.FindOneAndDeleteAsync(s => s.Id == ObjectId.Parse(id));
+            }
+            catch (Exception e)
+            {
+                // Save errors
+                Errors(e);
+            }
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> UpdateSponsor(string id)
+        {
+            var results = await sponsorCollection.FindAsync(s => s.Id == ObjectId.Parse(id));
+            Sponsor sponsor = results.FirstOrDefault();
+            return View(sponsor);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSponsor(string id, Sponsor model, IFormFile NewLogo)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    //Set missing id in model
+                    model.Id = ObjectId.Parse(id);
+
+                    // If there is a new logo, overwrite the old one. (convert to string)
+                    if (NewLogo != null)
+                    {
+                        MemoryStream memoryStream = new MemoryStream();
+                        NewLogo.OpenReadStream().CopyTo(memoryStream);
+                        model.Logo = Convert.ToBase64String(memoryStream.ToArray());
+                    }
+
+                    // Update in database
+                    await sponsorCollection.FindOneAndUpdateAsync(
+                        s => s.Id == ObjectId.Parse(id),
+                        new ObjectUpdateDefinition<Sponsor>(model)
+                    );
+                    
+                    // Return to table view
+                    return RedirectToAction("Index");
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            return View(model);
+        }
+
+        // Methods - Errors
+        private void Errors(Task result)
+        {
+            var e = result.Exception;
+            Errors(e);
+        }
+        private void Errors(Exception e)
+        {
+            ModelState.AddModelError("", e.Message);
+        }
 
         private void Errors(IdentityResult result)
         {

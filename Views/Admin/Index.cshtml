@@ -3,11 +3,12 @@
     ViewBag.Title = "Admin";
     var roles = Model.Roles;
     var users = Model.Users;
+    var sponsors = Model.Sponsors;
 }
 <div class="container">
     <h1 class="bg-info text-white">Roles</h1>
-    <a asp-action="CreateRole" class="btn btn-secondary">Create a Role</a>
   
+    <!-- Roles -->
     <table class="table table-sm table-bordered table-bordered text-white">
         <tr><th>ID</th><th>Name</th><th>Users</th><th>Update</th><th>Delete</th></tr>
         @foreach (ApplicationRole role in roles)
@@ -26,8 +27,14 @@
                 </td>
             </tr>
         }
+        <tr>
+        <td colspan="5">
+            <a asp-action="CreateRole" class="btn btn-secondary">Create a Role</a>
+        </td>
+        </tr>
     </table>
 
+    <!-- Users -->
     <h1 class="bg-info text-white">Users</h1>
     <table class="table table-sm table-bordered table-bordered text-white">
         <tr>
@@ -43,5 +50,30 @@
                 <td i-user="@user.Id"></td>
             </tr>
         }
+    </table>
+
+    <!-- Sponsors -->
+    <h1 class="bg-info text-white">Sponsors</h1>
+    <table class="table table-sm table-bordered table-bordered text-white">
+        <tr><th>Logo</th><th>Name</th><th>Users</th><th>Update</th><th>Delete</th></tr>
+        @foreach (Sponsor sponsor in sponsors)
+        {
+            <tr>
+                <td style="text-align:center;"><img src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" style="height:100px;"/></td>
+                <td>@sponsor.Name</td>
+                <td>@sponsor.Tier</td>
+                <td><a class="btn btn-sm btn-primary" asp-action="UpdateSponsor" asp-route-id="@sponsor.Id">Update</a></td>
+                <td>
+                    <form asp-action="DeleteSponsor" asp-route-id="@sponsor.Id" method="post">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        <tr>
+        <td colspan="5">
+            <a asp-action="CreateSponsor" class="btn btn-secondary">Add a Sponsor</a>
+        </td>
+        </tr>
     </table>
 </div>
