@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HackathonWebApp.Models;
+using MongoDB.Driver;
 
 namespace HackathonWebApp
 {
@@ -33,8 +34,13 @@ namespace HackathonWebApp
             if (MONGODB_URL == null)
                 throw new ArgumentNullException("Missing Setting: MONGODB_URL");
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
-            .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid> (MONGODB_URL, "Identity");
+            // Add DB link to Identity Store
+            services.AddIdentity<ApplicationUser, ApplicationRole>().AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(MONGODB_URL, "Identity");
+            
+            // Add client to MongoDB DBs
+            services.AddSingleton<IMongoClient, MongoClient>(s => {
+                return new MongoClient(MONGODB_URL);
+            });
             services.AddControllersWithViews();
         }
 
