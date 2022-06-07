@@ -39,9 +39,9 @@ namespace HackathonWebApp.Controllers
         public ViewResult Index()
         {
             dynamic model = new ExpandoObject();
-            model.Roles = roleManager.Roles;
-            model.Users = userManager.Users;
-            model.Sponsors = sponsorCollection.Find(s => true).ToList<Sponsor>();
+            model.CountRoles = roleManager.Roles.Count();
+            model.CountUsers = userManager.Users.Count();
+            model.CountSponsors = sponsorCollection.CountDocuments(s => true);
             return View(model);
         }
 
