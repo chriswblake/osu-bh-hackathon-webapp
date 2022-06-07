@@ -1,6 +1,7 @@
 ﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,10 +13,15 @@ namespace HackathonWebApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private IMongoCollection<Sponsor> sponsorCollection;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IMongoClient client)
         {
             _logger = logger;
+
+            // Hackathon DBs
+            var database = client.GetDatabase("Hackathon");
+            this.sponsorCollection = database.GetCollection<Sponsor>("Sponsor");
         }
 
         public IActionResult Index()
@@ -35,7 +41,8 @@ namespace HackathonWebApp.Controllers
 
         public IActionResult Sponsors()
         {
-            return View();
+            var sponsors = sponsorCollection.Find(s => true).ToList<Sponsor>();
+            return View(sponsors);
         }
 
         public IActionResult Team()

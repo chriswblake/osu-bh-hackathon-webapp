@@ -1,5 +1,8 @@
-﻿@{
+﻿@model List<Sponsor>
+
+@{
     ViewData["Title"] = "Home Page";
+    var sponsors = Model;
 }
 
 <style>
@@ -37,23 +40,17 @@
 	</section>
 	<section class="diagonal-section" style="background-color:#EEE; padding-top:3em;">
 		<div class="diagonal-section-content">
-			<!-- Gold -->
-            <div class="sponsors-container">
+
+             <div class="sponsors-container">
                 @*<h3 style="color: #e7d709">— Gold —</h3>*@
-                <a href="https://phase2online.com/"><img style="width:200px;" src="~/img/sponsors/phase-2.png" /></a>
-                <a href="https://www.mongodb.com/"><img style="width:250px;" src="~/img/sponsors/mongo-db.png" /></a>
+                @*@foreach (Sponsor sponsor in sponsors.Where(s => s.Tier.ToLower() == "gold"))*@
+                @foreach (Sponsor sponsor in sponsors)
+                {
+                    <a href="@sponsor.WebsiteUrl" target="_blank">
+                        <img style="width:250px; max-height:100px;" src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" alt="@sponsor.Name"/>
+                    </a>
+                }
             </div>
-
-@*            <!-- Silver -->
-            <div class="sponsors-container">
-                <h3 style="color: #cccccc">— Silver —</h3>
-            </div>*@
-
-            <!-- Bronze -->
- @*           <div class="sponsor-container">
-                <h3 class="sponsor-tier" style="color: #b45b5b">— Bronze —</h3>
-                <a href=""><img class="sponsors-img" src="./img/sponsors/" /></a>
-            </div>*@
 
             <!-- Hosted by -->
             <div class="sponsors-container">
