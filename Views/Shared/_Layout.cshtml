@@ -47,32 +47,62 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Team">Team</a>
                         </li>
 
-                        @{
-                            if (User?.IsInRole("Admin") ?? false)
+                        <li class="nav-item">
+                            @if (User?.Identity?.IsAuthenticated ?? false)
                             {
-                                                                            <li>
-                                                                                <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin</a>
-                                                                            </li>
-                            }
-                        }
-
-                        @{
-                            if (User?.Identity?.IsAuthenticated ?? false)
-                            {
-                                                                            <li class="nav-item">
-                                                                                <a class="nav-link" asp-controller="Account" asp-action="Index">@User.Identity.Name</a>
-                                                                            </li>
-                                                                            <li class="nav-item">
-                                                                                <a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Logout</a>
-                                                                            </li>
+                            <div id="userMenu" class="dropdown">
+                                <a class="dropdown-toggle" type="button" id="userMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <i class="fa-solid fa-circle-user"></i>
+                                </a>
+                                
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    Signed in as<br/>
+                                    <b>@User.Identity.Name</b>
+                                    <hr/>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Index">Your Profile</a>
+                                    @if (User?.IsInRole("Admin") ?? false)
+                                    {
+                                        <a class="dropdown-item" asp-controller="Admin" asp-action="Index">Admin</a>
+                                    }
+                                    <hr/>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Logout">Sign out</a>
+                                    </div>
+                            </div>
                             }
                             else
                             {
-                                                                            <li class="nav-item">
-                                                                                <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
-                                                                            </li>
+                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login" style="color:var(--bh-light-green);">Sign In</a>
+                            }
+                        </li>
+                        @*
+                        @{
+                            if (User?.IsInRole("Admin") ?? false)
+                            {
+                                <li>
+                                    <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin</a>
+                                </li>
                             }
                         }
+                        *@
+
+                        @*@{
+                            if (User?.Identity?.IsAuthenticated ?? false)
+                            {
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-controller="Account" asp-action="Index">@User.Identity.Name</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Logout</a>
+                                    </li>
+                            }
+                            else
+                            {
+                                    <li class="nav-item">
+                                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
+                                    </li>
+                            }
+                        }
+*@
                     </ul>
                 </div>
             </div>

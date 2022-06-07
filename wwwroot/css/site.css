@@ -178,7 +178,33 @@ nav a {
         text-align: center;
         font-size: x-large;
     }
+}
 
+/* Header User Menu
+-------------------------------------------------- */
+#userMenu {
+    margin-left: 0.5em;
+    margin-top: 0.4em;
+}
+#userMenu hr {
+    margin: 0.5em;
+}
+#userMenu .dropdown-toggle {
+    background-color: transparent;
+    color: var(--bh-light-gray);
+}
+#userMenu .dropdown-menu {
+    background-color: var(--bh-light-gray);
+    padding: 0.7em 1em;
+    text-align: left;
+    font-size: smaller;
+}
+#userMenu .dropdown-item {
+    padding: 0;
+}
+#userMenu .dropdown-item:hover {
+    color: var(--osu-orange);
+    background-color: transparent;
 }
 
 /* Left Nav Bar
