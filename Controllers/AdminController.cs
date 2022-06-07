@@ -35,7 +35,7 @@ namespace HackathonWebApp.Controllers
             this.sponsorCollection = database.GetCollection<Sponsor>("Sponsor");
         }
 
-        // Main View
+        // Index
         public ViewResult Index()
         {
             dynamic model = new ExpandoObject();
@@ -45,7 +45,18 @@ namespace HackathonWebApp.Controllers
             return View(model);
         }
 
+        //Methods - Users
+        public ViewResult Users()
+        {
+            return View(userManager.Users);
+        }
+
+
         // Methods - Roles
+        public ViewResult Roles()
+        {
+            return View(roleManager.Roles);
+        }
         public IActionResult CreateRole() => View();
         [HttpPost]
         public async Task<IActionResult> CreateRole([Required] string name)
@@ -128,6 +139,11 @@ namespace HackathonWebApp.Controllers
         }
 
         // Methods - Sponsor
+        public ViewResult Sponsors()
+        {
+            var sponsors = sponsorCollection.Find(s => true).ToList<Sponsor>();
+            return View(sponsors);
+        }
         public IActionResult CreateSponsor() => View();
         [HttpPost]
         public async Task<IActionResult> CreateSponsor(Sponsor model, IFormFile Logo)
