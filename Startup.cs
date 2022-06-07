@@ -41,6 +41,7 @@ namespace HackathonWebApp
             services.AddSingleton<IMongoClient, MongoClient>(s => {
                 return new MongoClient(MONGODB_URL);
             });
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
