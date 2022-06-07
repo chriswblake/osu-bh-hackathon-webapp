@@ -1,79 +1,19 @@
 ﻿@model dynamic
 @{
-    ViewBag.Title = "Admin";
-    var roles = Model.Roles;
-    var users = Model.Users;
-    var sponsors = Model.Sponsors;
+    Layout = "_AdminLayout";
 }
-<div class="container">
-  
-    <!-- Roles -->
-    <h1 class="text-white">Roles</h1>
-    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
-        <tr><th>ID</th><th>Name</th><th>Users</th><th>Update</th><th>Delete</th></tr>
-        @foreach (ApplicationRole role in roles)
-        {
-            <tr>
-                <td>@role.Id</td>
-                <td>@role.Name</td>
-                <td i-role="@role.Id"></td>
-                <td><a class="btn btn-sm btn-primary" asp-action="UpdateRole" asp-route-id="@role.Id">Update</a></td>
-                <td>
-                    <form asp-action="DeleteRole" asp-route-id="@role.Id" method="post">
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            Delete
-                        </button>
-                    </form>
-                </td>
-            </tr>
-        }
-        <tr>
-        <td colspan="5">
-            <a asp-action="CreateRole" class="btn btn-secondary">Create a Role</a>
-        </td>
-        </tr>
-    </table>
+@{
+    ViewBag.Title = "Admin";
+    var countRoles = Model.CountRoles;
+    var countUsers = Model.CountUsers;
+    var countSponsors = Model.CountSponsors;
+}
 
-    <!-- Users -->
-    <h1 class="text-white">Users</h1>
-    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
-        <tr>
-            <th>UserName</th>
-            <th>Email</th>
-            <th>Roles</th>
-        </tr>
-        @foreach (ApplicationUser user in users)
-        {
-            <tr>
-                <td>@user.UserName</td>
-                <td>@user.Email</td>
-                <td i-user="@user.Id"></td>
-            </tr>
-        }
-    </table>
+<span class="text-white">
+    <h1>General</h1>
 
-    <!-- Sponsors -->
-    <h1 class="text-white">Sponsors</h1>
-    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
-        <tr><th>Logo</th><th>Name</th><th>Tier</th><th>Update</th><th>Delete</th></tr>
-        @foreach (Sponsor sponsor in sponsors)
-        {
-            <tr>
-                <td style="text-align:center;"><img src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" style="height:100px;"/></td>
-                <td>@sponsor.Name</td>
-                <td>@sponsor.Tier</td>
-                <td><a class="btn btn-sm btn-primary" asp-action="UpdateSponsor" asp-route-id="@sponsor.Id">Update</a></td>
-                <td>
-                    <form asp-action="DeleteSponsor" asp-route-id="@sponsor.Id" method="post">
-                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        }
-        <tr>
-        <td colspan="5">
-            <a asp-action="CreateSponsor" class="btn btn-secondary">Add a Sponsor</a>
-        </td>
-        </tr>
-    </table>
-</div>
+    <h2>Overview</h2>
+    Roles: @countRoles<br/>
+    Users: @countUsers<br/>
+    Sponsors: @countSponsors<br/>
+</span>
