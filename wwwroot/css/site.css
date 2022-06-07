@@ -181,6 +181,32 @@ nav a {
 
 }
 
+/* Left Nav Bar
+-------------------------------------------------- */
+nav.left-nav {
+    background-color: var(--bh-dark-green-gray);
+    border: 1px solid var(--bh-green);
+    border-radius: 1em;
+    padding: 1em;
+}
+nav.left-nav li {
+    padding: 3px;
+}
+nav.left-nav li i {
+    padding: 3px;
+    min-width: 2em;
+    text-align: center;
+}
+
+@media (max-width: 575px) {
+    nav.left-nav {
+        background-color: #00000055;
+        text-align: center;
+        font-size: x-large;
+        border-radius:0;
+        border:0;
+    }
+}
 
 /* Sticky footer styles
 -------------------------------------------------- */
