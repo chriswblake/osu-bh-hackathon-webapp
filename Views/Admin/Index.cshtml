@@ -6,10 +6,10 @@
     var sponsors = Model.Sponsors;
 }
 <div class="container">
-    <h1 class="bg-info text-white">Roles</h1>
   
     <!-- Roles -->
-    <table class="table table-sm table-bordered table-bordered text-white">
+    <h1 class="text-white">Roles</h1>
+    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
         <tr><th>ID</th><th>Name</th><th>Users</th><th>Update</th><th>Delete</th></tr>
         @foreach (ApplicationRole role in roles)
         {
@@ -35,8 +35,8 @@
     </table>
 
     <!-- Users -->
-    <h1 class="bg-info text-white">Users</h1>
-    <table class="table table-sm table-bordered table-bordered text-white">
+    <h1 class="text-white">Users</h1>
+    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
         <tr>
             <th>UserName</th>
             <th>Email</th>
@@ -53,9 +53,9 @@
     </table>
 
     <!-- Sponsors -->
-    <h1 class="bg-info text-white">Sponsors</h1>
-    <table class="table table-sm table-bordered table-bordered text-white">
-        <tr><th>Logo</th><th>Name</th><th>Users</th><th>Update</th><th>Delete</th></tr>
+    <h1 class="text-white">Sponsors</h1>
+    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
+        <tr><th>Logo</th><th>Name</th><th>Tier</th><th>Update</th><th>Delete</th></tr>
         @foreach (Sponsor sponsor in sponsors)
         {
             <tr>
