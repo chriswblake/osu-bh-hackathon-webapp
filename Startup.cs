@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Net.Mail;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,7 +44,36 @@ namespace HackathonWebApp
             services.AddSingleton<IMongoClient, MongoClient>(s => {
                 return new MongoClient(MONGODB_URL);
             });
-            services.AddControllersWithViews();
+
+            // Load credentials for email account
+            string EMAIL_USERNAME = null;
+            if (EMAIL_USERNAME == null)
+                EMAIL_USERNAME = Configuration.GetValue<string>("EMAIL_USERNAME");
+            if (EMAIL_USERNAME == null)
+                EMAIL_USERNAME = Environment.GetEnvironmentVariable("EMAIL_USERNAME");
+            if (EMAIL_USERNAME == null)
+                throw new ArgumentNullException("Missing Setting: EMAIL_USERNAME");
+            string EMAIL_PASSWORD = null;
+            if (EMAIL_PASSWORD == null)
+                EMAIL_PASSWORD = Configuration.GetValue<string>("EMAIL_PASSWORD");
+            if (EMAIL_PASSWORD == null)
+                EMAIL_PASSWORD = Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
+            if (EMAIL_PASSWORD == null)
+                throw new ArgumentNullException("Missing Setting: EMAIL_PASSWORD");
+
+            // Add SMTP client for emails
+            services.AddSingleton<SmtpClient>(s => {
+                SmtpClient smtp = new SmtpClient();
+                smtp.Host = "smtp.gmail.com";
+                smtp.Port = 587;
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = new System.Net.NetworkCredential(EMAIL_USERNAME, EMAIL_PASSWORD); // Enter seders User name and password  
+                smtp.EnableSsl = true;
+                return smtp;
+            });
+
+            // Enable serving web pages
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

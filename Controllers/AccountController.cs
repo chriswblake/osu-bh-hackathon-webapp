@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using HackathonWebApp.Models;
+using System.Net.Mail;
 
 namespace HackathonWebApp.Controllers
 {
@@ -12,12 +13,14 @@ namespace HackathonWebApp.Controllers
         // Fields
         private UserManager<ApplicationUser> userManager;
         private SignInManager<ApplicationUser> signInManager;
+        private SmtpClient emailClient;
 
         // Constructor
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.emailClient = emailClient;
         }
 
         // Views
