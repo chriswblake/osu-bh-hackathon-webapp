@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using HackathonWebApp.Models;
+using System.Net.Mail;
 
 namespace HackathonWebApp.Controllers
 {
@@ -12,12 +13,14 @@ namespace HackathonWebApp.Controllers
         // Fields
         private UserManager<ApplicationUser> userManager;
         private SignInManager<ApplicationUser> signInManager;
+        private SmtpClient emailClient;
 
         // Constructor
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.emailClient = emailClient;
         }
 
         // Views
@@ -44,18 +47,38 @@ namespace HackathonWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Create User
                 ApplicationUser appUser = new ApplicationUser
                 {
                     UserName = user.Name,
                     Email = user.Email
                 };
-
-                // Create User
                 IdentityResult result = await userManager.CreateAsync(appUser, user.Password);
 
-                // Inform User
+                // Send confirmation email to user
                 if (result.Succeeded)
-                    ViewBag.Message = "User Created Successfully";
+                {
+                    // Generate confirmation email body with token
+                    string code = await userManager.GenerateEmailConfirmationTokenAsync(appUser);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                    string msgBody = "" +
+                        "Please confirm your account by clicking <a href='"+callbackUrl+"'>here</a>" +
+                        "<br/>" +
+                        "<br/>" +
+                        "Thanks!";
+
+                    // Send Email
+                    MailMessage mail = new MailMessage();
+                    mail.To.Add(appUser.Email);
+                    mail.From = new MailAddress("chriswblake@gmail.com");
+                    mail.Subject = "Confirm Account - HackOKState";
+                    mail.Body = msgBody;
+                    mail.IsBodyHtml = true;
+                    await emailClient.SendMailAsync(mail);
+
+                    // Go back to login page
+                    return RedirectToAction("Login");
+                }
                 else
                 {
                     foreach (IdentityError error in result.Errors)
@@ -95,21 +118,37 @@ namespace HackathonWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([Required][EmailAddress] string email, [Required] string password, string returnurl)
         {
-            if (ModelState.IsValid)
+            // If model is not complete, show login
+            if (!ModelState.IsValid)
+                return View();
+
+            // Check if user exists
+            ApplicationUser appUser = await userManager.FindByEmailAsync(email);
+            if (appUser == null)
             {
-                ApplicationUser appUser = await userManager.FindByEmailAsync(email);
-                if (appUser != null)
-                {
-                    Microsoft.AspNetCore.Identity.SignInResult result = await signInManager.PasswordSignInAsync(appUser, password, false, false);
-                    if (result.Succeeded)
-                    {
-                        return Redirect(returnurl ?? "/");
-                    }
-                }
                 ModelState.AddModelError(nameof(email), "Login Failed: Invalid Email or Password");
+                return View();
             }
 
-            return View();
+            // Check if email is confirmed
+            bool emailConfirmed = await userManager.IsEmailConfirmedAsync(appUser);
+            if (!emailConfirmed)
+            {
+                ModelState.AddModelError(nameof(email), "Login Failed: Unconfirmed Email");
+                return View();
+            }
+
+            // Try to login
+            Microsoft.AspNetCore.Identity.SignInResult result = await signInManager.PasswordSignInAsync(appUser, password, false, false);
+            if (result.Succeeded)
+            { 
+                return Redirect(returnurl ?? "/");
+            }
+            else
+            {
+               ModelState.AddModelError(nameof(email), "Login Failed: Invalid Email or Password");
+                return View();
+            }
         }
         
         [Authorize]
@@ -117,6 +156,28 @@ namespace HackathonWebApp.Controllers
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            // Get the user
+            var appUser = await userManager.FindByIdAsync(userId);
+
+            // Check if already confirmed
+            bool emailAlreadyConfirmed = await userManager.IsEmailConfirmedAsync(appUser);
+            if (emailAlreadyConfirmed)
+            {
+                ViewBag.EmailConfirmed = "already";
+                return View();
+            }
+
+            // Try to confirm the email
+            var result = await userManager.ConfirmEmailAsync(appUser, code);
+            if (result.Succeeded)
+                ViewBag.EmailConfirmed = "yes";
+            else
+                ViewBag.EmailConfirmed = "no";
+            return View();
         }
 
         private void Errors(IdentityResult result)
