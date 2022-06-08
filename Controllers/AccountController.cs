@@ -47,18 +47,38 @@ namespace HackathonWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Create User
                 ApplicationUser appUser = new ApplicationUser
                 {
                     UserName = user.Name,
                     Email = user.Email
                 };
-
-                // Create User
                 IdentityResult result = await userManager.CreateAsync(appUser, user.Password);
 
-                // Inform User
+                // Send confirmation email to user
                 if (result.Succeeded)
-                    ViewBag.Message = "User Created Successfully";
+                {
+                    // Generate confirmation email body with token
+                    string code = await userManager.GenerateEmailConfirmationTokenAsync(appUser);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                    string msgBody = "" +
+                        "Please confirm your account by clicking <a href='"+callbackUrl+"'>here</a>" +
+                        "<br/>" +
+                        "<br/>" +
+                        "Thanks!";
+
+                    // Send Email
+                    MailMessage mail = new MailMessage();
+                    mail.To.Add(appUser.Email);
+                    mail.From = new MailAddress("chriswblake@gmail.com");
+                    mail.Subject = "Confirm Account - HackOKState";
+                    mail.Body = msgBody;
+                    mail.IsBodyHtml = true;
+                    await emailClient.SendMailAsync(mail);
+
+                    // Go back to login page
+                    return RedirectToAction("Login");
+                }
                 else
                 {
                     foreach (IdentityError error in result.Errors)
