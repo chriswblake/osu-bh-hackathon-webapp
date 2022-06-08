@@ -35,8 +35,10 @@ namespace HackathonWebApp
                 throw new ArgumentNullException("Missing Setting: MONGODB_URL");
 
             // Add DB link to Identity Store
-            services.AddIdentity<ApplicationUser, ApplicationRole>().AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(MONGODB_URL, "Identity");
-            
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(MONGODB_URL, "Identity")
+                .AddTokenProvider("Default", typeof(EmailTwoFactorAuthentication<ApplicationUser>));
+
             // Add client to MongoDB DBs
             services.AddSingleton<IMongoClient, MongoClient>(s => {
                 return new MongoClient(MONGODB_URL);
