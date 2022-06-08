@@ -118,21 +118,37 @@ namespace HackathonWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([Required][EmailAddress] string email, [Required] string password, string returnurl)
         {
-            if (ModelState.IsValid)
+            // If model is not complete, show login
+            if (!ModelState.IsValid)
+                return View();
+
+            // Check if user exists
+            ApplicationUser appUser = await userManager.FindByEmailAsync(email);
+            if (appUser == null)
             {
-                ApplicationUser appUser = await userManager.FindByEmailAsync(email);
-                if (appUser != null)
-                {
-                    Microsoft.AspNetCore.Identity.SignInResult result = await signInManager.PasswordSignInAsync(appUser, password, false, false);
-                    if (result.Succeeded)
-                    {
-                        return Redirect(returnurl ?? "/");
-                    }
-                }
                 ModelState.AddModelError(nameof(email), "Login Failed: Invalid Email or Password");
+                return View();
             }
 
-            return View();
+            // Check if email is confirmed
+            bool emailConfirmed = await userManager.IsEmailConfirmedAsync(appUser);
+            if (!emailConfirmed)
+            {
+                ModelState.AddModelError(nameof(email), "Login Failed: Unconfirmed Email");
+                return View();
+            }
+
+            // Try to login
+            Microsoft.AspNetCore.Identity.SignInResult result = await signInManager.PasswordSignInAsync(appUser, password, false, false);
+            if (result.Succeeded)
+            { 
+                return Redirect(returnurl ?? "/");
+            }
+            else
+            {
+               ModelState.AddModelError(nameof(email), "Login Failed: Invalid Email or Password");
+                return View();
+            }
         }
         
         [Authorize]
