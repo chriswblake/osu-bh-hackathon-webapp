@@ -142,6 +142,28 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            // Get the user
+            var appUser = await userManager.FindByIdAsync(userId);
+
+            // Check if already confirmed
+            bool emailAlreadyConfirmed = await userManager.IsEmailConfirmedAsync(appUser);
+            if (emailAlreadyConfirmed)
+            {
+                ViewBag.EmailConfirmed = "already";
+                return View();
+            }
+
+            // Try to confirm the email
+            var result = await userManager.ConfirmEmailAsync(appUser, code);
+            if (result.Succeeded)
+                ViewBag.EmailConfirmed = "yes";
+            else
+                ViewBag.EmailConfirmed = "no";
+            return View();
+        }
+
         private void Errors(IdentityResult result)
         {
             foreach (IdentityError error in result.Errors)

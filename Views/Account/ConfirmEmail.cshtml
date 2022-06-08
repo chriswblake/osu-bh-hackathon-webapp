@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Confirm Email";
+    string emailConfirmed = ViewBag.EmailConfirmed;
+}
+
+<div class="container text-white">
+
+    <h2>@ViewBag.Title</h2>
+
+    @switch (emailConfirmed)
+    {
+        case "already":
+            <p>
+            You have already confirmed your email.<br/>
+            Please @Html.ActionLink("Click here to Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
+            </p>
+            break;
+
+        case "yes":
+            <p>
+            Thank you for confirming your email.<br/>
+            Please @Html.ActionLink("Click here to Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
+            </p>
+            break;
+
+        default:
+            <p>
+            <span style="color:red;">Invalid confirmation code</span> for the given account. <br/>
+            Please check your email for a confirmation link.
+            </p>
+            break;
+    }
+</div>
