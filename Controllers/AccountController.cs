@@ -70,7 +70,7 @@ namespace HackathonWebApp.Controllers
                     // Send Email
                     MailMessage mail = new MailMessage();
                     mail.To.Add(appUser.Email);
-                    mail.From = new MailAddress("chriswblake@gmail.com");
+                    mail.From = new MailAddress("hackokstate@gmail.com");
                     mail.Subject = "Confirm Account - HackOKState";
                     mail.Body = msgBody;
                     mail.IsBodyHtml = true;
