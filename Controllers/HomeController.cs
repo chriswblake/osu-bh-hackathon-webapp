@@ -44,6 +44,10 @@ namespace HackathonWebApp.Controllers
             var sponsors = sponsorCollection.Find(s => true).ToList<Sponsor>();
             return View(sponsors);
         }
+        public IActionResult SponsorBenefits()
+        {
+            return View();
+        }
 
         public IActionResult Team()
         {
