@@ -1,0 +1,183 @@
+@{
+    ViewData["Title"] = "Sponsorship Benefits";
+}
+
+<div class="text-center">
+	<!-- Sponsorship Benefits -->
+	<style>
+		#tiers {
+			background-color: #EEE;
+		}
+		#tiers thead th {
+			padding: 5px 20px 5px 20px;
+			background-color: var(--bh-dark-green);
+			color: var(--osu-orange);
+			font-size: larger;
+		}
+		#tiers thead td {
+			padding: 5px 20px 5px 20px;
+			background-color: var(--bh-green);
+			color: var(--osu-orange);
+			font-weight: 500;
+		}
+		#tiers tbody tr {
+			border-bottom: 2px solid var(--bh-green);
+		}
+		#tiers tbody th,td {
+			padding: 5px 10px 5px 10px;
+		}
+	</style>
+	<section class="first-section" style="padding: 5em;">
+		<h1 class="osu-orange">Sponsorship Benefits</h1>
+	</section>
+	<section class="diagonal-section" style="background-color:white; padding-top:2em;">
+	<div class="diagonal-section-content">
+	<div class="container">
+		<center>
+			Below are the benefits that you receive as a sponsor depending on total support.
+			<br/>
+			<br/>
+			<table id="tiers">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Gold</th>
+						<th>Silver</th>
+						<th>Bronze</th>
+					</tr>
+					<tr>
+						<td></td>
+						<td>$2000+</td>
+						<td>$1000</td>
+						<td>Less than $1000</td>
+					</tr>
+				</thead>
+				<tbody>
+					@* Bronze *@
+					<tr><th>Logo on Website</th>							<td>👍</td><td>👍</td><td>👍</td></tr>
+					<tr><th>Logo on Shirt</th>								<td>👍</td><td>👍</td><td>👍</td></tr>
+					<tr><th>Logo in presentation - Opening/Closing</th>		<td>👍</td><td>👍</td><td>👍</td></tr>
+				
+					@* Silver *@
+					<tr><th>Special Thank you - Opening/Closing</th>		<td>😎</td><td>😎</td><td></td></tr>
+					<tr><th>Screen Advertisement</th>						<td>😎</td><td>😎</td><td></td></tr>
+					<tr><th>Social Media Mention</th>						<td>😎</td><td>😎</td><td></td></tr>
+				
+					@* Gold *@
+					<tr><th>Representative(s)</th>							<td>💕</td><td></td><td></td></tr>
+					<tr><th>Opening Remarks</th>							<td>💕</td><td></td><td></td></tr>
+					<tr><th>Closing Remarks</th>							<td>💕</td><td></td><td></td></tr>
+				</tbody>
+			</table>
+		</center>
+		<br/>
+		<br/>
+	</div>
+	</div>
+	</section>
+
+
+	<!-- Ways to Support -->
+	<style>
+		.faq-bubble {
+			margin-bottom: 1em;
+		}
+		.card {
+			border-radius: 50px;
+			padding: 2.5em;
+			text-wrapping: wrap;
+			background-color: #EEE;
+		}
+		.card i {
+			color: var(--bh-green);
+			font-size: large;
+			margin-bottom: 0.5em;
+		}
+		.card h4 {
+			text-transform: uppercase;
+		}
+		.card hr {
+			margin: 1em;
+		}
+
+	</style>
+	<section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:3em;">
+		<h2 class="osu-orange">Ways to Support</h2>
+	</section>
+	<section class="diagonal-section" style="background-color:white; padding-top:2em;">
+	<div class="diagonal-section-content">
+	<div class="container">
+		Our hackathon may be magical, but it doesn happen by magic. There are lots of 🧙‍ and 🧙‍♀️  making it happen! So... lots of room for help!
+		<br/>
+		<br/>
+		
+		There are 4 typical categories for showing support, but your company is welcome to help out in any way you like. We love passion!<br/>
+		The approximate value of anything provided is used to determine your sponsorship benefits tier (above).
+		<br/>
+		<br/>
+		<div class="row">
+
+			<!-- Row 1 -->
+			<div class="col-md-3 faq-bubble">
+				<div class="card h-100">
+					<i class="fa-solid fa-bowl-food"></i>
+					<h4>Food</h4>
+					<hr>
+					Food<br/>
+					Prizes<br/>
+					Swag<br/>
+					Gift Cards<br/>
+					Money<br/>
+				</div>
+			</div>
+			<div class="col-md-3 faq-bubble">
+				<div class="card h-100">
+					<i class="fa-solid fa-bowl-food"></i>
+					<h4>Prizes</h4>
+					<hr>
+					Prizes<br/>
+					Swag<br/>
+					Gift Cards<br/>
+					Scholarship<br/>
+				</div>
+			</div>
+			<div class="col-md-3 faq-bubble">
+				<div class="card h-100">
+					<i class="fa-solid fa-people-group"></i>
+					<h4>People/Time</h4>
+					<hr>
+					Mentors<br/>
+					Judges<br/>
+					Day-Of Support<br/>
+					Planning Support<br/>
+				</div>
+			</div>
+			<div class="col-md-3 faq-bubble">
+				<div class="card h-100">
+					<i class="fa-solid fa-calendar-check"></i>
+					<h4>Activities</h4>
+					<hr>
+					Internships / Interviews<br/>
+					Workshops<br/>
+					Ted Talks<br/>
+					Special Events (Mario Kart, Jenga, Sack Race, etc.)<br/>
+				</div>
+			</div>
+
+			<!-- Row 2 -->
+			<div class="col-md-12 faq-bubble">
+				<div class="card h-100">
+					<i class="fa-solid fa-hand-spock"></i>
+					<h4>Pro Tip</h4>
+					<hr>
+					Every consective year of sponsoring earns increased "Awesome Sponsor" status. <br/>
+					This comes with a special icon next to your logo and reduced requirements to earn sponsorship tier benefits.
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	</div>
+	</section>
+
+</div>
