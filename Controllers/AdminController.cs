@@ -24,14 +24,13 @@ namespace HackathonWebApp.Controllers
         private IMongoCollection<Sponsor> sponsorCollection;
 
         // Constructors
-        public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IMongoClient client)
+        public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IMongoDatabase database)
         {
             // Identity
             this.roleManager = roleManager;
             this.userManager = userManager;
 
             // Hackathon DBs
-            var database = client.GetDatabase("Hackathon");
             this.sponsorCollection = database.GetCollection<Sponsor>("Sponsor");
         }
 
