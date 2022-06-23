@@ -15,12 +15,11 @@ namespace HackathonWebApp.Controllers
         private readonly ILogger<HomeController> _logger;
         private IMongoCollection<Sponsor> sponsorCollection;
 
-        public HomeController(ILogger<HomeController> logger, IMongoClient client)
+        public HomeController(ILogger<HomeController> logger, IMongoDatabase database)
         {
             _logger = logger;
-
+            
             // Hackathon DBs
-            var database = client.GetDatabase("Hackathon");
             this.sponsorCollection = database.GetCollection<Sponsor>("Sponsor");
         }
 
