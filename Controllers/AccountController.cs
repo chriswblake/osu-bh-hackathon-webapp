@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using HackathonWebApp.Models;
 using System.Net.Mail;
-
+using System.IO;
 namespace HackathonWebApp.Controllers
 {
     public class AccountController : Controller
@@ -59,13 +59,12 @@ namespace HackathonWebApp.Controllers
                 if (result.Succeeded)
                 {
                     // Generate confirmation email body with token
+                    string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Controllers", "EmailTemplates", "ConfirmEmailAddress.html");
+                    string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
                     string code = await userManager.GenerateEmailConfirmationTokenAsync(appUser);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    string msgBody = "" +
-                        "Please confirm your account by clicking <a href='"+callbackUrl+"'>here</a>" +
-                        "<br/>" +
-                        "<br/>" +
-                        "Thanks!";
+                    string userName = appUser.UserName;
+                    string msgBody = string.Format(msgBodyTemplate, userName, callbackUrl);
 
                     // Send Email
                     MailMessage mail = new MailMessage();
