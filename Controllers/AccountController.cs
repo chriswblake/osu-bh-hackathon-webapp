@@ -71,7 +71,7 @@ namespace HackathonWebApp.Controllers
                 if (result.Succeeded)
                 {
                     // Generate confirmation email body with token
-                    string templatePath = Path.Combine(webHostEnvironment.ContentRootPath, "Controllers", "EmailTemplates", "ConfirmEmailAddress.html");
+                    string templatePath = Path.Combine(webHostEnvironment.WebRootPath, "email-templates", "ConfirmEmailAddress.html");
                     string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
                     string code = await userManager.GenerateEmailConfirmationTokenAsync(appUser);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
