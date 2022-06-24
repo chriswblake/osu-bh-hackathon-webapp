@@ -101,7 +101,7 @@ namespace HackathonWebApp.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Delete(string empname)
+        public async Task<IActionResult> Delete()
         {
             ApplicationUser appUser = await userManager.FindByNameAsync(User.Identity.Name);
 
@@ -113,15 +113,18 @@ namespace HackathonWebApp.Controllers
                 {
                     // Sign out and display confirmation
                     await signInManager.SignOutAsync();
-                    return View();
+                    return RedirectToAction("DeleteConfirmation", "Account");
                 }
                 else
                     Errors(result);
-                }
+            }
             else
                 ModelState.AddModelError("", "No role found");
 
             return RedirectToAction("Index");
+        }
+        public ViewResult DeleteConfirmation(){
+            return View("Delete");
         }
 
         [HttpPost]
