@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,18 +7,21 @@ using System.Threading.Tasks;
 using HackathonWebApp.Models;
 using System.Net.Mail;
 using System.IO;
+
 namespace HackathonWebApp.Controllers
 {
     public class AccountController : Controller
     {
         // Fields
+        private IWebHostEnvironment webHostEnvironment;
         private UserManager<ApplicationUser> userManager;
         private SignInManager<ApplicationUser> signInManager;
         private SmtpClient emailClient;
 
         // Constructor
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient)
+        public AccountController(IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient)
         {
+            this.webHostEnvironment = webHostEnvironment;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.emailClient = emailClient;
@@ -67,7 +71,7 @@ namespace HackathonWebApp.Controllers
                 if (result.Succeeded)
                 {
                     // Generate confirmation email body with token
-                    string templatePath = Path.Combine(Directory.GetCurrentDirectory(), "Controllers", "EmailTemplates", "ConfirmEmailAddress.html");
+                    string templatePath = Path.Combine(webHostEnvironment.ContentRootPath, "Controllers", "EmailTemplates", "ConfirmEmailAddress.html");
                     string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
                     string code = await userManager.GenerateEmailConfirmationTokenAsync(appUser);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
