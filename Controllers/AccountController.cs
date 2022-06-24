@@ -47,6 +47,14 @@ namespace HackathonWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Check if user exists
+                ApplicationUser existingUser = await userManager.FindByEmailAsync(user.Email);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("", "Email already in use.");
+                    return View(user);
+                }
+
                 // Create User
                 ApplicationUser appUser = new ApplicationUser
                 {
