@@ -2,7 +2,9 @@
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "Hackathon Events";
-    List<HackathonEvent> events = Model;
+    @* List<HackathonEvent> events_old = Model; *@
+    List<HackathonEvent> events = ViewBag.events;
+    List<EventApplication> activeEventApplications = ViewBag.activeEventApplications;
 }
 
 <h1 class="text-white">Hackathon Events</h1>
@@ -22,4 +24,18 @@
         <a asp-action="CreateHackathonEvent" class="btn btn-secondary">Create Event</a>
     </td>
     </tr>
+</table>
+
+
+<h1 class="text-white">Applications (active event)</h1>
+<table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
+    <tr><th>Name</th><th>Major</th><th>School Year</th></tr>
+    @foreach (EventApplication eventApplication in activeEventApplications)
+    {
+        <tr>
+            <td>@eventApplication.Name</td>
+            <td>@eventApplication.Major</td>
+            <td>@eventApplication.SchoolYear</td>
+        </tr>
+    }
 </table>

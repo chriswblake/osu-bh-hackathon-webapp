@@ -8,6 +8,9 @@ namespace HackathonWebApp.Models
 {
     public class EventApplication
     {
+        [BsonId]
+        public ObjectId Id {get; set;}
+        
         // Associated Event
         [Required]
         [BsonElement("event_id")]

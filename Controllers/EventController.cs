@@ -44,8 +44,14 @@ namespace HackathonWebApp.Controllers
         // Event Settings
         public IActionResult Index()
         {
+            // Get events and applications for current event
             var events = eventCollection.Find(s => true).ToList<HackathonEvent>();
-            return View(events);
+            var activeEventApplications = eventApplicationCollection.Find(s => s.EventId == EventController.activeEvent.Id).ToList<EventApplication>();
+
+            // Add to view's data
+            ViewBag.events = events;
+            ViewBag.activeEventApplications = activeEventApplications;
+            return View();
         }
         public ViewResult CreateHackathonEvent() => View();
         [HttpPost]
