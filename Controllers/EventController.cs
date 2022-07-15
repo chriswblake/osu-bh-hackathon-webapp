@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 namespace HackathonWebApp.Controllers
 {
     [Authorize(Roles = "Admin")]
-
     public class EventController : Controller
     {
         // Class Fields
@@ -52,6 +51,7 @@ namespace HackathonWebApp.Controllers
         {
             // Set blank registration settings
             hackathonEvent.RegistrationSettings = new RegistrationSettings();
+            // Recheck if model is valid
             ModelState.Clear();
 
             if (ModelState.IsValid)
@@ -99,28 +99,16 @@ namespace HackathonWebApp.Controllers
         {
             try
             { 
-                // Delete the sponsor
                 await eventCollection.FindOneAndDeleteAsync(s => s.Id == ObjectId.Parse(id));
             }
             catch (Exception e)
             {
-                // Save errors
                 Errors(e);
             }
             return RedirectToAction("Index");
         }
 
 
-        // Applications
-        public ViewResult CreateEventApplication() {
-            ViewBag.RegistrationSettings = EventController.activeEvent.RegistrationSettings;
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> CreateEventApplication(EventApplication eventApplication)
-        {
-            return RedirectToAction("Index");
-        }
 
         // Errors
         private void Errors(Task result)
