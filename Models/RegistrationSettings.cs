@@ -7,7 +7,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HackathonWebApp.Models
 {
-    public class RegistrationSettings {
+    public class RegistrationSettings
+    {
+        /// <summary>
+        /// Class: Represents the options for fields during registration of a participant.
+        /// </summary>
 
         // Constructor
         public RegistrationSettings()
@@ -17,16 +21,25 @@ namespace HackathonWebApp.Models
             this.TShirtSizeOptions = new Dictionary<string, string>();
         }
 
-
         // Schooling Fields
+        /// <summary>
+        /// Description: Key-Value pairs representing student academic majors.
+        /// <para>Key: A normalized value for storage/lookup.</para>
+        /// <para>Value: A human-friendly name, typically used for presentation.</para>
+        /// </summary>
         [Required]
         [BsonElement("major_options")]
         public Dictionary<string,string> MajorOptions {get; set;}
 
+        /// <summary>
+        /// Description: Key-Value pairs representing year in university. (Fresh, Soph, etc.)
+        /// <para>Key: A normalized value for storage/lookup.</para>
+        /// <para>Value: A human-friendly name, typically used for presentation.</para>
+        /// </summary>        
         [Required]
         [BsonIgnore]
         [BsonElement("school_year_options")]
-        public Dictionary<string,string> SchoolYearOptions {get {
+        public Dictionary<string,string> SchoolYearOptions { get {
             return new Dictionary<string, string>()
             {
                 { "first_year", "Freshman (1st Year)"},
@@ -40,12 +53,23 @@ namespace HackathonWebApp.Models
             };
         }}
     
+
         // Experience Fields
+        /// <summary>
+        /// Description: Key-Value pairs representing official trainings or certificates.
+        /// <para>Key: A normalized value for storage/lookup.</para>
+        /// <para>Value: A human-friendly name, typically used for presentation.</para>
+        /// </summary> 
         [Required]
         [BsonElement("trainings_acquired_options")]
         public Dictionary<string,string> TrainingsAcquiredOptions {get; set;}
 
         // Preferences Fields
+        /// <summary>
+        /// Description: Key-Value pairs representing available shirt sizes.
+        /// <para>Key: A normalized value for storage/lookup.</para>
+        /// <para>Value: A human-friendly name, typically used for presentation.</para>
+        /// </summary> 
         [Required]
         [BsonElement("tshirt_size_options")]
         public Dictionary<string,string> TShirtSizeOptions {get; set;}
