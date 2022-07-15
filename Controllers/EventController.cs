@@ -1,5 +1,6 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using MongoDB.Bson;
@@ -11,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace HackathonWebApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
+
     public class EventController : Controller
     {
         // Class Fields
