@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
@@ -21,6 +21,7 @@ namespace HackathonWebApp.Controllers
         // Fields
         private readonly ILogger<EventController> _logger;
         private IMongoCollection<HackathonEvent> eventCollection;
+        private IMongoCollection<EventApplication> eventApplicationCollection;
 
         // Constructor
         public EventController(ILogger<EventController> logger, IMongoDatabase database)
@@ -29,6 +30,7 @@ namespace HackathonWebApp.Controllers
             
             // Hackathon DBs
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
+            this.eventApplicationCollection = database.GetCollection<EventApplication>("EventApplications");
 
             // Load active hackathon event, if not previously loaded
             if (EventController.activeEvent == null)
@@ -109,6 +111,33 @@ namespace HackathonWebApp.Controllers
         }
 
 
+        // Applications
+        [AllowAnonymous]
+        public ViewResult CreateEventApplication() {
+            ViewBag.RegistrationSettings = EventController.activeEvent.RegistrationSettings;
+            return View();
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> CreateEventApplication(EventApplication eventApplication)
+        {
+            // Set application's associated event to the active event
+            eventApplication.EventId = EventController.activeEvent.Id;
+            // Revalidated model
+            ModelState.Clear();
+
+            if (ModelState.IsValid)
+            {
+                try {
+                    await eventApplicationCollection.InsertOneAsync(eventApplication);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            return RedirectToAction("Index");
+        }
 
         // Errors
         private void Errors(Task result)

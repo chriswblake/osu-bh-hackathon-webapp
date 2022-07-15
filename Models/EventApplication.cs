@@ -1,0 +1,85 @@
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+
+namespace HackathonWebApp.Models
+{
+    public class EventApplication
+    {
+        // Associated Event
+        [Required]
+        [BsonElement("event_id")]
+        public ObjectId EventId { get; set; }
+
+        // Basic Information
+        [Required]
+        [BsonElement("name")]
+        public string Name { get; set; }
+
+        [Required]
+        [BsonElement("major")]
+        public string Major { get; set; }
+
+        [Required]
+        [BsonElement("school_year")]
+        public string SchoolYear {get; set;}
+
+
+
+        // Skills Information
+        [Required]
+        [BsonElement("hackathon_experience")]
+        [Range(0, 5)]
+        public int HackathonExperience { get; set; }
+
+        [Required]
+        [BsonElement("coding_experience")]
+        [Range(0, 5)]
+        public int CodingExperience { get; set; }
+
+        [Required]
+        [BsonElement("communication_experience")]
+        [Range(0, 5)]
+        public int CommunicationExperience { get; set; }
+
+        [Required]
+        [BsonElement("organization_experience")]
+        [Range(0, 5)]
+        public bool OrganizationExperience { get; set; }
+
+        [Required]
+        [BsonElement("documentation_experience")]
+        [Range(0, 5)]
+        public int DocumentationExperience { get; set; }
+
+        [Required]
+        [BsonElement("business_experience")]
+        [Range(0, 5)]
+        public bool BusinessExperience { get; set; }
+
+        [Required]
+        [BsonElement("creativity_experience")]
+        [Range(0, 5)]
+        public int CreativityExperience { get; set; }
+
+
+
+        // Trainings
+        [Required]
+        [BsonElement("trainings_acquired")]
+        public List<string> TrainingsAcquired { get; set; }
+
+
+
+        // Customization Information
+        [Required]
+        [BsonElement("tshirt_size")]
+        public string TShirtSize { get; set; }
+
+        [Required]
+        [BsonElement("dietary_restrictions")]
+        public string DietaryRestrictions { get; set; }
+    }
+}

@@ -1,0 +1,191 @@
+﻿@using System.ComponentModel
+@using HackathonWebApp.Models
+@model HackathonWebApp.Models.EventApplication
+
+@{
+    ViewData["Title"] = "Event Application";
+    RegistrationSettings registrationSettings = ViewBag.RegistrationSettings;
+}
+
+<style>
+    .qa-section-box {
+        background-color: var(--bh-dark-green-gray);
+        border: 1px solid var(--bh-green);
+        padding: 10px 20px 10px 20px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+    }
+    .qa-section-box p {
+        margin: 0;
+    }
+    .basic-info-selector {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .experience-selector {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .trainings-selector {
+        width: 100%;
+    }
+    .preferences-selector {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container text-white">
+
+    <h2>Event Application</h2>
+    <hr />
+    <div class="row">
+        <div class="col-sm-8 col-md-6 col-lg-5">
+            <form asp-action="CreateEventApplication">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <h3>Basic Information</h3>
+                <div class="qa-section-box">
+                    <p>Name</p>
+                    <input asp-for="Name" class="form-control basic-info-selector"/>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                    
+                    <p>Major</p>
+                    @Html.DropDownListFor(m => m.Major, new SelectList(registrationSettings.MajorOptions, "Key", "Value"), "Select Major", new { @class="basic-info-selector" })
+                    <span asp-validation-for="Major" class="text-danger"></span>
+                    <br/>
+
+                    <p>School Year</p>
+                    @Html.DropDownListFor(m => m.SchoolYear, new SelectList(registrationSettings.SchoolYearOptions, "Key", "Value"), "Select Year", new { @class="basic-info-selector" })
+                    <span asp-validation-for="SchoolYear" class="text-danger"></span>
+                </div>
+
+                <h3>Experience</h3>
+                <div class="qa-section-box">
+                    <p>
+                    Please indicate your experience with the following topics.
+                    This is used for team balancing, not selection, so honesty will increase the odds you have a fun time. :)
+                    </p><br/>
+
+                    <p>Hackathons - How familiar are you?</p>
+                    <select class="experience-selector" data-val="true" data-val-required="The Hackathons field is required." id="HackathonExperience" name="HackathonExperience">
+                        <option value="">Select Experience</option>
+                        <option value="0">Zero. This would be my first. 😋</option>
+                        <option value="1">Familiar. I've read a stuff and want to try. 🤔</option>
+                        <option value="2">Tried it once before. I want to try again. 🤓</option>
+                        <option value="3">A few. I'm sorta liking these. 🤓</option>
+                        <option value="4">I've been in several. It's fun! 😎</option>
+                        <option value="5">I've helped organize them! 🦸‍♀️</option>
+                    </select>
+                    <span asp-validation-for="HackathonExperience" class="text-danger"></span>
+
+                    <p>Coding</p>
+                    <select class="experience-selector" data-val="true" data-val-required="The Coding field is required." id="CodingExperience" name="CodingExperience">
+                        <option value="">Select Experience</option>
+                        <option value="0">No doubt, I am a Youngling (no experience)</option>
+                        <option value="1">I'm definitely a Padawan (please teach me)</option>
+                        <option value="2">As a Jedi Knight, I got skills (can do stuff)</option>
+                        <option value="3">I'm a Jedi Master (ready for anything)</option>
+                        <option value="4">Experienced Jedi Master (worked on team projects)</option>
+                        <option value="5">Jedi Trainer (able to teach others)</option>
+                    </select>
+                    <span asp-validation-for="CodingExperience" class="text-danger"></span>
+
+                    <p>Communication</p>
+                    <select class="experience-selector" data-val="true" data-val-required="The Communication field is required." id="CommunicationExperience" name="CommunicationExperience">
+                        <option value="">Select Experience</option>
+                        <option value="0">Just tell me what to do. I'll get it done, alone. 👩‍💻</option>
+                        <option value="1">Prefer alone or with people I know. 😎</option>
+                        <option value="2">I can get the team on the same page. 🧐</option>
+                        <option value="3">Presentations are fun. 👩‍🏫</option>
+                        <option value="4">I've been on stage infront of 100's of people. 🕺</option>
+                        <option value="5">Charisma is my thing! 🤩</option>
+                    </select>
+                    <span asp-validation-for="CommunicationExperience" class="text-danger"></span>
+
+                    <p>Organization</p>
+                    <select class="experience-selector" data-val="true" data-val-required="The Organization field is required." id="OrganizationExperience" name="OrganizationExperience">
+                        <option value="">Select Experience</option>
+                        <option value="0">All my files are named 'temp123'.</option>
+                        <option value="1">All my files have a folder and legit name.</option>
+                        <option value="2">I copy the folder to backup my code/work.</option>
+                        <option value="3">I use GitHub.</option>
+                        <option value="4">I can use branches on GitHub!</option>
+                        <option value="5">I'm probably too organized... actually, haha.</option>
+                    </select>
+                    <span asp-validation-for="OrganizationExperience" class="text-danger"></span>
+
+                    <p>Documentation</p>
+                    <select class="experience-selector" data-val="true" data-val-required="The Documentation field is required." id="DocumentationExperience" name="DocumentationExperience">
+                        <option value="">Select Experience</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                    <span asp-validation-for="DocumentationExperience" class="text-danger"></span>
+
+                    <p>Business</p>
+                    <select class="experience-selector" data-val="true" data-val-required="The Business field is required." id="BusinessExperience" name="BusinessExperience">
+                        <option value="">Select Experience</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                    <span asp-validation-for="BusinessExperience" class="text-danger"></span>
+
+                    <p>Creativity</p>
+                    <select class="experience-selector" data-val="true" data-val-required="The Creativity field is required." id="CreativityExperience" name="CreativityExperience">
+                        <option value="">Select Experience</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                    <span asp-validation-for="CreativityExperience" class="text-danger"></span>
+                </div>
+
+                <h3>Trainings</h3>
+                <div class="qa-section-box">
+                    Do you have any of the below training certificates? (hold 'ctrl' to select multiple)<br/>
+                    @Html.ListBoxFor(m => m.TrainingsAcquired, new SelectList(registrationSettings.TrainingsAcquiredOptions, "Key", "Value"), new { @class="trainings-selector" })<br/>
+                    @* <span asp-validation-for="TrainingsAcquired" class="text-danger"></span> *@
+                </div>
+
+                <h3>Preferences</h3>
+                <div class="qa-section-box">
+                    <div class="form-group">
+                        T-Shirt Size<br/>
+                        @Html.DropDownListFor(m => m.TShirtSize, new SelectList(registrationSettings.TShirtSizeOptions, "Key", "Value"), "Select Size", new { @class="preferences-selector" })
+                        <span asp-validation-for="TShirtSize" data-val-required="The T-Shirt Size field is required." class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        Dietary Restrictions<br/>
+                        <input asp-for="DietaryRestrictions" class="form-control preferences-selector" data-val-required="The Dietary field is required." placeholder="vegetarian, no pork, etc."/>
+                        <span asp-validation-for="DietaryRestrictions" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
