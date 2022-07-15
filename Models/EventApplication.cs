@@ -47,7 +47,7 @@ namespace HackathonWebApp.Models
         [Required]
         [BsonElement("organization_experience")]
         [Range(0, 5)]
-        public bool OrganizationExperience { get; set; }
+        public int OrganizationExperience { get; set; }
 
         [Required]
         [BsonElement("documentation_experience")]
@@ -57,7 +57,7 @@ namespace HackathonWebApp.Models
         [Required]
         [BsonElement("business_experience")]
         [Range(0, 5)]
-        public bool BusinessExperience { get; set; }
+        public int BusinessExperience { get; set; }
 
         [Required]
         [BsonElement("creativity_experience")]
