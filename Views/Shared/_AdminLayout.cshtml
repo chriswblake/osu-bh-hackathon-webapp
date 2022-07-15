@@ -30,6 +30,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a asp-controller="Event" asp-action="Index">
+                                <i class="fa-solid fa-calendar"></i>
+                                Events
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Roles">
                                 <i class="fa-solid fa-id-badge"></i>
                                 Roles
@@ -57,3 +63,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {  
+    @RenderSection("Scripts", required: false)
+} 
