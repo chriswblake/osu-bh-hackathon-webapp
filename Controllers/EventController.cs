@@ -94,7 +94,21 @@ namespace HackathonWebApp.Controllers
             }
             return View(hackathonEvent);
         }
-
+        [HttpPost]
+        public async Task<IActionResult> DeleteHackathonEvent(string id)
+        {
+            try
+            { 
+                // Delete the sponsor
+                await eventCollection.FindOneAndDeleteAsync(s => s.Id == ObjectId.Parse(id));
+            }
+            catch (Exception e)
+            {
+                // Save errors
+                Errors(e);
+            }
+            return RedirectToAction("Index");
+        }
 
 
         // Applications

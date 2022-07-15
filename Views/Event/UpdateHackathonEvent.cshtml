@@ -39,6 +39,23 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+<div class="container text-white">
+    <h2 class="text-white">Danger Zone</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="DeleteHackathonEvent">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" class="form-control" />
+
+                <div class="form-group">
+                    This will permantently delete the event and all associated settings/information.
+                    <input type="submit" value="Delete" class="btn btn-danger" /> 
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
