@@ -44,12 +44,8 @@
             <form asp-action="CreateEventApplication">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                <h3>Basic Information</h3>
+                <h3>School Information</h3>
                 <div class="qa-section-box">
-                    <p>Name</p>
-                    <input asp-for="Name" class="form-control basic-info-selector"/>
-                    <span asp-validation-for="Name" class="text-danger"></span>
-                    
                     <p>Major</p>
                     @Html.DropDownListFor(m => m.Major, new SelectList(registrationSettings.MajorOptions, "Key", "Value"), "Select Major", new { @class="basic-info-selector" })
                     <span asp-validation-for="Major" class="text-danger"></span>
@@ -154,7 +150,8 @@
 
                 <h3>Trainings</h3>
                 <div class="qa-section-box">
-                    Do you have any of the below training certificates? (hold 'ctrl' to select multiple)<br/>
+                    Do you have any of the below training certificates?<br/>
+                    (hold 'ctrl' to select multiple)<br/>
                     @Html.ListBoxFor(m => m.TrainingsAcquired, new SelectList(registrationSettings.TrainingsAcquiredOptions, "Key", "Value"), new { @class="trainings-selector" })<br/>
                     @* <span asp-validation-for="TrainingsAcquired" class="text-danger"></span> *@
                 </div>

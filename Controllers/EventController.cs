@@ -1,6 +1,7 @@
 ﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using MongoDB.Bson;
@@ -20,15 +21,17 @@ namespace HackathonWebApp.Controllers
 
         // Fields
         private readonly ILogger<EventController> _logger;
+        private UserManager<ApplicationUser> userManager;
         private IMongoCollection<HackathonEvent> eventCollection;
         private IMongoCollection<EventApplication> eventApplicationCollection;
 
         // Constructor
-        public EventController(ILogger<EventController> logger, IMongoDatabase database)
+        public EventController(ILogger<EventController> logger, UserManager<ApplicationUser> userManager, IMongoDatabase database)
         {
             _logger = logger;
             
             // Hackathon DBs
+            this.userManager = userManager;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
             this.eventApplicationCollection = database.GetCollection<EventApplication>("EventApplications");
 
@@ -129,6 +132,12 @@ namespace HackathonWebApp.Controllers
         {
             // Set application's associated event to the active event
             eventApplication.EventId = EventController.activeEvent.Id;
+            
+            // Set application's user to logged in user
+            string userName = User.Identity.Name;
+            ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+            eventApplication.UserId = appUser.Id;
+
             // Revalidated model
             ModelState.Clear();
 

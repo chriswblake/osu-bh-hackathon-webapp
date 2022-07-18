@@ -29,11 +29,11 @@
 
 <h1 class="text-white">Applications (active event)</h1>
 <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
-    <tr><th>Name</th><th>Major</th><th>School Year</th></tr>
+    <tr><th>UserId</th><th>Major</th><th>School Year</th></tr>
     @foreach (EventApplication eventApplication in activeEventApplications)
     {
         <tr>
-            <td>@eventApplication.Name</td>
+            <td>@eventApplication.UserId</td>
             <td>@eventApplication.Major</td>
             <td>@eventApplication.SchoolYear</td>
         </tr>

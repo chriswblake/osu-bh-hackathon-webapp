@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
@@ -16,11 +17,14 @@ namespace HackathonWebApp.Models
         [BsonElement("event_id")]
         public ObjectId EventId { get; set; }
 
-        // Basic Information
+        // Associated User
         [Required]
-        [BsonElement("name")]
-        public string Name { get; set; }
+        [BsonElement("user_id")]
+        public Guid UserId { get; set; }
 
+
+
+        // Schooling Information
         [Required]
         [BsonElement("major")]
         public string Major { get; set; }
