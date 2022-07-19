@@ -1,4 +1,4 @@
-﻿@using System.ComponentModel
+@using System.ComponentModel
 @using HackathonWebApp.Models
 @model HackathonWebApp.Models.EventApplication
 
@@ -101,39 +101,15 @@
                     <span asp-validation-for="OrganizationExperience" class="text-danger"></span>
 
                     <p>Documentation</p>
-                    <select class="experience-selector" data-val="true" data-val-required="The Documentation field is required." id="DocumentationExperience" name="DocumentationExperience">
-                        <option value="">Select Experience</option>
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
+                    @Html.DropDownListFor(m => m.DocumentationExperience, new SelectList(registrationSettings.DocumentationExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
                     <span asp-validation-for="DocumentationExperience" class="text-danger"></span>
-
+ 
                     <p>Business</p>
-                    <select class="experience-selector" data-val="true" data-val-required="The Business field is required." id="BusinessExperience" name="BusinessExperience">
-                        <option value="">Select Experience</option>
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
+                    @Html.DropDownListFor(m => m.BusinessExperience, new SelectList(registrationSettings.BusinessExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
                     <span asp-validation-for="BusinessExperience" class="text-danger"></span>
 
                     <p>Creativity</p>
-                    <select class="experience-selector" data-val="true" data-val-required="The Creativity field is required." id="CreativityExperience" name="CreativityExperience">
-                        <option value="">Select Experience</option>
-                        <option value="0">0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                    </select>
+                    @Html.DropDownListFor(m => m.CreativityExperience, new SelectList(registrationSettings.CreativityExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
                     <span asp-validation-for="CreativityExperience" class="text-danger"></span>
                 </div>
 

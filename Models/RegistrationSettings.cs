@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 using System;
@@ -111,15 +111,61 @@ namespace HackathonWebApp.Models
         public Dictionary<int,string> OrganizationExperienceOptions { get {
             return new Dictionary<int, string>()
             {
-                { 0, "All my files are named 'temp123'."},
-                { 1, "All my files have a folder and legit name."},
-                { 2, "I copy the folder to backup my code/work."},
-                { 3, "I use GitHub."},
-                { 4, "I can use branches on GitHub!"},
-                { 5, "I'm probably too organized... actually, haha."}
+                { 0, "All my files are named 'temp123'. 🚮"},
+                { 1, "All my files have a folder and legit name. 🗃"},
+                { 2, "I copy the folder to backup my code/work. 🎁"},
+                { 3, "I use GitHub. 🔓"},
+                { 4, "I can use branches on GitHub!🎋"},
+                { 5, "I'm probably too organized... actually, haha.🕸"}
+            };
+        }}
+
+        [Required]
+        [BsonIgnore]
+        [BsonElement("documentation_experience_options")]
+        public Dictionary<int,string> DocumentationExperienceOptions { get {
+            return new Dictionary<int, string>()
+            {
+                { 0, "Instructions! I don't need those...🙈"},
+                { 1, "Instuctions...they're more like guidelines.🧻"},
+                { 2, "I usually follow the instuctions.📄"},
+                { 3, "I ♥ documentation. (stack overflow 😅)"},
+                { 4, "I like to fix mistakes and comment on docs.✏"},
+                { 5, "It ain't done unless there are docs. 🧐"},
+            };
+        }}
+
+        [Required]
+        [BsonIgnore]
+        [BsonElement("business_experience_options")]
+        public Dictionary<int,string> BusinessExperienceOptions { get {
+            return new Dictionary<int, string>()
+            {
+                { 0, "Work? I prefer to avoid that... ugh. 😝"},
+                { 1, "I've never worked before. 👼"},
+                { 2, "I've contributed to a team at work. 👩‍🔧"},
+                { 3, "I've led a project at work. 🕵️‍♀️"},
+                { 4, "I've managed a team at work. 🥋"},
+                { 5, "Actually, I have my own business. 💼"}
+            };
+        }}
+
+        [Required]
+        [BsonIgnore]
+        [BsonElement("creativity_experience_options")]
+        public Dictionary<int,string> CreativityExperienceOptions { get {
+            return new Dictionary<int, string>()
+            {
+                {0, "I'm a task-doer robot. 🤖"},
+                {1, "I appreciate art. 🖼"},
+                {2, "Cool stuff comes from brainstorming! 🦄"},
+                {3, "I tend to get distracted by new ideas. ✨"},
+                {4, "I garden multiple ideas at the same time. 🌱"},
+                {5, "Life is a pickle, but at least it's spicy. 🎭"}
             };
         }}
         
+        // Trainging Fields
         [Required]
         [BsonElement("trainings_acquired_options")]
         public Dictionary<string,string> TrainingsAcquiredOptions {get; set;}
