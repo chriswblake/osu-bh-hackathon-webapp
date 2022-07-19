@@ -122,7 +122,7 @@ namespace HackathonWebApp.Controllers
 
         // Applications
         [AllowAnonymous]
-        public IActionResult CreateEventApplication()
+        public IActionResult Apply()
         {
             // Skip to "Thank You" page if already applied
             if (User?.Identity?.IsAuthenticated ?? false)
@@ -146,7 +146,7 @@ namespace HackathonWebApp.Controllers
         [AllowAnonymous]
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreateEventApplication(EventApplication eventApplication)
+        public async Task<IActionResult> Apply(EventApplication eventApplication)
         {
             // Set application's associated event to the active event
             eventApplication.EventId = EventController.activeEvent.Id;
