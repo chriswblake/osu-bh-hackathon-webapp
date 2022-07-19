@@ -76,7 +76,6 @@ namespace HackathonWebApp.Models
 
 
         // Trainings
-        [Required]
         [BsonElement("trainings_acquired")]
         public List<string> TrainingsAcquired { get; set; }
 
@@ -87,7 +86,6 @@ namespace HackathonWebApp.Models
         [BsonElement("tshirt_size")]
         public string TShirtSize { get; set; }
 
-        [Required]
         [BsonElement("dietary_restrictions")]
         public string DietaryRestrictions { get; set; }
     }
