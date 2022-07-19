@@ -1,4 +1,4 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 using System;
@@ -81,12 +81,12 @@ namespace HackathonWebApp.Models
         public Dictionary<int,string> CodingExperienceOptions { get {
             return new Dictionary<int, string>()
             {
-                {0, "No doubt, I am a Youngling (no experience)"},
-                {1, "I'm definitely a Padawan (please teach me)"},
-                {2, "As a Jedi Knight, I got skills (can do stuff)"},
-                {3, "I'm a Jedi Master (ready for anything)"},
-                {4, "Experienced Jedi Master (worked on team projects)"},
-                {5, "Jedi Trainer (able to teach others)"}
+                {0, "No doubt, I am a Youngling. 🧒 (no experience)"},
+                {1, "I'm definitely a Padawan. 👨‍🎓 (please teach me)"},
+                {2, "As a Jedi Knight, I got skills. 👩‍🎤 (can do stuff)"},
+                {3, "I'm a Jedi Master 🦸‍♂️ (ready for anything)"},
+                {4, "Experienced Jedi Master 🧙‍♀️ (worked on team projects)"},
+                {5, "Jedi Trainer 🧘‍♀️ (able to teach others)"}
             };
         }}
 
