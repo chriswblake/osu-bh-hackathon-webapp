@@ -122,7 +122,24 @@ namespace HackathonWebApp.Controllers
 
         // Applications
         [AllowAnonymous]
-        public ViewResult CreateEventApplication() {
+        public IActionResult CreateEventApplication()
+        {
+            // Skip to "Thank You" page if already applied
+            if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                // Get logged in user
+                string userName = User.Identity.Name;
+                ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+
+                // Check if already applied
+                var existingApps = eventApplicationCollection.Find(a => a.EventId == EventController.activeEvent.Id && a.UserId == appUser.Id).ToList<EventApplication>();
+
+                // If already applied forward to Thank You page
+                if (existingApps.Count > 0)
+                   return RedirectToAction("ThankYou");
+            }
+
+            // Display form to apply
             ViewBag.RegistrationSettings = EventController.activeEvent.RegistrationSettings;
             return View();
         }
@@ -175,9 +192,12 @@ namespace HackathonWebApp.Controllers
                     Errors(e);
                 }
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("ThankYou");
         }
-
+        [AllowAnonymous]
+        public ViewResult ThankYou() {
+            return View();
+        }
         // Errors
         private void Errors(Task result)
         {
