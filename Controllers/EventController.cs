@@ -1,6 +1,7 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using MongoDB.Bson;
@@ -20,15 +21,19 @@ namespace HackathonWebApp.Controllers
 
         // Fields
         private readonly ILogger<EventController> _logger;
+        private UserManager<ApplicationUser> userManager;
         private IMongoCollection<HackathonEvent> eventCollection;
+        private IMongoCollection<EventApplication> eventApplicationCollection;
 
         // Constructor
-        public EventController(ILogger<EventController> logger, IMongoDatabase database)
+        public EventController(ILogger<EventController> logger, UserManager<ApplicationUser> userManager, IMongoDatabase database)
         {
             _logger = logger;
             
             // Hackathon DBs
+            this.userManager = userManager;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
+            this.eventApplicationCollection = database.GetCollection<EventApplication>("EventApplications");
 
             // Load active hackathon event, if not previously loaded
             if (EventController.activeEvent == null)
@@ -42,8 +47,14 @@ namespace HackathonWebApp.Controllers
         // Event Settings
         public IActionResult Index()
         {
+            // Get events and applications for current event
             var events = eventCollection.Find(s => true).ToList<HackathonEvent>();
-            return View(events);
+            var activeEventApplications = eventApplicationCollection.Find(s => s.EventId == EventController.activeEvent.Id).ToList<EventApplication>();
+
+            // Add to view's data
+            ViewBag.events = events;
+            ViewBag.activeEventApplications = activeEventApplications;
+            return View();
         }
         public ViewResult CreateHackathonEvent() => View();
         [HttpPost]
@@ -109,7 +120,84 @@ namespace HackathonWebApp.Controllers
         }
 
 
+        // Applications
+        [AllowAnonymous]
+        public IActionResult Apply()
+        {
+            // Skip to "Thank You" page if already applied
+            if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                // Get logged in user
+                string userName = User.Identity.Name;
+                ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
 
+                // Check if already applied
+                var existingApps = eventApplicationCollection.Find(a => a.EventId == EventController.activeEvent.Id && a.UserId == appUser.Id).ToList<EventApplication>();
+
+                // If already applied forward to Thank You page
+                if (existingApps.Count > 0)
+                   return RedirectToAction("ThankYou");
+            }
+
+            // Display form to apply
+            ViewBag.RegistrationSettings = EventController.activeEvent.RegistrationSettings;
+            return View();
+        }
+        [AllowAnonymous]
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Apply(EventApplication eventApplication)
+        {
+            // Set application's associated event to the active event
+            eventApplication.EventId = EventController.activeEvent.Id;
+            
+            // Associated logged in user, or create the user then associate it
+            if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                // Set application's associated user to the logged in user
+                string userName = User.Identity.Name;
+                ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+                eventApplication.UserId = appUser.Id;
+            }
+            else
+            {
+                // Create account
+                var accountController = (AccountController) this.HttpContext.RequestServices.GetService(typeof(AccountController));
+                accountController.ControllerContext = this.ControllerContext;
+                await accountController.Create(eventApplication.AssociatedUser);
+                
+                // Return to page if error creating account
+                if (accountController.ModelState.ErrorCount > 0)
+                {
+                    ViewBag.RegistrationSettings = EventController.activeEvent.RegistrationSettings;
+                    return View();
+                }
+
+                // Set application's associated user to the new account
+                string email = eventApplication.AssociatedUser.Email;
+                ApplicationUser appUser = userManager.FindByEmailAsync(email).Result;
+                eventApplication.UserId = appUser.Id;
+            }
+
+            // Revalidated model
+            ModelState.Clear();
+
+            if (ModelState.IsValid)
+            {
+                try {
+                    await eventApplicationCollection.InsertOneAsync(eventApplication);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            return RedirectToAction("ThankYou");
+        }
+        [AllowAnonymous]
+        public ViewResult ThankYou() {
+            return View();
+        }
         // Errors
         private void Errors(Task result)
         {
