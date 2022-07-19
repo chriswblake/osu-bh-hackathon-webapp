@@ -61,6 +61,66 @@ namespace HackathonWebApp.Models
         /// <para>Value: A human-friendly name, typically used for presentation.</para>
         /// </summary> 
         [Required]
+        [BsonIgnore]
+        [BsonElement("hackathon_experience_options")]
+        public Dictionary<int,string> HackathonExperienceOptions { get {
+            return new Dictionary<int, string>()
+            {
+                {0, "Zero. This would be my first. 😋"},
+                {1, "Familiar. I've read a stuff and want to try. 🤔"},
+                {2, "Tried it once before. I want to try again. 🤓"},
+                {3, "A few. I'm sorta liking these. 🤓"},
+                {4, "I've been in several. It's fun! 😎"},
+                {5, "I've helped organize them! 🦸‍♀️"}
+            };
+        }}
+
+        [Required]
+        [BsonIgnore]
+        [BsonElement("coding_experience_options")]
+        public Dictionary<int,string> CodingExperienceOptions { get {
+            return new Dictionary<int, string>()
+            {
+                {0, "No doubt, I am a Youngling (no experience)"},
+                {1, "I'm definitely a Padawan (please teach me)"},
+                {2, "As a Jedi Knight, I got skills (can do stuff)"},
+                {3, "I'm a Jedi Master (ready for anything)"},
+                {4, "Experienced Jedi Master (worked on team projects)"},
+                {5, "Jedi Trainer (able to teach others)"}
+            };
+        }}
+
+        [Required]
+        [BsonIgnore]
+        [BsonElement("coding_experience_options")]
+        public Dictionary<int,string> CommunicationExperienceOptions { get {
+            return new Dictionary<int, string>()
+            {
+                { 0, "Just tell me what to do. I'll get it done, alone. 👩‍💻"},
+                { 1, "Prefer alone or with people I know. 😎"},
+                { 2, "I can get the team on the same page. 🧐"},
+                { 3, "Presentations are fun. 👩‍🏫"},
+                { 4, "I've been on stage infront of 100's of people. 🕺"},
+                { 5, "Charisma is my thing! 🤩"}
+            };
+        }}
+
+        [Required]
+        [BsonIgnore]
+        [BsonElement("coding_experience_options")]
+        public Dictionary<int,string> OrganizationExperienceOptions { get {
+            return new Dictionary<int, string>()
+            {
+                { 0, "All my files are named 'temp123'."},
+                { 1, "All my files have a folder and legit name."},
+                { 2, "I copy the folder to backup my code/work."},
+                { 3, "I use GitHub."},
+                { 4, "I can use branches on GitHub!"},
+                { 5, "I'm probably too organized... actually, haha."}
+            };
+        }}
+        
+        [Required]
         [BsonElement("trainings_acquired_options")]
         public Dictionary<string,string> TrainingsAcquiredOptions {get; set;}
 

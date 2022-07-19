@@ -1,4 +1,4 @@
-@using System.ComponentModel
+﻿@using System.ComponentModel
 @using HackathonWebApp.Models
 @model HackathonWebApp.Models.EventApplication
 
@@ -85,51 +85,19 @@
                     </p><br/>
 
                     <p>Hackathons - How familiar are you?</p>
-                    <select class="experience-selector" data-val="true" data-val-required="The Hackathons field is required." id="HackathonExperience" name="HackathonExperience">
-                        <option value="">Select Experience</option>
-                        <option value="0">Zero. This would be my first. 😋</option>
-                        <option value="1">Familiar. I've read a stuff and want to try. 🤔</option>
-                        <option value="2">Tried it once before. I want to try again. 🤓</option>
-                        <option value="3">A few. I'm sorta liking these. 🤓</option>
-                        <option value="4">I've been in several. It's fun! 😎</option>
-                        <option value="5">I've helped organize them! 🦸‍♀️</option>
-                    </select>
+                    @Html.DropDownListFor(m => m.HackathonExperience, new SelectList(registrationSettings.HackathonExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
                     <span asp-validation-for="HackathonExperience" class="text-danger"></span>
 
                     <p>Coding</p>
-                    <select class="experience-selector" data-val="true" data-val-required="The Coding field is required." id="CodingExperience" name="CodingExperience">
-                        <option value="">Select Experience</option>
-                        <option value="0">No doubt, I am a Youngling (no experience)</option>
-                        <option value="1">I'm definitely a Padawan (please teach me)</option>
-                        <option value="2">As a Jedi Knight, I got skills (can do stuff)</option>
-                        <option value="3">I'm a Jedi Master (ready for anything)</option>
-                        <option value="4">Experienced Jedi Master (worked on team projects)</option>
-                        <option value="5">Jedi Trainer (able to teach others)</option>
-                    </select>
+                    @Html.DropDownListFor(m => m.CodingExperience, new SelectList(registrationSettings.CodingExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
                     <span asp-validation-for="CodingExperience" class="text-danger"></span>
 
                     <p>Communication</p>
-                    <select class="experience-selector" data-val="true" data-val-required="The Communication field is required." id="CommunicationExperience" name="CommunicationExperience">
-                        <option value="">Select Experience</option>
-                        <option value="0">Just tell me what to do. I'll get it done, alone. 👩‍💻</option>
-                        <option value="1">Prefer alone or with people I know. 😎</option>
-                        <option value="2">I can get the team on the same page. 🧐</option>
-                        <option value="3">Presentations are fun. 👩‍🏫</option>
-                        <option value="4">I've been on stage infront of 100's of people. 🕺</option>
-                        <option value="5">Charisma is my thing! 🤩</option>
-                    </select>
+                    @Html.DropDownListFor(m => m.CommunicationExperience, new SelectList(registrationSettings.CommunicationExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
                     <span asp-validation-for="CommunicationExperience" class="text-danger"></span>
 
                     <p>Organization</p>
-                    <select class="experience-selector" data-val="true" data-val-required="The Organization field is required." id="OrganizationExperience" name="OrganizationExperience">
-                        <option value="">Select Experience</option>
-                        <option value="0">All my files are named 'temp123'.</option>
-                        <option value="1">All my files have a folder and legit name.</option>
-                        <option value="2">I copy the folder to backup my code/work.</option>
-                        <option value="3">I use GitHub.</option>
-                        <option value="4">I can use branches on GitHub!</option>
-                        <option value="5">I'm probably too organized... actually, haha.</option>
-                    </select>
+                    @Html.DropDownListFor(m => m.OrganizationExperience, new SelectList(registrationSettings.OrganizationExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
                     <span asp-validation-for="OrganizationExperience" class="text-danger"></span>
 
                     <p>Documentation</p>
