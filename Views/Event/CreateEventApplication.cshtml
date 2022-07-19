@@ -1,4 +1,4 @@
-﻿@using System.ComponentModel
+@using System.ComponentModel
 @using HackathonWebApp.Models
 @model HackathonWebApp.Models.EventApplication
 
@@ -42,7 +42,28 @@
     <div class="row">
         <div class="col-sm-8 col-md-6 col-lg-5">
             <form asp-action="CreateEventApplication">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @if ((User?.Identity?.IsAuthenticated ?? false) == false)
+                {
+                <h3>Create Account</h3>
+                <div class="qa-section-box">
+                    <div class="form-group">
+                        Name
+                        <input asp-for="AssociatedUser.Name" class="form-control" placeholder="First and Last Name"/>
+                        <span asp-validation-for="AssociatedUser.Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        Email
+                        <input asp-for="AssociatedUser.Email" class="form-control" placeholder="someone@example.com"/>
+                        <span asp-validation-for="AssociatedUser.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        Password
+                        <input asp-for="AssociatedUser.Password" type="password" class="form-control" placeholder="Choose a password"/>
+                        <span asp-validation-for="AssociatedUser.Password" class="text-danger"></span>
+                    </div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                </div>
+                }
 
                 <h3>School Information</h3>
                 <div class="qa-section-box">

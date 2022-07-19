@@ -21,6 +21,8 @@ namespace HackathonWebApp.Models
         [Required]
         [BsonElement("user_id")]
         public Guid UserId { get; set; }
+        [BsonIgnore]
+        public User AssociatedUser {get; set;}
 
 
 
