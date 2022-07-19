@@ -1,4 +1,4 @@
-@using System.ComponentModel
+﻿@using System.ComponentModel
 @using HackathonWebApp.Models
 @model HackathonWebApp.Models.EventApplication
 
@@ -118,7 +118,7 @@
                     Do you have any of the below training certificates?<br/>
                     (hold 'ctrl' to select multiple)<br/>
                     @Html.ListBoxFor(m => m.TrainingsAcquired, new SelectList(registrationSettings.TrainingsAcquiredOptions, "Key", "Value"), new { @class="trainings-selector" })<br/>
-                    @* <span asp-validation-for="TrainingsAcquired" class="text-danger"></span> *@
+                    <span asp-validation-for="TrainingsAcquired" class="text-danger"></span>
                 </div>
 
                 <h3>Preferences</h3>

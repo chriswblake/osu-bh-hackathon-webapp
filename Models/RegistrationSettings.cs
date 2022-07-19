@@ -45,7 +45,7 @@ namespace HackathonWebApp.Models
                 { "first_year", "Freshman (1st Year)"},
                 { "second_year", "Sophomore (2nd Year)"},
                 { "third_year", "Junior (3rd Year)"},
-                { "fourth_year", "Senior (4hth Year)"},
+                { "fourth_year", "Senior (4th Year)"},
                 { "fifth_year", "Super Senior (5th Year)"},
                 { "six_plus_years", "Senior++ (6+ Years)"},
                 { "graduate_student", "Graduate Student"},
@@ -67,7 +67,7 @@ namespace HackathonWebApp.Models
             return new Dictionary<int, string>()
             {
                 {0, "Zero. This would be my first. 😋"},
-                {1, "Familiar. I've read a stuff and want to try. 🤔"},
+                {1, "Familiar. I've read stuff and want to try. 🤔"},
                 {2, "Tried it once before. I want to try again. 🤓"},
                 {3, "A few. I'm sorta liking these. 🤓"},
                 {4, "I've been in several. It's fun! 😎"},
