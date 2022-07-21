@@ -83,10 +83,23 @@ namespace HackathonWebApp.Models
         /// <para>eventApplications: List<EventApplications>: A list of event applications, representing the experience of various application users.</para>
         /// <para>numTeams: Int: The number of teams to assign the applications to.</para>
         /// </summary>
-        public List<Team> AssignTeams(List<EventApplication> eventApplications, int numTeams) {
-            var assignedTeams = new List<Team>();
+        public static Dictionary<ObjectId, Team> AssignTeams(List<EventApplication> eventApplications, int numTeams) {
+            var assignedTeams = new Dictionary<ObjectId, Team>();
 
-            // Write some optimization code here.
+
+            // Example: Adding a team to the dictionary
+            // The team is stored in the dictionary using the team ID, so it can be quickly retrieved in other operations.
+            var myTeam = new Team() {Id = ObjectId.GenerateNewId() };
+            assignedTeams.Add(myTeam.Id, myTeam);
+
+            // Example" Adding an EventApplication to a team.
+            // The appliction is stored in the dictionary using their ID, so it can be quickly retrieved in other operations.
+            var userEventApplication = eventApplications.First();
+            myTeam.TeamMemberApplications.Add(userEventApplication.UserId, userEventApplication);
+
+
+            // Write some optimization code here to move event applications on to various teams.
+
 
             return assignedTeams;
         }
