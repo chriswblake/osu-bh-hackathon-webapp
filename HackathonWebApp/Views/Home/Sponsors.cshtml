@@ -1,0 +1,67 @@
+﻿@model List<Sponsor>
+
+@{
+    ViewData["Title"] = "Sponsors";
+    var sponsors = Model;
+}
+
+<style>
+    .sponsors-container {
+        padding: 1em;
+        margin-bottom: 2em;
+    }
+    .sponsors-container img {
+        padding: 1em;
+      }
+
+    @@media screen and (max-width: 480px) {
+      .sponsors-container {
+        width: 100%;
+      }
+      .sponsors-container img {
+        width: 60%;
+      }
+    }
+
+    @@media screen and (max-width: 800px) and (min-width: 600px) {
+      .sponsors-container {
+        width: 33%;
+      }
+      .sponsors-container img {
+        width: 30%;
+      }
+    }
+</style>
+
+<div class="text-center">
+	<!-- Sponsors -->
+    <section class="first-section" style="padding: 5em;">
+		<h1 class="osu-orange">Sponsors</h1>
+	</section>
+	<section class="diagonal-section" style="background-color:#EEE; padding-top:3em;">
+		<div class="diagonal-section-content">
+
+             <div class="sponsors-container">
+                @*<h3 style="color: #e7d709">— Gold —</h3>*@
+                @*@foreach (Sponsor sponsor in sponsors.Where(s => s.Tier.ToLower() == "gold"))*@
+                @foreach (Sponsor sponsor in sponsors)
+                {
+                    <a href="@sponsor.WebsiteUrl" target="_blank">
+                        <img style="width:250px; max-height:100px;" src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" alt="@sponsor.Name"/>
+                    </a>
+                }
+            </div>
+            <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="SponsorBenefits">Learn about Sponsor Benefits</a>
+
+            <!-- Hosted by -->
+            <div class="sponsors-container">
+                <h3 style="color: #cccccc">— Hosted by —</h3>
+                <a href="https://go.okstate.edu/"><img class="sponsors-img" src="~/img/osu_logo.svg" style="height:10em;"/></a>
+                <a href="https://www.bakerhughes.com"><img class="sponsors-img" src="~/img/bh_logo.png" style="width:10em;"/></a>
+            </div>
+
+		</div>
+	</section>
+
+
+</div>

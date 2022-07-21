@@ -9,6 +9,7 @@
             "type": "shell",
             "args": [
                 "build",
+                "${workspaceFolder}/HackathonWebApp",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -24,7 +25,7 @@
             "type": "process",
             "args": [
                 "clean",
-                "${workspaceFolder}",
+                "${workspaceFolder}/HackathonWebApp",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

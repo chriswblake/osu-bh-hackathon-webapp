@@ -1,0 +1,131 @@
+﻿@{
+    ViewData["Title"] = "FAQs";
+}
+
+<style>
+	.faq-bubble {
+		margin-bottom: 1em;
+	}
+	.card {
+		border-radius: 50px;
+		font-size: small;
+		padding: 2.5em;
+		text-wrapping: wrap;
+	}
+	.card i {
+		color: var(--bh-green);
+		font-size: large;
+		margin-bottom: 0.5em;
+	}
+	.card h4 {
+		text-transform: uppercase;
+	}
+	.card hr {
+		margin: 1em;
+	}
+
+</style>
+
+<div class="text-center">
+	<!-- Title -->
+	<section class="first-section" style="padding: 5em;">
+		<h1 class="osu-orange">Frequently Asked Questions</h1>
+	</section>
+		
+	<!-- Info Cards -->
+	<section class="diagonal-section" style="padding-top:3em;">
+		<div class="mx-auto diagonal-section-content">
+			<div class="container">
+				<div class="row">
+					<!-- Row 1 -->
+					<div class="col-md-4 faq-bubble">
+						<div class="card h-100">
+							<i class="fas fa-question"></i>
+							<h4>What is a hackathon?</h4>
+							<hr>
+							A hackathon is where you turn your crazy ideas into real projects.
+							We provide hardware, mentors, fun activities, speakers, workshops, food, friends, and so much more.
+							You take care of hacking; we’ll take care of you.
+						</div>
+					</div>
+					<div class="col-md-4 faq-bubble">
+						<div class="card h-100">
+							<i class="fas fa-map-marked-alt"></i>
+							<h4>How do I get there?</h4>
+							<hr>
+							The hackathon is partnered with Baker Hughes, however it is at the <a target="_blank" href="https://goo.gl/maps/3DXUzjEXqghF1UiV6">OSU Endeavor Building.</a><br/>
+							Address:<br/>215 N Hester St, Stillwater, OK 74078
+						</div>
+					</div>
+					<div class="col-md-4 faq-bubble">
+						<div class="card h-100">
+							<i class="fas fa-user-friends"></i>
+							<h4>Do I need a team?</h4>
+							<hr>
+							Nope. Teams will be pseudo-randomly assigned.
+							But... you will find out your team a couple days before the event so you can get to know each other.
+						</div>
+					</div>
+
+					<!-- Row 2 -->
+					<div class="col-md-4 faq-bubble">
+						<div class="card h-100">
+							<i class="fas fa-microchip"></i>
+							<h4>What can I build?</h4>
+							<hr>
+							It will depend on the challenge, but other than than anything your heart desires!
+							We will try to have access to all the hardware technologies you will need. :)
+						</div>
+					</div>
+					<div class="col-md-4 faq-bubble">
+						<div class="card h-100">
+							<i class="fas fa-laptop-code"></i>
+							<h4>What if I have never coded?</h4>
+							<hr>
+							Not a problem. We will do our best to make sure each team has a diverse set of skills, including coding.
+						</div>
+					</div>
+					<div class="col-md-4 faq-bubble">
+						<div class="card h-100">
+							<i class="fas fa-question"></i>
+							<h4>Will you provide hardware?</h4>
+							<hr>
+							Yes! There’ll be plenty of fun hardware for you to experiment with!
+							We’ll try to put out a list closer to the event so you can see what’s available.
+							Also, feel free to bring your own from home!
+						</div>
+					</div>
+
+					<!-- Row 3 -->
+					<div class="col-md-4 faq-bubble">
+						<div class="card h-100">
+							<i class="fas fa-question"></i>
+							<h4>I won't be on campus. Can I still participate?</h4>
+							<hr>
+							Unfortunately, no. This will be a hands-on challenge. There may be a virtual component to a solution, but a physical prescence is required.
+						</div>
+					</div>
+					<div class="col-md-4 faq-bubble">
+						<div class="card h-100">
+							<i class="fas fa-envelope"></i>
+							<h4>Who can attend?</h4>
+							<hr>
+							You are eligible to attend if you're an OSU Undergraduate or Graduate Student.
+						</div>
+					</div>
+					<div class="col-md-4 faq-bubble">
+						<div class="card h-100">
+							<i class="fas fa-question"></i>
+							<h4>Have some other questions?</h4>
+							<hr>
+							You can email us any additional questions. We are happy to help!
+							Check out the <a asp-controller="Home" asp-action="Team" target="_blank">Team page</a> for the appropriate person.
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+
+</div>

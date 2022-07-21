@@ -1,0 +1,19 @@
+﻿@model ApplicationUser
+@{
+    ViewData["Title"] = "Account";
+    var user = Model;
+}
+
+<div class="container text-white">
+
+    <h1 class="bg-info text-white">Account Details</h1>
+    <div class="text-danger" asp-validation-summary="All"></div>
+
+    UserName: @user.UserName <br/>
+    Email: @user.Email
+
+    <form asp-action="Delete" method="post">
+        <button type="submit">Delete</button>
+    </form>
+
+</div>

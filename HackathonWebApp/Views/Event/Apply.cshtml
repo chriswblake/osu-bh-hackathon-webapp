@@ -1,0 +1,153 @@
+﻿@using System.ComponentModel
+@using HackathonWebApp.Models
+@model HackathonWebApp.Models.EventApplication
+
+@{
+    ViewData["Title"] = "Event Application";
+    RegistrationSettings registrationSettings = ViewBag.RegistrationSettings;
+}
+
+<style>
+    .qa-section-box {
+        background-color: var(--bh-dark-green-gray);
+        border: 1px solid var(--bh-green);
+        padding: 10px 20px 10px 20px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+    }
+    .qa-section-box p {
+        margin: 0;
+    }
+    .basic-info-selector {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .experience-selector {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .trainings-selector {
+        width: 100%;
+    }
+    .preferences-selector {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container text-white">
+
+    <h2>Event Application</h2>
+    <hr />
+    <div class="row">
+        <div class="col-sm-8 col-md-6 col-lg-5">
+            <form asp-action="Apply">
+                @if ((User?.Identity?.IsAuthenticated ?? false) == false)
+                {
+                <h3>Create Account</h3>
+                <div class="qa-section-box">
+                    <div class="form-group">
+                        Username
+                        <input asp-for="AssociatedUser.Name" class="form-control" placeholder="Choose a username"/>
+                        <span asp-validation-for="AssociatedUser.Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        Email
+                        <input asp-for="AssociatedUser.Email" class="form-control" placeholder="someone@example.com"/>
+                        <span asp-validation-for="AssociatedUser.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        Password
+                        <input asp-for="AssociatedUser.Password" type="password" class="form-control" placeholder="Choose a password"/>
+                        <span asp-validation-for="AssociatedUser.Password" class="text-danger"></span>
+                    </div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                </div>
+                }
+
+                <h3>School Information</h3>
+                <div class="qa-section-box">
+                    <p>Major</p>
+                    @Html.DropDownListFor(m => m.Major, new SelectList(registrationSettings.MajorOptions, "Key", "Value"), "Select Major", new { @class="basic-info-selector" })
+                    <span asp-validation-for="Major" class="text-danger"></span>
+                    <br/>
+
+                    <p>School Year</p>
+                    @Html.DropDownListFor(m => m.SchoolYear, new SelectList(registrationSettings.SchoolYearOptions, "Key", "Value"), "Select Year", new { @class="basic-info-selector" })
+                    <span asp-validation-for="SchoolYear" class="text-danger"></span>
+                </div>
+
+                <h3>Experience</h3>
+                <div class="qa-section-box">
+                    <p>
+                    Please indicate your experience with the following topics.
+                    This is used for team balancing, not selection, so honesty will increase the odds you have a fun time. :)
+                    </p><br/>
+
+                    <p>Hackathons - How familiar are you?</p>
+                    @Html.DropDownListFor(m => m.HackathonExperience, new SelectList(registrationSettings.HackathonExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
+                    <span asp-validation-for="HackathonExperience" class="text-danger"></span>
+
+                    <p>Coding</p>
+                    @Html.DropDownListFor(m => m.CodingExperience, new SelectList(registrationSettings.CodingExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
+                    <span asp-validation-for="CodingExperience" class="text-danger"></span>
+
+                    <p>Communication</p>
+                    @Html.DropDownListFor(m => m.CommunicationExperience, new SelectList(registrationSettings.CommunicationExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
+                    <span asp-validation-for="CommunicationExperience" class="text-danger"></span>
+
+                    <p>Organization</p>
+                    @Html.DropDownListFor(m => m.OrganizationExperience, new SelectList(registrationSettings.OrganizationExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
+                    <span asp-validation-for="OrganizationExperience" class="text-danger"></span>
+
+                    <p>Documentation</p>
+                    @Html.DropDownListFor(m => m.DocumentationExperience, new SelectList(registrationSettings.DocumentationExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
+                    <span asp-validation-for="DocumentationExperience" class="text-danger"></span>
+ 
+                    <p>Business</p>
+                    @Html.DropDownListFor(m => m.BusinessExperience, new SelectList(registrationSettings.BusinessExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
+                    <span asp-validation-for="BusinessExperience" class="text-danger"></span>
+
+                    <p>Creativity</p>
+                    @Html.DropDownListFor(m => m.CreativityExperience, new SelectList(registrationSettings.CreativityExperienceOptions, "Key", "Value"), "Select Experience", new { @class="basic-info-selector" })
+                    <span asp-validation-for="CreativityExperience" class="text-danger"></span>
+                </div>
+
+                <h3>Trainings</h3>
+                <div class="qa-section-box">
+                    Do you have any of the below training certificates?<br/>
+                    (hold 'ctrl' to select multiple)<br/>
+                    @Html.ListBoxFor(m => m.TrainingsAcquired, new SelectList(registrationSettings.TrainingsAcquiredOptions, "Key", "Value"), new { @class="trainings-selector" })<br/>
+                    <span asp-validation-for="TrainingsAcquired" class="text-danger"></span>
+                </div>
+
+                <h3>Preferences</h3>
+                <div class="qa-section-box">
+                    <div class="form-group">
+                        T-Shirt Size<br/>
+                        @Html.DropDownListFor(m => m.TShirtSize, new SelectList(registrationSettings.TShirtSizeOptions, "Key", "Value"), "Select Size", new { @class="preferences-selector" })
+                        <span asp-validation-for="TShirtSize" data-val-required="The T-Shirt Size field is required." class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        Dietary Restrictions<br/>
+                        <input asp-for="DietaryRestrictions" class="form-control preferences-selector" data-val-required="The Dietary field is required." placeholder="vegetarian, no pork, etc."/>
+                        <span asp-validation-for="DietaryRestrictions" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

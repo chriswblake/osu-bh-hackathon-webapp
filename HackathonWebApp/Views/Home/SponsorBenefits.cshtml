@@ -1,0 +1,289 @@
+﻿@{
+    ViewData["Title"] = "Sponsorship Benefits";
+}
+
+<div class="text-center">
+	<!-- Sponsorship Benefits -->
+	<style>
+		#tiers {
+			background-color: #EEE;
+		}
+		#tiers thead th {
+			padding: 5px 20px 5px 20px;
+			background-color: var(--bh-dark-green);
+			color: var(--osu-orange);
+			font-size: larger;
+		}
+		#tiers thead td {
+			padding: 5px 20px 5px 20px;
+			background-color: var(--bh-green);
+			color: var(--osu-orange);
+			font-weight: 500;
+		}
+		#tiers tbody tr {
+			border-bottom: 2px solid var(--bh-green);
+		}
+		#tiers tbody th,td {
+			padding: 5px 10px 5px 10px;
+		}
+	</style>
+	<section class="first-section" style="padding: 5em;">
+		<h1 class="osu-orange">Sponsorship Benefits</h1>
+	</section>
+	<section class="diagonal-section" style="background-color:white; padding-top:2em;">
+	<div class="diagonal-section-content">
+	<div class="container">
+		<center>
+			Below are the benefits that you receive as a sponsor depending on total support.
+			<br/>
+			<br/>
+			<table id="tiers">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Gold</th>
+						<th>Silver</th>
+						<th>Bronze</th>
+						<th>Copper</th>
+					</tr>
+					<tr>
+						<td></td>
+						<td>$2000+</td>
+						<td>$1000</td>
+						<td>$200</td>
+						<td>Less than $200</td>
+					</tr>
+				</thead>
+				<tbody>
+					@* Copper *@
+					<tr><th>Name on Website</th>							<td>👍</td><td>👍</td><td>👍</td><td>👍</td></tr>
+					<tr><th>Name on Donation</th>							<td>👍</td><td>👍</td><td>👍</td><td>👍</td></tr>
+
+					@* Bronze *@
+					<tr><th>Logo on Website</th>							<td>👍</td><td>👍</td><td>👍</td><td></td></tr>
+					<tr><th>Logo on Shirt</th>								<td>👍</td><td>👍</td><td>👍</td><td></td></tr>
+					<tr><th>Logo in Presentation - Opening/Closing</th>		<td>👍</td><td>👍</td><td>👍</td><td></td></tr>
+				
+					@* Silver *@
+					<tr><th>Special Thank you - Opening/Closing</th>		<td>😎</td><td>😎</td><td></td><td></td></tr>
+					<tr><th>Screen Advertisement</th>						<td>😎</td><td>😎</td><td></td><td></td></tr>
+					<tr><th>Social Media Mention</th>						<td>😎</td><td>😎</td><td></td><td></td></tr>
+				
+					@* Gold *@
+					<tr><th>Representative(s)</th>							<td>💕</td><td></td><td></td><td></td></tr>
+					<tr><th>Opening Remarks</th>							<td>💕</td><td></td><td></td><td></td></tr>
+					<tr><th>Closing Remarks</th>							<td>💕</td><td></td><td></td><td></td></tr>
+
+					@*<tr><th>Custom socks with your name</th>					<td>🤯</td><td></td><td></td></tr>*@
+					@*<tr><th>Sponsor a raffle</th>								<td>🤯</td><td></td><td></td></tr>*@
+
+					@* Diamond Green *@
+					@*<tr><th>QA/Networking after registration</th>				<td>🤯</td><td></td><td></td></tr>*@
+					@*<tr><th>Resume Access</th>								<td>🤯</td><td></td><td></td></tr>*@
+					@*<tr><th>Private Interview Room</th>						<td>🤯</td><td></td><td></td></tr>*@
+
+					@* Platinum Orange $5000 *@
+					@*<tr><th>They can host a mini 1-hr challenge</th>			<td>🤯</td><td></td><td></td></tr>*@
+					@*<tr><th>Special mention on website</th>					<td>🤯</td><td></td><td></td></tr>*@
+					@*<tr><th>Fancy socks with logo</th>						<td>🤯</td><td></td><td></td></tr>*@
+
+					@*<tr><th>Challenge named after your company</th>			<td>🤯</td><td></td><td></td></tr>*@
+					@*<tr><th>Challenge tailored to your industry</th>			<td>🤯</td><td></td><td></td></tr>*@
+					@*<tr><th>Inclusion in media marketing/interviews</th>		<td>🤯</td><td></td><td></td></tr>*@
+					@*<tr><th>Attend planning meetings</th>					    <td>🤯</td><td></td><td></td></tr>*@
+					@*<tr><th>Lunch table?</th>									<td>🤯</td><td></td><td></td></tr>*@
+					
+
+				</tbody>
+			</table>
+		</center>
+		<br/>
+		<br/>
+	</div>
+	</div>
+	</section>
+
+
+	<!-- Ways to Support -->
+	<style>
+		.faq-bubble {
+			margin-bottom: 1em;
+		}
+		.card {
+			border-radius: 50px;
+			padding: 2.5em;
+			text-wrapping: wrap;
+			background-color: #EEE;
+		}
+		.card i {
+			color: var(--bh-green);
+			font-size: large;
+			margin-bottom: 0.5em;
+		}
+		.card h4 {
+			text-transform: uppercase;
+		}
+		.card hr {
+			margin: 1em;
+		}
+
+	</style>
+	<section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:3em;">
+		<h2 class="osu-orange">Ways to Support</h2>
+	</section>
+	<section class="diagonal-section" style="background-color:white; padding-top:2em;">
+	<div class="diagonal-section-content">
+	<div class="container">
+		Our hackathon may be magical, but it doesn happen by magic. There are lots of 🧙‍ and 🧙‍♀️  making it happen! So... lots of room for help!
+		<br/>
+		<br/>
+		
+		There are 4 typical categories for showing support, but your company is welcome to help out in any way you like. We love passion!<br/>
+		The approximate value of anything provided is used to determine your sponsorship benefits tier (above).
+		<br/>
+		<br/>
+		<div class="row">
+
+			<!-- Row 1 -->
+			<div class="col-md-3 faq-bubble">
+				<div class="card h-100">
+					<i class="fa-solid fa-bowl-food"></i>
+					<h4>Food</h4>
+					<hr>
+					Donuts<br/>
+					Snacks<br/>
+					Coffee<br/>
+					Breakfast<br/>
+					Lunch<br/>
+					Dinner<br/>
+					Drinks<br/>
+				</div>
+			</div>
+			<div class="col-md-3 faq-bubble">
+				<div class="card h-100">
+					<i class="fa-solid fa-bowl-food"></i>
+					<h4>Prizes</h4>
+					<hr>
+					Tech Gear<br/>
+					Hoodies<br/>
+					Swag<br/>
+					Gift Cards<br/>
+					Coupons<br/>
+					Scholarships<br/>
+				</div>
+			</div>
+			<div class="col-md-3 faq-bubble">
+				<div class="card h-100">
+					<i class="fa-solid fa-people-group"></i>
+					<h4>People/Time</h4>
+					<hr>
+					Mentors<br/>
+					Judges<br/>
+					Day-Of Support<br/>
+					Planning Support<br/>
+				</div>
+			</div>
+			<div class="col-md-3 faq-bubble">
+				<div class="card h-100">
+					<i class="fa-solid fa-calendar-check"></i>
+					<h4>Activities</h4>
+					<hr>
+					Internships / Interviews<br/>
+					Workshops<br/>
+					Ted Talks<br/>
+					Special Events (Mario Kart, Jenga, Sack Race, etc.)<br/>
+				</div>
+			</div>
+
+			<!-- Row 2 -->
+			<div class="col-md-12 faq-bubble">
+				<div class="card h-100">
+					<i class="fa-solid fa-hand-spock"></i>
+					<h4>Pro Tip</h4>
+					<hr>
+					Every consective year of sponsoring earns increased "Awesome Sponsor" status. <br/>
+					This comes with a special icon next to your logo and reduced requirements to earn sponsorship tier benefits.
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	</div>
+	</section>
+
+	<!-- Why Sponsor -->
+	@*<section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:3em;">
+		<h2 class="osu-orange">Why Sponsor</h2>
+	</section>
+	<section class="diagonal-section" style="background-color:white; padding-top:2em;">
+	<div class="diagonal-section-content">
+	<div class="container">
+	<div class="row">
+		Did you know that hackathons have become the new career fairs? Not only are they quickly replacing
+		traditional recruitment, but they are also fostering innovation within the community. Sponsoring
+		Hacklahoma will give you direct access to the top, most passionate and talented students in the region.
+		With the fast growth of technology, you can count on our members to someday serve your technical
+		needs.
+
+		Advertise your brand. Inspire the tech and software development community in Oklahoma with your
+		company’s technical expertise.
+
+		Recruit the brightest student developers. Gain access to their resumes and portfolios while building
+		relationships with these talented students through networking and mentoring.
+
+		Test and showcase your products and APIs. Get real-time feedback on your tech and have students
+		use your product in ways you never thought of.
+
+		Run workshops, tutorials, and talks. Teach students how to use your technology and speak about
+		important skills to have in the professional world.
+
+		Develop a larger tech community in Oklahoma. Encourage the enthusiasm for innovation and help
+		Oklahoma become a strong leader in technology.
+
+
+		YOU ARE THE IDEAL SPONSOR!
+		Ideal sponsors establish a strong presence with the Hacklahoma community by sending representatives,
+		developers, and mentors to the event. This allows Hacklahoma attendees to learn more about your
+		company goals and culture in addition to professional opportunities in the tech industry.
+		Sponsors can work with us to coordinate workshops, showcase their unique company culture, and find
+		ways to challenge our hackers. In fact, our team can help you host an interactive experience, tech-talk,
+		or mini-challenge, which are great ways to advertise your company.
+		Promote your business with your branding! Our hackers love swag! Sponsors who give out companybranded shirts, pens, stickers, water bottles and more, leave a lasting impression on Hacklahoma
+		attendees.
+	</div>
+	</div>
+	</div>
+	</section>*@
+
+	<!-- Stats -->
+	@*<section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:3em;">
+		<h2 class="osu-orange">Stats</h2>
+	</section>
+	<section class="diagonal-section" style="background-color:white; padding-top:2em;">
+	<div class="diagonal-section-content">
+	<div class="container">
+	<div class="row">
+		Statistics about our previous attendance. (per year)
+		- # attendees
+		- # projects
+		- # Sponsors
+		- Gender
+		- College Year
+		- Major
+		- Expertise
+	</div>
+	</div>
+	</div>
+	</section>*@
+
+	<!-- About Our Hackathon -->
+	@*<section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:3em;">
+		<h2 class="osu-orange">About our Hackathon</h2>
+	</section>
+	<section class="diagonal-section" style="background-color:white; padding-top:2em;">
+	<div class="diagonal-section-content">
+		Description of OSU-BH Hackathon.
+	</div>
+	</section>*@
+
+</div>
