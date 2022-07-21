@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 using System;
@@ -56,5 +56,25 @@ namespace HackathonWebApp.Models
         public double CreativityExperience { get {
             return this.Teams.Values.Sum(t => t.CreativityExperience);
         }}
+
+
+        // Convert these from abstract to actual methods and write the unit tests.
+        public Dictionary<Guid, ApplicationUser> Participants { get { return null; }} // Retrieves all members on team into 1 dictionary.
+        public double AvgTeamHackathonExperience { get { return 0; }}
+        public double AvgTeamCodingExperience { get { return 0; }}
+        public double AvgTeamCommunicationExperience { get { return 0; }}
+        public double AvgTeamOrganizationExperience { get { return 0; }}
+        public double AvgTeamDocumentationExperience { get { return 0; }}
+        public double AvgTeamBusinessExperience { get { return 0; }}
+        public double AvgTeamCreativityExperience { get { return 0; }}
+
+        public double StdDevTeamHackathonExperience { get { return 0; }}
+        public double StdDevTeamCodingExperience { get { return 0; }}
+        public double StdDevTeamCommunicationExperience { get { return 0; }}
+        public double StdDevTeamOrganizationExperience { get { return 0; }}
+        public double StdDevTeamDocumentationExperience { get { return 0; }}
+        public double StdDevTeamBusinessExperience { get { return 0; }}
+        public double StdDevTeamCreativityExperience { get { return 0; }}
+
     }
 }
