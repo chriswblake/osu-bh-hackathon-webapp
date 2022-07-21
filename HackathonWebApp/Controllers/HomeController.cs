@@ -35,7 +35,60 @@ namespace HackathonWebApp.Controllers
 
         public IActionResult Selection()
         {
-            return View();
+            // Use Event Controller to get all event applications for the active event.
+            var eventController = (EventController) this.HttpContext.RequestServices.GetService(typeof(EventController));
+            var activeEventApplications = eventController.GetActiveEventApplications();
+
+            // If there are very few applicants, inject random data. (so the page doesn't look empty)
+            if (activeEventApplications.Count < 5)
+            {
+                var rand = new Random(9000);
+                List<string> MajorOptions = new List<string>() {
+                    "aerospace_engineering",
+                    "architecture",
+                    "business",
+                    "chemical_engineering",
+                    "civil_engineering",
+                    "computer_engineering",
+                    "computer_science",
+                    "electrical_engineering",
+                    "environmental_engineering",
+                    "industrial_engineering",
+                    "management_information Systems",
+                    "mechanical_engineering",
+                    "microbiology",
+                    "petroleum_engineering"
+                };
+                List<string> SchoolYearOptions = new List<string>() {
+                    "first_year",
+                    "second_year",
+                    "third_year",
+                    "fourth_year",
+                    "fifth_year",
+                    "six_plus_years",
+                    "graduate_student",
+                    "phd_student"
+                };
+                // var activeEventApplications = new List<EventApplication>();
+                for (int i = 0; i < 5; i++)
+                {   
+                    activeEventApplications.Add(new EventApplication() {
+                        Major = MajorOptions[rand.Next(0,MajorOptions.Count)],
+                        SchoolYear = SchoolYearOptions[rand.Next(0,SchoolYearOptions.Count)],
+                        HackathonExperience = rand.Next(0, 6),
+                        CodingExperience = rand.Next(0, 6),
+                        CommunicationExperience = rand.Next(0, 6),
+                        OrganizationExperience = rand.Next(0, 6),
+                        DocumentationExperience = rand.Next(0, 6),
+                        BusinessExperience = rand.Next(0, 6),
+                        CreativityExperience = rand.Next(0, 6)
+                    });
+                }
+            }
+
+            
+
+            return View(activeEventApplications);
         }
 
         public IActionResult Sponsors()

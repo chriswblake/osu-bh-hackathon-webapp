@@ -121,6 +121,11 @@ namespace HackathonWebApp.Controllers
 
 
         // Applications
+        public List<EventApplication> GetActiveEventApplications()
+        {
+           var activeEventApplications = this.eventApplicationCollection.Find(p => p.EventId == EventController.activeEvent.Id).ToList<EventApplication>();
+           return activeEventApplications;
+        }
         [AllowAnonymous]
         public IActionResult Apply()
         {
@@ -198,6 +203,7 @@ namespace HackathonWebApp.Controllers
         public ViewResult ThankYou() {
             return View();
         }
+        
         // Errors
         private void Errors(Task result)
         {

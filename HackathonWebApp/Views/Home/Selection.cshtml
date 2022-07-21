@@ -1,11 +1,46 @@
-﻿@{
+﻿@using System.Linq
+@using System.Collections.Generic;
+@model List<EventApplication>
+@{
     ViewData["Title"] = "Selection";
+	List<EventApplication> eventApplications = Model;
 }
+@functions{
+	class HistogramPoint {
+		public string ValueLabel = "";
+		public int ValueCount = 0;
+	}
+	string ToChartDataPercentageArray(IEnumerable<HistogramPoint> data) {
+		double sumCounts = data.Sum(p => p.ValueCount);
+		var valuePercentages = data.Select(p => Math.Round(p.ValueCount/sumCounts*100, 1));
+		string delimetedString = "["+String.Join(",", valuePercentages)+"]";
+		return delimetedString;
+	}
+	string ToChartDataArray(IEnumerable<HistogramPoint> data) {
+		var valueCounts = data.Select(p => p.ValueCount);
+		string delimetedString = "["+String.Join(",", valueCounts)+"]";
+		return delimetedString;
+	}
+	string ToChartLabelsArray(IEnumerable<HistogramPoint> data) {
+		var valueLabels = data.Select(p => "'"+p.ValueLabel+"'");
+		string delimetedString = "["+String.Join(",", valueLabels)+"]";
+		return delimetedString;
+	}
+}
+@{
+	@* Collect pie chart data from list of event applications *@
+	var majorHistogramPoints = eventApplications.GroupBy(p => p.Major).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var schoolYearHistogramPoints = eventApplications.GroupBy(p => p.SchoolYear).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
 
-@*<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>*@
+	@* Collect histogram data from list of event applications *@
+	var hackathonExperienceHistogramPoints = eventApplications.GroupBy(p => p.HackathonExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var codingExperienceHistogramPoints = eventApplications.GroupBy(p => p.CodingExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var communicationExperienceHistogramPoints = eventApplications.GroupBy(p => p.CommunicationExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var organizationExperienceHistogramPoints = eventApplications.GroupBy(p => p.OrganizationExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var documentationExperienceHistogramPoints = eventApplications.GroupBy(p => p.DocumentationExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var businessExperienceHistogramPoints = eventApplications.GroupBy(p => p.BusinessExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var creativityExperienceHistogramPoints = eventApplications.GroupBy(p => p.CreativityExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+}
 
 <div class="text-center">
 	<!-- Intro -->
@@ -20,24 +55,27 @@
 				<div class="row">
 					<!-- Explanation-->
 					<div class="col-6" style="text-align:left;">
-						<h3>Skills Balancing Matrix Explained</h3>
-						While reading each submission, we used the "clustering" algorithms in our head to
-						come up with categories of repeated skills we saw mentioned (see below) From that, we hope
-						we have been able to set up all teams to be as balanced and successful. :)
+						<h3>Skills Balancing Explained</h3>
+						During registration all paricipants are asked questions about their experience with things
+						like previous hackathons, coding, business, etc. We use these self-assessments to form
+						teams that are as balanced as possible. The goal is to make everyone feel part of the team
+						and set every team up for success, so they can have fun! :)
 						<br/>
 						<br/>
 						We recognize that nothing is perfect, but we are committed to giving it our best.
 						<br/>
 						<br/>
 						<ul>
-							<li><b>Unique Skills</b> - Outlier skills that others didn't mention.</li>
-							<li><b>Hackathon Exp</b> - Have attended a hackathon befor</li>
-							<li><b>Communication</b> - Verbal and presentation skills.</li>
-							<li><b>Organization</b> - Project management, people management, teamwork</li>
-							<li><b>Coding</b> - Able to use a programming languag</li>
-							<li><b>Documentation</b> - Capturing work for the future</li>
-							<li><b>Ideation</b> - Creativity, expressive, collaboration</li>
-							<li><b>YearX</b> - Current year in their education</li>
+							<li><b>Major</b> - Current degree pursuing.</li>
+							<li><b>Shool Year</b> - Current year in college education.</li>
+
+							<li><b>Hackathon Exp.</b> - Have attended a hackathon before.</li>
+							<li><b>Coding Exp.</b> - Able to use a programming language.</li>
+							<li><b>Communication Exp.</b> - Verbal and presentation skills.</li>
+							<li><b>Organization Exp.</b> - Project management, people management, teamwork.</li>
+							<li><b>Documentation Exp.</b> - Writing skills and use of version control.</li>
+							<li><b>Business Exp.</b> - Familiarity with working, industry, and business concepts.</li>
+							<li><b>Creativity Exp.</b> - Painting, Music, Theatre, Dance, and other creative pursuits.</li>
 						</ul>
 					</div>
 					<!-- DEI -->
@@ -45,7 +83,7 @@
 						<h3>Fairness</h3>
 						<b>Diversity, Equity, and Inclusion (DEI)</b> are very important to the Hackathon organizers.
 						We are firm believers that this is where creative, robust, and great solutions come from.
-						And.. more importantly, we also believe this is where people have the most opportunity for growth, happiness, and a sense of fullfillment.
+						And... more importantly, we also believe this is where people have the most opportunity for growth, happiness, and a sense of fullfillment.
 						As such we are committed to transparency for promoting fairness.
 						<br/>
 						<br/>
@@ -56,24 +94,248 @@
 							<li>Providing feedback to all applicants, not just those that got on a team.</li>
 							<li>Openly listening to feedback to improve our process.</li>
 						</ul>
+
+						<b>Note:</b> The below statistics will be augmented with filler data until at least 5 participants have registered.
 					</div>
-					<!-- Decision Matrix -->
+
+					<!-- Experience Charts -->
+					<div class="col-6">
+						<h4>Major</h4>
+						<canvas id="major_pie_chart" class="schooling-pie-chart"></canvas>
+					</div>
+
+					<div class="col-6">
+						<h4>School Year</h4>
+						<canvas id="year_pie_chart" class="schooling-pie-chart"></canvas>
+					</div>
+
+
+					<!-- Experience Charts -->
+					<div class="col-4">
+						<h4>Hackathon Experience</h4>
+						<canvas id="hackathon_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Coding Experience</h4>
+						<canvas id="coding_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Communication Experience</h4>
+						<canvas id="communication_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Organization Experience</h4>
+						<canvas id="organization_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Documentation Experience</h4>
+						<canvas id="documentation_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Business Experience</h4>
+						<canvas id="business_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Creativity Experience</h4>
+						<canvas id="creativity_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					@* <!-- Decision Matrix -->
 					<div class="col-12">
 						<h3>Skills Balancing Matrix (live<sup style="font-size: 50%;">*</sup>)</h3>
 						<iframe style="width:100%; height:650px" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyyXUkeKakNgJJqSO-fgackzBwV58S_Titwh_e5aHl1w48rNIg7_pNgHK0R1nCZBU9oFA5k3jz3tAE/pubhtml?gid=957604057&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
 						*5 minute delay from Google Forms.
-					</div>
-					<!-- Registration Stats -->
-					<div class="col-12">
-						<h3>Registration Stats (live<sup style="font-size: 50%;">*</sup>)</h3>
-						<iframe style="width:100%; height:1500px" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyyXUkeKakNgJJqSO-fgackzBwV58S_Titwh_e5aHl1w48rNIg7_pNgHK0R1nCZBU9oFA5k3jz3tAE/pubhtml?gid=1114765437&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
-						*5 minute delay from Google Forms.
-					</div>
+					</div> *@
 
+					<div class="col-12">
+						<h2>Team Placement</h2>
+						Teams have not yet been assigned.<br/>
+						Please check back later for team statistics. 🤓
+					</div>
 				</div>
 			</div>
 		</div>
 	</section>
 
-
+	<br/>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0" asp-append-version="true"></script>
+	@* Reference: https://www.chartjs.org/docs/latest/samples/information.html *@
+	@* Reference: https://chartjs-plugin-datalabels.netlify.app/guide/#table-of-contents *@
+
+	@* Schooling Charts *@
+	<script>
+		$(document).ready(function(){
+			Chart.register(ChartDataLabels);
+			
+			// Colors
+			const bh_dark_green = '#05322B';
+			const bh_green =  '#018374';
+    		const bh_light_green = '#02BC94';
+			const osu_orange = '#FE5C00';
+
+			// Format all histograms the same
+			charts = {};
+			$(".schooling-pie-chart").each(function() {
+				let chartId = $(this).attr('id');
+				const ctx = document.getElementById(chartId).getContext('2d');
+				const myChart = new Chart(ctx, {
+					type: 'pie',
+					data: {
+						datasets: [{
+							label: '# of Applicants',
+							backgroundColor: bh_green,
+							borderColor: bh_light_green,
+							borderWidth: 1,
+							datalabels: {
+								color: osu_orange,
+								anchor: 'center',
+								align: 'end',
+								textAlign: 'center',
+								formatter: function(value, context) {
+									return context.chart.data.labels[context.dataIndex] + "\n" + value + "%";
+								}
+							}
+						}]
+					},
+					options: {
+						plugins: {
+							legend: {
+								display: false
+							}
+						},
+						layout: {
+							padding: {
+								left: 60,
+								right: 60
+							}
+						},
+					}
+				});
+				charts[chartId] = myChart;
+			});
+
+			// Add  data to charts
+			charts['major_pie_chart'].data.labels = @Html.Raw(ToChartLabelsArray(majorHistogramPoints));
+			charts['major_pie_chart'].data.datasets[0].data = @Html.Raw(@ToChartDataPercentageArray(majorHistogramPoints));
+
+			charts['year_pie_chart'].data.labels = @Html.Raw(@ToChartLabelsArray(schoolYearHistogramPoints));
+			charts['year_pie_chart'].data.datasets[0].data = @Html.Raw(@ToChartDataPercentageArray(schoolYearHistogramPoints));
+
+			charts['major_pie_chart'].update();
+			charts['year_pie_chart'].update();
+
+		});
+	</script>
+
+	@* Experience Charts *@
+	<script>
+		$(document).ready(function(){
+			Chart.register(ChartDataLabels);
+			
+			// Colors
+			const bh_dark_green = '#05322B';
+			const bh_green =  '#018374';
+			const osu_orange = '#FE5C00';
+
+			// Format all histograms the same
+			charts = {};
+			$(".experience-histogram").each(function() {
+				let chartId = $(this).attr('id');
+				const ctx = document.getElementById(chartId).getContext('2d');
+				const myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						@* labels: @ToChartLabelsArray(codingExperienceHistogram), *@
+						datasets: [{
+							label: '# of Applicants',
+							@* data: @ToChartDataArray(codingExperienceHistogram), *@
+							backgroundColor: osu_orange,
+							borderColor: bh_green,
+							borderWidth: 1,
+							datalabels: {
+								color: bh_green,
+								anchor: 'end',
+								align: 'end'
+							}
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								min: 0,
+								ticks: {
+									stepSize: 5
+								},
+								title: {
+									display: true,
+									text: '# Applicants'
+								}
+							},
+							x: {
+								title: {
+									display: true,
+									text: 'Exp. Level'
+								}
+							}
+						},
+						layout: {
+							padding: {
+								top: 25
+							}
+						},
+						plugins: {
+							legend: {
+								display: false
+							}
+						}
+					}
+				});
+				charts[chartId] = myChart;
+			});
+
+			// Add  data to charts
+			charts['hackathon_exp_histogram'].data.labels = @Html.Raw(@ToChartLabelsArray(hackathonExperienceHistogramPoints));
+			charts['hackathon_exp_histogram'].data.datasets[0].data = @Html.Raw(@ToChartDataArray(hackathonExperienceHistogramPoints));
+
+			charts['coding_exp_histogram'].data.labels = @Html.Raw(@ToChartLabelsArray(codingExperienceHistogramPoints));
+			charts['coding_exp_histogram'].data.datasets[0].data = @Html.Raw(@ToChartDataArray(codingExperienceHistogramPoints));
+
+			charts['communication_exp_histogram'].data.labels = @Html.Raw(@ToChartLabelsArray(communicationExperienceHistogramPoints));
+			charts['communication_exp_histogram'].data.datasets[0].data = @Html.Raw(@ToChartDataArray(communicationExperienceHistogramPoints));
+
+			charts['organization_exp_histogram'].data.labels = @Html.Raw(@ToChartLabelsArray(organizationExperienceHistogramPoints));
+			charts['organization_exp_histogram'].data.datasets[0].data = @Html.Raw(@ToChartDataArray(organizationExperienceHistogramPoints));
+
+			charts['documentation_exp_histogram'].data.labels = @Html.Raw(@ToChartLabelsArray(documentationExperienceHistogramPoints));
+			charts['documentation_exp_histogram'].data.datasets[0].data = @ToChartDataArray(documentationExperienceHistogramPoints);
+
+			charts['business_exp_histogram'].data.labels = @Html.Raw(@ToChartLabelsArray(businessExperienceHistogramPoints));
+			charts['business_exp_histogram'].data.datasets[0].data = @Html.Raw(@ToChartDataArray(businessExperienceHistogramPoints));
+
+			charts['creativity_exp_histogram'].data.labels = @Html.Raw(@ToChartLabelsArray(creativityExperienceHistogramPoints));
+			charts['creativity_exp_histogram'].data.datasets[0].data = @Html.Raw(@ToChartDataArray(creativityExperienceHistogramPoints));
+
+			// Update display for charts
+			charts['hackathon_exp_histogram'].update();
+			charts['coding_exp_histogram'].update();
+			charts['communication_exp_histogram'].update();
+			charts['organization_exp_histogram'].update();
+			charts['documentation_exp_histogram'].update();
+			charts['business_exp_histogram'].update();
+			charts['creativity_exp_histogram'].update();
+
+		});
+	</script>
+
+	
+}
