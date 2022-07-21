@@ -31,49 +31,71 @@ namespace HackathonWebApp.Models
 
         // Fields that would need aggregated from other collections
         [BsonIgnore]
-        public Dictionary<ObjectId, Team> Teams {get; set;}
+        public Dictionary<ObjectId, Team> Teams {get; set;} = new Dictionary<ObjectId, Team>();
 
 
         // Calculated Properties
+        [BsonIgnore]
         public double HackathonExperience { get {
             return this.Teams.Values.Sum(t => t.HackathonExperience);
         }}
+        [BsonIgnore]
         public double CodingExperience { get {
             return this.Teams.Values.Sum(t => t.CodingExperience);
         }}
+        [BsonIgnore]
         public double CommunicationExperience { get {
             return this.Teams.Values.Sum(t => t.CommunicationExperience);
         }}
+        [BsonIgnore]
         public double OrganizationExperience { get {
             return this.Teams.Values.Sum(t => t.OrganizationExperience);
         }}
+        [BsonIgnore]
         public double DocumentationExperience { get {
             return this.Teams.Values.Sum(t => t.DocumentationExperience);
         }}
+        [BsonIgnore]
         public double BusinessExperience { get {
             return this.Teams.Values.Sum(t => t.BusinessExperience);
         }}
+        [BsonIgnore]
         public double CreativityExperience { get {
             return this.Teams.Values.Sum(t => t.CreativityExperience);
         }}
 
 
         // Convert these from abstract to actual methods and write the unit tests.
+        [BsonIgnore]
         public Dictionary<Guid, ApplicationUser> Participants { get { return null; }} // Retrieves all members on team into 1 dictionary.
+        [BsonIgnore]
         public double AvgTeamHackathonExperience { get { return 0; }}
+        [BsonIgnore]
         public double AvgTeamCodingExperience { get { return 0; }}
+        [BsonIgnore]
         public double AvgTeamCommunicationExperience { get { return 0; }}
+        [BsonIgnore]
         public double AvgTeamOrganizationExperience { get { return 0; }}
+        [BsonIgnore]
         public double AvgTeamDocumentationExperience { get { return 0; }}
+        [BsonIgnore]
         public double AvgTeamBusinessExperience { get { return 0; }}
+        [BsonIgnore]
         public double AvgTeamCreativityExperience { get { return 0; }}
 
+        [BsonIgnore]
         public double StdDevTeamHackathonExperience { get { return 0; }}
+        [BsonIgnore]
         public double StdDevTeamCodingExperience { get { return 0; }}
+        [BsonIgnore]
         public double StdDevTeamCommunicationExperience { get { return 0; }}
+        [BsonIgnore]
         public double StdDevTeamOrganizationExperience { get { return 0; }}
+        [BsonIgnore]
         public double StdDevTeamDocumentationExperience { get { return 0; }}
+        [BsonIgnore]
         public double StdDevTeamBusinessExperience { get { return 0; }}
+        [BsonIgnore]
         public double StdDevTeamCreativityExperience { get { return 0; }}
 
         // Methods
