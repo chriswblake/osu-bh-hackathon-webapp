@@ -1,4 +1,4 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 using System;
@@ -75,6 +75,21 @@ namespace HackathonWebApp.Models
         public double StdDevTeamDocumentationExperience { get { return 0; }}
         public double StdDevTeamBusinessExperience { get { return 0; }}
         public double StdDevTeamCreativityExperience { get { return 0; }}
+
+        // Methods
+        /// <summary>
+        /// Description: Given a list of event applications, it assigns the applications
+        /// into teams such that the the teams are evenly balanced.
+        /// <para>eventApplications: List<EventApplications>: A list of event applications, representing the experience of various application users.</para>
+        /// <para>numTeams: Int: The number of teams to assign the applications to.</para>
+        /// </summary>
+        public List<Team> AssignTeams(List<EventApplication> eventApplications, int numTeams) {
+            var assignedTeams = new List<Team>();
+
+            // Write some optimization code here.
+
+            return assignedTeams;
+        }
 
     }
 }
