@@ -38,7 +38,27 @@ namespace HackathonWebApp.Controllers
             // Load active hackathon event, if not previously loaded
             if (EventController.activeEvent == null)
             {
+                // Try to get the defined event
                 var results = this.eventCollection.Find(h => h.Id == ObjectId.Parse("62d0913c493ff39662d52fba"));
+
+                // If not found, pick the first one
+                if (results.CountDocuments() == 0)
+                    results = this.eventCollection.Find(h => true);
+
+                // If still not found, create default event
+                if (results.CountDocuments() == 0)
+                {
+                    // Create event
+                    CreateHackathonEvent(new HackathonEvent() {
+                        Name = "Default Event",
+                        StartTime = DateTime.Now,
+                        EndTime = DateTime.Now
+                    }).Wait();
+                    // Retrieve the event
+                    results = this.eventCollection.Find(h => true);
+                }
+
+                // Set active event for controller
                 EventController.activeEvent = results.First();
             }
 
