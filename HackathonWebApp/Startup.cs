@@ -72,6 +72,7 @@ namespace HackathonWebApp
             });
 
             // Enable serving web pages
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddMvc().AddControllersAsServices();
         }
 

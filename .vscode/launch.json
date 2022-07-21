@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/HackathonWebApp.dll",
+            "program": "${workspaceFolder}/HackathonWebApp/bin/Debug/netcoreapp3.1/HackathonWebApp.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/HackathonWebApp",
             "console": "internalConsole",
             "stopAtEntry": false,
             "env": {
@@ -25,9 +25,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp3.1/HackathonWebApp.dll",
+            "program": "${workspaceFolder}/HackathonWebApp/bin/Debug/netcoreapp3.1/HackathonWebApp.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/HackathonWebApp",
             "console": "internalConsole",
             "stopAtEntry": false,
             "env": {
