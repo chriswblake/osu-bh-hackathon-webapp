@@ -54,7 +54,8 @@ namespace HackathonWebAppTests
             var numTeams = 10;
 
             // Process
-            var assignedTeams = hackathonEvent.AssignTeams(eventApplications, numTeams);
+            var assignedTeams = HackathonEvent.AssignTeams(eventApplications, numTeams);
+            hackathonEvent.Teams = assignedTeams;
 
             // Assert
             Assert.True(hackathonEvent.StdDevTeamHackathonExperience < 5);
