@@ -1,11 +1,36 @@
-﻿@{
+﻿@using System.Linq
+@using System.Collections.Generic;
+@model List<EventApplication>
+@{
     ViewData["Title"] = "Selection";
+	List<EventApplication> eventApplications = Model;
 }
-
-@*<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>*@
+@functions{
+	class HistogramPoint {
+		public string ValueLabel = "";
+		public int ValueCount = 0;
+	}
+	string ToChartDataArray(IEnumerable<HistogramPoint> data) {
+		var valueCounts = data.Select(p => p.ValueCount);
+		string delimetedString = "["+String.Join(",", valueCounts)+"]";
+		return delimetedString;
+	}
+	string ToChartLabelsArray(IEnumerable<HistogramPoint> data) {
+		var valueLabels = data.Select(p => p.ValueLabel);
+		string delimetedString = "["+String.Join(",", valueLabels)+"]";
+		return delimetedString;
+	}
+}
+@{
+	@* Collect histogram data from list of event applications *@
+	var hackathonExperienceHistogramPoints = eventApplications.GroupBy(p => p.HackathonExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var codingExperienceHistogramPoints = eventApplications.GroupBy(p => p.CodingExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var communicationExperienceHistogramPoints = eventApplications.GroupBy(p => p.CommunicationExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var organizationExperienceHistogramPoints = eventApplications.GroupBy(p => p.OrganizationExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var documentationExperienceHistogramPoints = eventApplications.GroupBy(p => p.DocumentationExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var businessExperienceHistogramPoints = eventApplications.GroupBy(p => p.BusinessExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+	var creativityExperienceHistogramPoints = eventApplications.GroupBy(p => p.CreativityExperience).Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
+}
 
 <div class="text-center">
 	<!-- Intro -->
@@ -57,7 +82,44 @@
 							<li>Openly listening to feedback to improve our process.</li>
 						</ul>
 					</div>
-					<!-- Decision Matrix -->
+
+					<!-- Experience Charts -->
+					<div class="col-4">
+						<h4>Hackathon Experience</h4>
+						<canvas id="hackathon_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Coding Experience</h4>
+						<canvas id="coding_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Communication Experience</h4>
+						<canvas id="communication_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Organization Experience</h4>
+						<canvas id="organization_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Documentation Experience</h4>
+						<canvas id="documentation_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Business Experience</h4>
+						<canvas id="business_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					<div class="col-4">
+						<h4>Creativity Experience</h4>
+						<canvas id="creativity_exp_histogram" class="experience-histogram" height="120" ></canvas>
+					</div>
+
+					@* <!-- Decision Matrix -->
 					<div class="col-12">
 						<h3>Skills Balancing Matrix (live<sup style="font-size: 50%;">*</sup>)</h3>
 						<iframe style="width:100%; height:650px" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyyXUkeKakNgJJqSO-fgackzBwV58S_Titwh_e5aHl1w48rNIg7_pNgHK0R1nCZBU9oFA5k3jz3tAE/pubhtml?gid=957604057&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
@@ -68,8 +130,7 @@
 						<h3>Registration Stats (live<sup style="font-size: 50%;">*</sup>)</h3>
 						<iframe style="width:100%; height:1500px" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTyyXUkeKakNgJJqSO-fgackzBwV58S_Titwh_e5aHl1w48rNIg7_pNgHK0R1nCZBU9oFA5k3jz3tAE/pubhtml?gid=1114765437&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
 						*5 minute delay from Google Forms.
-					</div>
-
+					</div> *@
 				</div>
 			</div>
 		</div>
@@ -77,3 +138,111 @@
 
 
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0" asp-append-version="true"></script>
+	@* Reference: https://www.chartjs.org/docs/latest/samples/information.html *@
+	@* Reference: https://chartjs-plugin-datalabels.netlify.app/guide/#table-of-contents *@
+
+	<script>
+		$(document).ready(function(){
+			Chart.register(ChartDataLabels);
+			
+			// Colors
+			const bh_dark_green = '#05322B';
+			const bh_green =  '#018374';
+			const osu_orange = '#FE5C00';
+
+			// Format all histograms the same
+			charts = {};
+			$(".experience-histogram").each(function() {
+				let chartId = $(this).attr('id');
+				const ctx = document.getElementById(chartId).getContext('2d');
+				const myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						@* labels: @ToChartLabelsArray(codingExperienceHistogram), *@
+						datasets: [{
+							label: '# of Applicants',
+							@* data: @ToChartDataArray(codingExperienceHistogram), *@
+							backgroundColor: osu_orange,
+							borderColor: bh_green,
+							borderWidth: 1,
+							datalabels: {
+								color: bh_green,
+								anchor: 'end',
+								align: 'end'
+							}
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								min: 0,
+								ticks: {
+									stepSize: 5
+								},
+								title: {
+									display: true,
+									text: '# Applicants'
+								}
+							},
+							x: {
+								title: {
+									display: true,
+									text: 'Exp. Level'
+								}
+							}
+						},
+						layout: {
+							padding: {
+								top: 25
+							}
+						},
+						plugins: {
+							legend: {
+								display: false
+							}
+						}
+					}
+				});
+				charts[chartId] = myChart;
+			});
+
+
+			// Add  data to charts
+			charts['hackathon_exp_histogram'].data.labels = @ToChartLabelsArray(hackathonExperienceHistogramPoints);
+			charts['hackathon_exp_histogram'].data.datasets[0].data = @ToChartDataArray(hackathonExperienceHistogramPoints);
+
+			charts['coding_exp_histogram'].data.labels = @ToChartLabelsArray(codingExperienceHistogramPoints);
+			charts['coding_exp_histogram'].data.datasets[0].data = @ToChartDataArray(codingExperienceHistogramPoints);
+
+			charts['communication_exp_histogram'].data.labels = @ToChartLabelsArray(communicationExperienceHistogramPoints);
+			charts['communication_exp_histogram'].data.datasets[0].data = @ToChartDataArray(communicationExperienceHistogramPoints);
+
+			charts['organization_exp_histogram'].data.labels = @ToChartLabelsArray(organizationExperienceHistogramPoints);
+			charts['organization_exp_histogram'].data.datasets[0].data = @ToChartDataArray(organizationExperienceHistogramPoints);
+
+			charts['documentation_exp_histogram'].data.labels = @ToChartLabelsArray(documentationExperienceHistogramPoints);
+			charts['documentation_exp_histogram'].data.datasets[0].data = @ToChartDataArray(documentationExperienceHistogramPoints);
+
+			charts['business_exp_histogram'].data.labels = @ToChartLabelsArray(businessExperienceHistogramPoints);
+			charts['business_exp_histogram'].data.datasets[0].data = @ToChartDataArray(businessExperienceHistogramPoints);
+
+			charts['creativity_exp_histogram'].data.labels = @ToChartLabelsArray(creativityExperienceHistogramPoints);
+			charts['creativity_exp_histogram'].data.datasets[0].data = @ToChartDataArray(creativityExperienceHistogramPoints);
+
+			// Update display for charts
+			charts['hackathon_exp_histogram'].update();
+			charts['coding_exp_histogram'].update();
+			charts['communication_exp_histogram'].update();
+			charts['organization_exp_histogram'].update();
+			charts['documentation_exp_histogram'].update();
+			charts['business_exp_histogram'].update();
+			charts['creativity_exp_histogram'].update();
+
+		});
+
+	</script>
+}

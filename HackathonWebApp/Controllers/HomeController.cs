@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
@@ -35,7 +35,11 @@ namespace HackathonWebApp.Controllers
 
         public IActionResult Selection()
         {
-            return View();
+            // Use Event Controller to get all event applications for the active event.
+            var eventController = (EventController) this.HttpContext.RequestServices.GetService(typeof(EventController));
+            var activeEventApplications = eventController.GetActiveEventApplications();
+
+            return View(activeEventApplications);
         }
 
         public IActionResult Sponsors()
