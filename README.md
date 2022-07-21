@@ -14,7 +14,8 @@ Can define event settings via an admin area, such as start dates, sponsors, team
 ### Prerequisites
 - [.Net SDK for VS Code, v3.1+](https://dotnet.microsoft.com/en-us/download/dotnet/3.1)
 - [Visual Studio Code](https://code.visualstudio.com/)
-- [C# Extension for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp)
+- [VS Code Extension: C#](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp)
+- [VS Code Extension: .NET Core Test Explorer](https://marketplace.visualstudio.com/items?itemName=formulahendry.dotnet-test-explorer)
 - [MongoDB Database](https://www.mongodb.com/) - Locally for development, something in the cloud for production.
     > For simplicity, we use MongoDB Atlas with a free tier.
 
