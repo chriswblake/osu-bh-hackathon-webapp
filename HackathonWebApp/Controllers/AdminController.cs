@@ -307,6 +307,21 @@ namespace HackathonWebApp.Controllers
             }
             return View(model);
         }
+        [HttpPost]
+        public async Task<IActionResult> DeleteOrganizer(string id)
+        {
+            try
+            { 
+                // Delete the organizer
+                await organizerCollection.FindOneAndDeleteAsync(s => s.Id == ObjectId.Parse(id));
+            }
+            catch (Exception e)
+            {
+                // Save errors
+                Errors(e);
+            }
+            return RedirectToAction("Organizers");
+        }
 
         // Methods - Errors
         private void Errors(Task result)
