@@ -1,4 +1,4 @@
-﻿@model List<Organizer>
+@model List<Organizer>
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "Organizers";
@@ -30,8 +30,8 @@
                 <i class="fas fa-envelope"></i> @organizer.Email
             </td>
             <td>
-                <a class="btn btn-sm btn-primary" style="margin-bottom:5px;" asp-action="UpdateOrganizer" asp-route-id="@organizer.Id">Update</a><br/>
-                <a class="btn btn-sm btn-danger" asp-action="DeleteOrganizer" asp-route-id="@organizer.Id">Delete</a>
+                <a class="btn btn-sm btn-primary" style="margin-bottom:5px;" asp-action="UpdateOrganizer" asp-route-id="@organizer.Id">Update</a>
+                <form asp-action="DeleteOrganizer" asp-route-id="@organizer.Id" method="post"><button type="submit" class="btn btn-sm btn-danger">Delete</button></form>
             </td>
         </tr>
     }
