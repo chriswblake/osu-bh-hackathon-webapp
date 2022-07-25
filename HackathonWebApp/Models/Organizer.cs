@@ -28,19 +28,13 @@ namespace HackathonWebApp.Models
         [BsonElement("display_team")]
         public string DisplayTeam { get; set; }
 
-        [Required]
         [BsonElement("linkedin_url")]
         public string LinkedInUrl { get; set; }
 
-        [Required]
         [BsonElement("github_url")]
         public string GitHubUrl { get; set; }
 
-        [Required]
         [EmailAddress(ErrorMessage = "Invalid Email")]
         public string Email { get; set; }
-
-
-        
     }
 }
