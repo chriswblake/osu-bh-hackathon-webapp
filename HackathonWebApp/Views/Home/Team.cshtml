@@ -32,9 +32,8 @@
 				@if (organizer.ProfileImage != null && organizer.ProfileImage != "") {
                     <img class="img-fluid" src="@String.Format("data:image/png;base64,{0}", organizer.ProfileImage)"/>
                 }else {
-                    <img class="img-fluid" src="/img/team/placeholder.png"/>
+                    <img class="img-fluid" src="/img/profile-placeholder.png"/>
                 }
-				@* <img class="img-fluid" src="~/img/team/placeholder.png"> *@
 				<div>
 					<h3>@organizer.DisplayName</h3>
 					<h5>@organizer.Role</h5>
