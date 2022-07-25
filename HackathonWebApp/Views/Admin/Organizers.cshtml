@@ -20,7 +20,7 @@
     {
         <tr>
             <td style="text-align:center;">
-                @if (organizer.ProfileImage != "") {
+                @if (organizer.ProfileImage != null && organizer.ProfileImage != "") {
                     <img src="@String.Format("data:image/png;base64,{0}", organizer.ProfileImage)" style="height:100px;"/>
                 }else {
                     <img src="/img/team/placeholder.png" style="height:100px;"/>
