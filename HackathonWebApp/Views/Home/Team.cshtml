@@ -1,183 +1,54 @@
-﻿@{
+﻿@model List<Organizer>
+@{
     ViewData["Title"] = "Team";
+    var organizers = Model;
+	var organizersByTeam = organizers.GroupBy(p => p.DisplayTeam);
+	var a =1;
 }
 
 <div class="text-center">
 	<section class="first-section" style="padding: 5em;">
 		<h1 class="osu-orange">Meet the Team</h1>
 	</section>
-	<!-- OSU Students and Staff -->
-	<section class="diagonal-section" style="background-color:white; padding-top:2em;">
-	<div class="diagonal-section-content">
-	<div class="container">
-	<div class="row">
-		<!-- Tariq -->
-		<div class="person-card col-sm-6, col-md-4">
-			<img class="img-fluid" src="~/img/team/tariq-tariq.jpg">
-			<div>
-				<h3>Tariq Tariq</h3>
-				<h5>Event Support</h5>
-				<h6>Chemical Engineering</h6>
-				<div class="social-tags">
-					<a href="https://www.linkedin.com/in/tariq-tariq-a799a4207" target="_blank"><i class="fab fa-linkedin"></i></a>
-					<a href="mailto:ttariq@okstate.edu?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a>
+
+	<!-- Show each group and its organizers -->
+	@foreach (var group in organizersByTeam)
+	{
+		// Create banner for group
+		var displayTeam = group.Key;
+		<section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:3em;">
+			<h2 class="osu-orange">@displayTeam</h2>
+		</section>
+
+		// Create cards for each person
+		<section class="diagonal-section" style="background-color:white; padding-top:2em;">
+		<div class="diagonal-section-content">
+		<div class="container">
+		<div class="row">
+		@foreach (var organizer in group)
+		{
+			// Replace image with placeholder, if missing.
+			<div class="person-card col-sm-6, col-md-4">
+				@if (organizer.ProfileImage != null && organizer.ProfileImage != "") {
+                    <img class="img-fluid" src="@String.Format("data:image/png;base64,{0}", organizer.ProfileImage)"/>
+                }else {
+                    <img class="img-fluid" src="/img/profile-placeholder.png"/>
+                }
+				<div>
+					<h3>@organizer.DisplayName</h3>
+					<h5>@organizer.Role</h5>
+					<h6>@organizer.JobTitle</h6>
+					<div class="social-tags">
+						@if (organizer.GitHubUrl != null && organizer.GitHubUrl != "") { <a href="@organizer.GitHubUrl" target="_blank"><i class="fab fa-github"></i></a> }
+						@if (organizer.LinkedInUrl != null && organizer.LinkedInUrl != "") { <a href="@organizer.LinkedInUrl" target="_blank"><i class="fab fa-linkedin"></i></a> }
+						@if (organizer.Email != null && organizer.Email != "") { <a href="mailto:@organizer.Email?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a> }
+					</div>
 				</div>
 			</div>
+		}
 		</div>
-
-		<!-- Carter -->
-		<div class="person-card col-sm-6, col-md-4">
-			<img class="img-fluid" src="~/img/team/carter-swallow.jpg">
-			<div>
-				<h3>Carter Swallow</h3>
-				<h5>Event Support</h5>
-				<h6>Mechanical & Aerospace Engineering</h6>
-				<div class="social-tags">
-					<a href="https://www.linkedin.com/in/carter-swallow-8b4a42240/" target="_blank"><i class="fab fa-linkedin"></i></a>
-					<a href="mailto:tiffany.swallow@okstate.edu?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a>
-				</div>
-			</div>
 		</div>
-
-		<!-- Lance -->
-		<div class="person-card col-sm-6, col-md-4">
-			<img class="img-fluid" src="~/img/team/lance-millis.png">
-			<div>
-				<h3>Lance Millis</h3>
-				<h5>Event Advisor</h5>
-				<h6>Director - Academic Services</h6>
-				<div class="social-tags">
-					<a href="https://www.linkedin.com/in/lance-millis-91571a5/" target="_blank"><i class="fab fa-linkedin"></i></a>
-					<a href="mailto:lance.millis@okstate.edu?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a>
-				</div>
-			</div>
 		</div>
-
-		<!-- Marc -->
-		<div class="person-card col-sm-6, col-md-4">
-			<img class="img-fluid" src="~/img/team/marc-tower.jpg">
-			<div>
-				<h3>Marc Tower</h3>
-				<h5>Event Advisor</h5>
-				<h6>Assistant Dean, Spears School of Business</h6>
-				<div class="social-tags">
-					<a href="https://www.linkedin.com/in/marctower/" target="_blank"><i class="fab fa-linkedin"></i></a>
-					<a href="mailto:marc.tower@okstate.edu?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a>
-				</div>
-			</div>
-		</div>
-
-		<!-- Chad -->
-		<div class="person-card col-sm-6, col-md-4">
-			<img class="img-fluid" src="~/img/team/chad-mills.jpg">
-			<div>
-				<h3>Chad Mills</h3>
-				<h5>Event Advisor</h5>
-				<h6>Director, Riata Center for Entrepreneurship</h6>
-				<div class="social-tags">
-					<a href="https://www.linkedin.com/in/chad-howard-mills-501999b6/" target="_blank"><i class="fab fa-linkedin"></i></a>
-					<a href="mailto:chadhm@okstate.edu?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a>
-				</div>
-			</div>
-		</div>
-
-	</div>
-	</div>
-	</div>
-	</section>
-
-	<!-- Baker Hughes Staff -->
-	<section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:3em;">
-		<h2 class="osu-orange">Baker Hughes Staff</h2>
-	</section>
-	<section class="diagonal-section" style="background-color:white; padding-top:2em;">
-	<div class="diagonal-section-content">
-	<div class="container">
-	<div class="row">
-		<!-- Christopher -->
-		<div class="person-card col-sm-6, col-md-4">
-			<img class="img-fluid" src="~/img/team/christopher-blake.jpg">
-			<div>
-				<h3>Christopher W. Blake</h3>
-				<h5>Event Organizer + WebApp</h5>
-				<h6>Inner Source Engineer</h6>
-				<div class="social-tags">
-					<a href="https://github.com/chriswblake" target="_blank"><i class="fab fa-github"></i></a>
-					<a href="https://www.linkedin.com/in/chriswblake" target="_blank"><i class="fab fa-linkedin"></i></a>
-					<a href="mailto:christopher.blake@bakerhughes.com?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a>
-				</div>
-			</div>
-		</div>
-
-		<!-- Jason -->
-		<div class="person-card col-sm-6, col-md-4">
-			<img class="img-fluid" src="~/img/team/jason-angolano.png">
-			<div>
-				<h3>Jason Angolano</h3>
-				<h5>OSU Outreach</h5>
-				<h6>Laboratory Manager</h6>
-				<div class="social-tags">
-					<a href="https://www.linkedin.com/in/jason-angolano-56730442/" target="_blank"><i class="fab fa-linkedin"></i></a>
-					<a href="mailto:jason.angolano@bakerhughes.com?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a>
-				</div>
-			</div>
-		</div>
-
-		<div class="person-card col-sm-6, col-md-4">
-			<img class="img-fluid" src="~/img/team/pamela-lopez.jpg">
-			<div>
-				<h3>Pamela Denisse López</h3>
-				<h5>Graphic Design</h5>
-				<h6>Data Scientist</h6>
-				<div class="social-tags">
-					<a href="https://www.linkedin.com/in/padeloma/" target="_blank"><i class="fab fa-linkedin"></i></a>
-					<a href="mailto:pameladenisse.lopez@bakerhughes.com?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a>
-				</div>
-			</div>
-		</div>
-
-		<div class="person-card col-sm-6, col-md-4">
-			<img class="img-fluid" src="~/img/team/marco-bermillo.jpg">
-			<div>
-				<h3>Marco Bermillo</h3>
-				<h5>Team Placement/Automation</h5>
-				<h6>Intern</h6>
-				<div class="social-tags">
-					<a href="https://www.linkedin.com/in/marco-b-469886112/" target="_blank"><i class="fab fa-linkedin"></i></a>
-					<a href="mailto:bermjos01@bakerhughes.onmicrosoft.com?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a>
-				</div>
-			</div>
-		</div>
-
-	</div>
-	</div>
-	</div>
-	</section>
-
-	<!-- Judges -->
-	<section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:3em;">
-		<h2 class="osu-orange">Judges</h2>
-	</section>
-	<section class="diagonal-section" style="background-color:white; padding-top:2em;">
-	<div class="diagonal-section-content">
-	<div class="container">
-	<div class="row">
-		<!-- Maki -->
-		<div class="person-card col-sm-6, col-md-4">
-			<img class="img-fluid" src="~/img/team/maki-ikeda.jpg">
-			<div>
-				<h3>Maki Ikeda</h3>
-				<h5>Judge</h5>
-				<h6>Director - Energy Innovation Center, Baker Hughes</h6>
-				<div class="social-tags">
-					<a href="https://www.linkedin.com/in/maki-ikeda-2a90b32/" target="_blank"><i class="fab fa-linkedin"></i></a>
-					<a href="mailto:maki.ikeda@bakerhughes.com?subject=Hackathon" target="_blank"><i class="fas fa-envelope"></i></a>
-				</div>
-			</div>
-		</div>
-	</div>
-	</div>
-	</div>
-	</section>
-
+		</section>
+	}
 </div>

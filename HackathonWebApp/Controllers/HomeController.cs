@@ -14,6 +14,7 @@ namespace HackathonWebApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private IMongoCollection<Sponsor> sponsorCollection;
+        private IMongoCollection<Organizer> organizerCollection;
 
         public HomeController(ILogger<HomeController> logger, IMongoDatabase database)
         {
@@ -21,6 +22,7 @@ namespace HackathonWebApp.Controllers
             
             // Hackathon DBs
             this.sponsorCollection = database.GetCollection<Sponsor>("Sponsor");
+            this.organizerCollection = database.GetCollection<Organizer>("Organizer");
         }
 
         public IActionResult Index()
@@ -103,7 +105,8 @@ namespace HackathonWebApp.Controllers
 
         public IActionResult Team()
         {
-            return View();
+            var organizers = organizerCollection.Find(s => true).ToList<Organizer>();
+            return View(organizers);
         }
 
         public IActionResult Privacy()
