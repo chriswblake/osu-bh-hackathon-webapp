@@ -22,6 +22,7 @@ namespace HackathonWebApp.Controllers
         private RoleManager<ApplicationRole> roleManager;
         private UserManager<ApplicationUser> userManager;
         private IMongoCollection<Sponsor> sponsorCollection;
+        private IMongoCollection<Organizer> organizerCollection;
 
         // Constructors
         public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IMongoDatabase database)
@@ -32,6 +33,7 @@ namespace HackathonWebApp.Controllers
 
             // Hackathon DBs
             this.sponsorCollection = database.GetCollection<Sponsor>("Sponsor");
+            this.organizerCollection = database.GetCollection<Organizer>("Organizer");
         }
 
         // Index
@@ -228,6 +230,44 @@ namespace HackathonWebApp.Controllers
             }
             return View(model);
         }
+
+        // Methods - Organizers
+        public ViewResult Organizers()
+        {
+            var organizers = organizerCollection.Find(s => true).ToList<Organizer>();
+            return View(organizers);
+        }
+        public IActionResult CreateOrganizer() => View();
+        [HttpPost]
+        public async Task<IActionResult> CreateOrganizer(Organizer model, IFormFile ProfileImage)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {   // Save logo into string of model
+                    if (ProfileImage != null)
+                    {
+                        MemoryStream memoryStream = new MemoryStream();
+                        ProfileImage.OpenReadStream().CopyTo(memoryStream);
+                        model.ProfileImage = Convert.ToBase64String(memoryStream.ToArray());
+                    }
+                    else
+                    {
+                        model.ProfileImage = "";
+                    }
+
+                    // Create the organizer
+                    await organizerCollection.InsertOneAsync(model);
+                    return RedirectToAction("Organizers");
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            return View(model);
+        }
+
 
         // Methods - Errors
         private void Errors(Task result)

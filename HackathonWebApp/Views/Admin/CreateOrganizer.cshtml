@@ -1,0 +1,69 @@
+﻿@model HackathonWebApp.Models.Organizer
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Create Organizer";
+}
+<div class="container text-white">
+    <h1>Create Organizer</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="CreateOrganizer" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="ProfileImage" class="control-label"></label>
+                    <input type="file" asp-for="ProfileImage" class="form-control" />
+                    <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DisplayName" class="control-label"></label>
+                    <input asp-for="DisplayName" class="form-control" />
+                    <span asp-validation-for="DisplayName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Role" class="control-label"></label>
+                    <input asp-for="Role" class="form-control" />
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="JobTitle" class="control-label"></label>
+                    <input asp-for="JobTitle" class="form-control" />
+                    <span asp-validation-for="JobTitle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DisplayTeam" class="control-label"></label>
+                    <input asp-for="DisplayTeam" class="form-control" />
+                    <span asp-validation-for="DisplayTeam" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LinkedInUrl" class="control-label"></label>
+                    <input asp-for="LinkedInUrl" class="form-control" />
+                    <span asp-validation-for="LinkedInUrl" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="GitHubUrl" class="control-label"></label>
+                    <input asp-for="GitHubUrl" class="form-control" />
+                    <span asp-validation-for="GitHubUrl" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Sponsors">Back to List</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
