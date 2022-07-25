@@ -1,4 +1,4 @@
-@model List<Organizer>
+﻿@model List<Organizer>
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "Organizers";
@@ -19,7 +19,14 @@
     @foreach (Organizer organizer in organizers)
     {
         <tr>
-            <td style="text-align:center;"><img src="@String.Format("data:image/png;base64,{0}", organizer.ProfileImage)" style="height:100px;"/></td>
+            <td style="text-align:center;">
+                @if (organizer.ProfileImage != "") {
+                    <img src="@String.Format("data:image/png;base64,{0}", organizer.ProfileImage)" style="height:100px;"/>
+                }else {
+                    <img src="/img/team/placeholder.png" style="height:100px;"/>
+                    
+                }
+            </td>
             <td>@organizer.DisplayName</td>
             <td>@organizer.Role</td>
             <td>@organizer.JobTitle</td>
