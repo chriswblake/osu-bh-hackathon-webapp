@@ -47,9 +47,19 @@
                 <h3>Create Account</h3>
                 <div class="qa-section-box">
                     <div class="form-group">
+                        First Name
+                        <input asp-for="AssociatedUser.FirstName" class="form-control" placeholder="Choose a username"/>
+                        <span asp-validation-for="AssociatedUser.FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        Last name
+                        <input asp-for="AssociatedUser.LastName" class="form-control" placeholder="Choose a username"/>
+                        <span asp-validation-for="AssociatedUser.LastName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
                         Username
-                        <input asp-for="AssociatedUser.Name" class="form-control" placeholder="Choose a username"/>
-                        <span asp-validation-for="AssociatedUser.Name" class="text-danger"></span>
+                        <input asp-for="AssociatedUser.UserName" class="form-control" placeholder="Choose a username"/>
+                        <span asp-validation-for="AssociatedUser.UserName" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         Email

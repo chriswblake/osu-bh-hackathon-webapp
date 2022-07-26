@@ -47,25 +47,20 @@ namespace HackathonWebApp.Controllers
 
         // Methods
         [HttpPost]
-        public async Task<IActionResult> Create(User user)
+        public async Task<IActionResult> Create(ApplicationUser appUser)
         {
             if (ModelState.IsValid)
             {
                 // Check if user exists
-                ApplicationUser existingUser = await userManager.FindByEmailAsync(user.Email);
+                ApplicationUser existingUser = await userManager.FindByEmailAsync(appUser.Email);
                 if (existingUser != null)
                 {
                     ModelState.AddModelError("", "Email already in use.");
-                    return View(user);
+                    return View(appUser);
                 }
 
                 // Create User
-                ApplicationUser appUser = new ApplicationUser
-                {
-                    UserName = user.Name,
-                    Email = user.Email
-                };
-                IdentityResult result = await userManager.CreateAsync(appUser, user.Password);
+                IdentityResult result = await userManager.CreateAsync(appUser, appUser.Password);
 
                 // Send confirmation email to user
                 if (result.Succeeded)
@@ -96,7 +91,7 @@ namespace HackathonWebApp.Controllers
                         ModelState.AddModelError("", error.Description);
                 }
             }
-            return View(user);
+            return View(appUser);
         }
 
         [Authorize]
