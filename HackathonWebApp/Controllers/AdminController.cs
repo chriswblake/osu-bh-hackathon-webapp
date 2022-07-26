@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -166,7 +166,7 @@ namespace HackathonWebApp.Controllers
 
                     // Create the sponsor
                     await sponsorCollection.InsertOneAsync(model);
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Sponsors");
                 }
                 catch (Exception e)
                 {
@@ -188,7 +188,7 @@ namespace HackathonWebApp.Controllers
                 // Save errors
                 Errors(e);
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Sponsors");
         }
         public async Task<IActionResult> UpdateSponsor(string id)
         {
@@ -221,7 +221,7 @@ namespace HackathonWebApp.Controllers
                     );
                     
                     // Return to table view
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Sponsors");
                 }
                 catch (Exception e)
                 {
