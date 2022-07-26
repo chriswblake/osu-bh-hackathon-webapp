@@ -2,10 +2,10 @@
     ViewData["Title"] = "Create Account";
 }
 
-@model User
+@model ApplicationUser
 
 <div class="container text-white">
-    <h1 class="text-white">Create User</h1>
+    <h1 class="text-white">Create Account</h1>
     <div asp-validation-summary="All" class="text-danger"></div>
  
     <div class="row">
@@ -16,12 +16,20 @@
             }
             <form method="post">
                 <div class="form-group">
+                    First Name
+                    <input asp-for="FirstName" class="form-control" placeholder="Ben"/>
+                </div>
+                <div class="form-group">
+                    Last Name
+                    <input asp-for="LastName" class="form-control" placeholder="Kenobi"/>
+                </div>
+                <div class="form-group">
                     Username
-                    <input asp-for="Name" class="form-control" placeholder="Choose a username"/>
+                    <input asp-for="UserName" class="form-control" placeholder="ObiWan"/>
                 </div>
                 <div class="form-group">
                     Email
-                    <input asp-for="Email" class="form-control" placeholder="someone@example.com"/>
+                    <input asp-for="Email" class="form-control" placeholder="obiwan@jedimasters.net"/>
                 </div>
                 <div class="form-group">
                     Password

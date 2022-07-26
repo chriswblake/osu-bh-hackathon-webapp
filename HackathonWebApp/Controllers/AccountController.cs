@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using HackathonWebApp.Models;
+using System;
 using System.Net.Mail;
 using System.IO;
 
@@ -47,25 +48,20 @@ namespace HackathonWebApp.Controllers
 
         // Methods
         [HttpPost]
-        public async Task<IActionResult> Create(User user)
+        public async Task<IActionResult> Create(ApplicationUser appUser)
         {
             if (ModelState.IsValid)
             {
                 // Check if user exists
-                ApplicationUser existingUser = await userManager.FindByEmailAsync(user.Email);
+                ApplicationUser existingUser = await userManager.FindByEmailAsync(appUser.Email);
                 if (existingUser != null)
                 {
                     ModelState.AddModelError("", "Email already in use.");
-                    return View(user);
+                    return View(appUser);
                 }
 
                 // Create User
-                ApplicationUser appUser = new ApplicationUser
-                {
-                    UserName = user.Name,
-                    Email = user.Email
-                };
-                IdentityResult result = await userManager.CreateAsync(appUser, user.Password);
+                IdentityResult result = await userManager.CreateAsync(appUser, appUser.Password);
 
                 // Send confirmation email to user
                 if (result.Succeeded)
@@ -96,7 +92,7 @@ namespace HackathonWebApp.Controllers
                         ModelState.AddModelError("", error.Description);
                 }
             }
-            return View(user);
+            return View(appUser);
         }
 
         [Authorize]
@@ -165,6 +161,34 @@ namespace HackathonWebApp.Controllers
             }
         }
         
+        [HttpPost]
+        public async Task<IActionResult> Update(ApplicationUser appUserChanges)
+        {
+            ApplicationUser appUser = null;
+            try
+            {
+                // Find the user
+                appUser = await userManager.FindByNameAsync(User.Identity.Name);
+
+                // Update basic info
+                appUser.FirstName = appUserChanges.FirstName;
+                appUser.LastName = appUserChanges.LastName;
+                appUser.UserName = appUserChanges.UserName;
+                appUser.Email = appUserChanges.Email;
+                
+                // Save to DB
+                await userManager.UpdateAsync(appUser);
+
+                // Sign in again, incase username (email) is different
+                await signInManager.SignInAsync(appUser, true);
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return View("Index", appUser);
+        }
+
         [Authorize]
         public async Task<IActionResult> Logout()
         {
@@ -194,6 +218,17 @@ namespace HackathonWebApp.Controllers
             return View();
         }
 
+
+        // Error Messages
+        private void Errors(Task result)
+        {
+            var e = result.Exception;
+            Errors(e);
+        }
+        private void Errors(Exception e)
+        {
+            ModelState.AddModelError("", e.Message);
+        }
         private void Errors(IdentityResult result)
         {
             foreach (IdentityError error in result.Errors)

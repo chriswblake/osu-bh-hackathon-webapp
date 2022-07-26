@@ -4,9 +4,66 @@
     var user = Model;
 }
 
-<div class="container text-white">
+<style>
+    .danger-zone {
+        border: 1px solid rgba(248,81,73,0.4);
+        border-radius: 5px;
+        padding: 10px;
+    }
+    .danger-zone div {
+        display: inline-block;
+    }
+</style>
 
-    <h1 class="bg-info text-white">Account Details</h1>
+<div class="container text-white" style="margin-bottom:50px;">
+
+    <div class="col-xs-12 col-sm-12 col-md-7 col-lg-5 col-xl-4">
+        <h3>Profile</h3>
+        <form asp-action="Update" asp-controller='Account'>
+            <input type="hidden" asp-for="Id" class="form-control" />
+            <div class="form-group">
+                First Name
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                Last Name
+                <input asp-for="LastName" class="form-control"/>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                UserName
+                <input asp-for="UserName" class="form-control"/>
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                Email
+                <input asp-for="Email" class="form-control" type="email"/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+
+    @* <div asp-validation-summary="All" class="text-danger"></div> *@
+
+    <div class="col-xs-12 col-sm-12 col-md-7 col-lg-5 col-xl-4">
+        <h3>Danger Zone</h3>
+        <div class="danger-zone">
+            <b>Delete Account</b><br/>
+            This will permantently delete your account and all associated data. No going back!
+            <form asp-action="Delete" method="post" style="margin-top: 10px;">
+                <button type="submit" class="btn btn-danger">Delete My Account</button>
+            </form>
+        </div>
+    </div>
+
+    
+
+
+    @* <h1 class="bg-info text-white">Account Details</h1>
     <div class="text-danger" asp-validation-summary="All"></div>
 
     UserName: @user.UserName <br/>
@@ -14,6 +71,8 @@
 
     <form asp-action="Delete" method="post">
         <button type="submit">Delete</button>
-    </form>
+    </form> *@
+
+
 
 </div>

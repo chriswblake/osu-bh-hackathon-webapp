@@ -3,65 +3,125 @@
 @{
     ViewData["Title"] = "Sponsors";
     var sponsors = Model;
+    var sponsorsByTier = sponsors.GroupBy(p => p.Tier);
 }
 
 <style>
+    .tier-container {
+      margin-bottom: 2em;
+    }
+    
+    /* Apply color to headings */
+    .tier-container h3.gold {
+      color: #D4AF37;
+    }
+    .tier-container h3.silver {
+      color: #C0C0C0;
+    }
+    .tier-container h3.bronze {
+      color: #9F7A34;
+    }
+    .tier-container h3.copper {
+      color: #B87333;
+    }
+
+    /* Apply color to boxes */
+    .sponsors-container.gold {
+      background-color: #D4AF3733;
+      border: 1px solid #D4AF37;
+    }
+    .sponsors-container.silver {
+      background-color: #C0C0C033;
+      border: 1px solid #C0C0C0;
+    }
+    .sponsors-container.bronze {
+      background-color: #9F7A3433;
+      border: 1px solid #9F7A34;
+    }
+    .sponsors-container.copper {
+      background-color: #B8733333;
+      border: 1px solid #B87333;
+    }
+
+    /* Format sponsors */
     .sponsors-container {
-        padding: 1em;
-        margin-bottom: 2em;
+      display: inline-block;
+      padding: 1em;
+      border-radius: 10px;
     }
-    .sponsors-container img {
-        padding: 1em;
-      }
-
-    @@media screen and (max-width: 480px) {
-      .sponsors-container {
-        width: 100%;
-      }
-      .sponsors-container img {
-        width: 60%;
-      }
+    .sponsor-container {
+      position: relative;
+      display: inline-block;
+      padding: 1em;
     }
-
-    @@media screen and (max-width: 800px) and (min-width: 600px) {
-      .sponsors-container {
-        width: 33%;
-      }
-      .sponsors-container img {
-        width: 30%;
-      }
+    .medal {
+      position: absolute;
+      left: 1%;
+      top: 1%;
+      width: 2em;
+      height: 2em;
+      background-size: 100% 100%;
     }
+    
 </style>
 
 <div class="text-center">
-	<!-- Sponsors -->
+	  <!-- Sponsors -->
     <section class="first-section" style="padding: 5em;">
-		<h1 class="osu-orange">Sponsors</h1>
-	</section>
-	<section class="diagonal-section" style="background-color:#EEE; padding-top:3em;">
-		<div class="diagonal-section-content">
-
-             <div class="sponsors-container">
-                @*<h3 style="color: #e7d709">— Gold —</h3>*@
-                @*@foreach (Sponsor sponsor in sponsors.Where(s => s.Tier.ToLower() == "gold"))*@
-                @foreach (Sponsor sponsor in sponsors)
+		  <h1 class="osu-orange">Sponsors</h1>
+	  </section>
+	  <section class="diagonal-section" style="background-color:#EEE; padding-top:3em;">
+      <div class="diagonal-section-content">
+        @foreach (var group in sponsorsByTier)
+        {
+          var tierName = group.Key;
+          var tierColor = tierName.ToLower();
+          <div class="tier-container">
+            <h3 class="@tierColor"><i class="fa-solid fa-award"></i> @tierName <i class="fa-solid fa-award"></i></h3>
+            <div class="sponsors-container @tierColor">
+            @foreach (Sponsor sponsor in group)
+            {
+              <div class="sponsor-container">
+                <a href="@sponsor.WebsiteUrl" target="_blank">
+                  <img style="width:250px; max-height:100px;" src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" alt="@sponsor.Name"/>
+                </a>
+                @if (sponsor.YearsConsecutiveSuppport > 0)
                 {
-                    <a href="@sponsor.WebsiteUrl" target="_blank">
-                        <img style="width:250px; max-height:100px;" src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" alt="@sponsor.Name"/>
-                    </a>
+                  <div class="medal" style="background-image: url('/img/medal.svg');"
+                  data-toggle="tooltip" data-placement="top" data-html="true"
+                  title="<b>Awesome Sponsor!</b><br/>@sponsor.YearsConsecutiveSuppport years of consecutive support.">@sponsor.YearsConsecutiveSuppport</div>
                 }
+              </div>
+            }
             </div>
-            <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="SponsorBenefits">Learn about Sponsor Benefits</a>
+          </div>
+        }
 
-            <!-- Hosted by -->
-            <div class="sponsors-container">
-                <h3 style="color: #cccccc">— Hosted by —</h3>
-                <a href="https://go.okstate.edu/"><img class="sponsors-img" src="~/img/osu_logo.svg" style="height:10em;"/></a>
-                <a href="https://www.bakerhughes.com"><img class="sponsors-img" src="~/img/bh_logo.png" style="width:10em;"/></a>
-            </div>
+      <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="SponsorBenefits">Learn about Sponsor Benefits</a>
+      <br/>
+      <br/>
 
-		</div>
+      <!-- Hosted by -->
+      <div class="tier-container">
+          <h3 style="color: #cccccc">— Hosted by —</h3>
+          <a href="https://go.okstate.edu/"><img class="sponsors-img" src="~/img/osu_logo.svg" style="height:10em;"/></a>
+          <a href="https://www.bakerhughes.com"><img class="sponsors-img" src="~/img/bh_logo.png" style="width:10em;"/></a>
+      </div>
+    </div>
 	</section>
 
 
 </div>
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function() {
+            // Enable Tooltips
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        });
+    </script>
+
+}
