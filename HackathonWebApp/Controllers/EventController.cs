@@ -238,7 +238,7 @@ namespace HackathonWebApp.Controllers
             try
             {
                 // Set ID for question
-                if (scoreQuestion.Id == null)
+                if (scoreQuestion.Id == ObjectId.Empty)
                     scoreQuestion.Id = ObjectId.GenerateNewId();
 
                 // Remove empty score options
