@@ -224,6 +224,50 @@ namespace HackathonWebApp.Controllers
             return View();
         }
         
+
+        // Score Questions
+        public ViewResult ScoreQuestions()
+        {
+            var scoreQuestions = EventController.activeEvent.ScoringQuestions.Values.ToList();
+            return View(scoreQuestions);
+        }
+        public IActionResult CreateScoreQuestion() => View();
+        [HttpPost]
+        public async Task<IActionResult> CreateScoreQuestion(ScoreQuestion scoreQuestion)
+        {
+            try
+            {
+                // Set ID for question
+                scoreQuestion.Id = ObjectId.GenerateNewId();
+
+                // Remove empty score options
+                scoreQuestion.AnswerOptions = scoreQuestion.AnswerOptions.Where(p=> (p.Value.Description != null) && (p.Value.Description.Trim() != "")).ToDictionary(kv=> kv.Key, kv=> kv.Value);
+
+                // Create change set
+                var key = scoreQuestion.Id.ToString();
+                var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.ScoringQuestions[key], scoreQuestion);
+
+                // Update in DB
+                string eventId = activeEvent.Id.ToString();
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == ObjectId.Parse(eventId),
+                    updateDefinition
+                );
+
+                // Clear Active Event, so it is triggered to be refreshed on next request.
+                EventController.activeEvent = null;
+
+                // Go back to list
+                return RedirectToAction("ScoreQuestions");
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return View(scoreQuestion);
+        }
+
+
         // Errors
         private void Errors(Task result)
         {

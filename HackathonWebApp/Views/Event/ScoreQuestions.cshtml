@@ -1,0 +1,33 @@
+﻿@model List<ScoreQuestion>
+@{
+    Layout = "_AdminLayout";
+    ViewBag.Title = "Score Questions";
+    var scoreQuestions = Model;
+}
+
+<h1 class="text-white">@ViewBag.Title</h1>
+<table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
+    <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Answer Options</th>
+    </tr>
+    @foreach (ScoreQuestion scoreQuestion in scoreQuestions)
+    {
+        <tr>
+            <td>@scoreQuestion.Title</td>
+            <td>@scoreQuestion.Description</td>
+            <td>
+                @foreach (var answerOption in scoreQuestion.AnswerOptions.Values)
+                {
+                    <div>@answerOption.Score pts - @answerOption.Description</div>
+                }
+            </td>
+        </tr>
+    }
+    <tr>
+    <td colspan="5">
+        <a asp-action="CreateScoreQuestion" class="btn btn-secondary">Add a Question</a>
+    </td>
+    </tr>
+</table>
