@@ -238,7 +238,8 @@ namespace HackathonWebApp.Controllers
             try
             {
                 // Set ID for question
-                scoreQuestion.Id = ObjectId.GenerateNewId();
+                if (scoreQuestion.Id == null)
+                    scoreQuestion.Id = ObjectId.GenerateNewId();
 
                 // Remove empty score options
                 scoreQuestion.AnswerOptions = scoreQuestion.AnswerOptions.Where(p=> (p.Value.Description != null) && (p.Value.Description.Trim() != "")).ToDictionary(kv=> kv.Key, kv=> kv.Value);
@@ -266,7 +267,19 @@ namespace HackathonWebApp.Controllers
             }
             return View(scoreQuestion);
         }
+        public ViewResult UpdateScoreQuestion(string id) {
+            var scoreQuestion = activeEvent.ScoringQuestions[id];
+            return View(scoreQuestion);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateScoreQuestion(string id, ScoreQuestion scoreQuestion)
+        {
+            // Set ID so it stays the same
+            scoreQuestion.Id = ObjectId.Parse(id);
 
+            // Forward input to creation method, which is updating the hackathon event.
+            return await CreateScoreQuestion(scoreQuestion);
+        }
 
         // Errors
         private void Errors(Task result)

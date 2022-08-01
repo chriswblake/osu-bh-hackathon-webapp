@@ -1,4 +1,4 @@
-﻿@model List<ScoreQuestion>
+@model List<ScoreQuestion>
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "Score Questions";
@@ -11,6 +11,7 @@
         <th>Title</th>
         <th>Description</th>
         <th>Answer Options</th>
+        <th>Actions</th>
     </tr>
     @foreach (ScoreQuestion scoreQuestion in scoreQuestions)
     {
@@ -22,6 +23,9 @@
                 {
                     <div>@answerOption.Score pts - @answerOption.Description</div>
                 }
+            </td>
+            <td>
+                <a class="btn btn-sm btn-primary" style="margin-bottom:5px;" asp-action="UpdateScoreQuestion" asp-route-id="@scoreQuestion.Id">Update</a>
             </td>
         </tr>
     }
