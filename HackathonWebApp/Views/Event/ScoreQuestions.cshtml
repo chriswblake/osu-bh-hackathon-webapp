@@ -1,4 +1,4 @@
-@model List<ScoreQuestion>
+﻿@model List<ScoreQuestion>
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "Score Questions";
@@ -26,6 +26,7 @@
             </td>
             <td>
                 <a class="btn btn-sm btn-primary" style="margin-bottom:5px;" asp-action="UpdateScoreQuestion" asp-route-id="@scoreQuestion.Id">Update</a>
+                <form asp-action="DeleteScoreQuestion" asp-route-id="@scoreQuestion.Id" method="post"><button type="submit" class="btn btn-sm btn-danger">Delete</button></form>
             </td>
         </tr>
     }

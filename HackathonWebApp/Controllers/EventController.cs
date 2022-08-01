@@ -280,7 +280,29 @@ namespace HackathonWebApp.Controllers
             // Forward input to creation method, which is updating the hackathon event.
             return await CreateScoreQuestion(scoreQuestion);
         }
+        public async Task<IActionResult> DeleteScoreQuestion(string id)
+        {
+            try
+            {
+                // Create change set
+                var updateDefinition = Builders<HackathonEvent>.Update.Unset("scoring_questions." + id);
 
+                // Update in DB
+                string eventId = activeEvent.Id.ToString();
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == ObjectId.Parse(eventId),
+                    updateDefinition
+                );
+
+                // Clear Active Event, so it is triggered to be refreshed on next request.
+                EventController.activeEvent = null;
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return RedirectToAction("ScoreQuestions");
+        }
         // Errors
         private void Errors(Task result)
         {
