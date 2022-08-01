@@ -16,6 +16,8 @@ namespace HackathonWebApp.Models
         [Required]
         public string Description {get; set; }
         [Required]
+        public string Group {get; set; }
+        [Required]
         public Dictionary<string, AnswerOption> AnswerOptions {get; set; }
     }
 

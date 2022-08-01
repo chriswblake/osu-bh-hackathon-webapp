@@ -30,6 +30,11 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" name="id" value="@scoreQuestion.Id">
                 <div class="form-group">
+                    <label asp-for="Group" class="control-label"></label>
+                    <input asp-for="Group" class="form-control" />
+                    <span asp-validation-for="Group" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <label asp-for="Title" class="control-label"></label>
                     <input asp-for="Title" class="form-control" />
                     <span asp-validation-for="Title" class="text-danger"></span>

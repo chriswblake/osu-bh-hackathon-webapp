@@ -3,36 +3,48 @@
     Layout = "_AdminLayout";
     ViewBag.Title = "Score Questions";
     var scoreQuestions = Model;
+
+    // Group Questions
+	var groupedQuestions = scoreQuestions.GroupBy(p => p.Group);//.Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
 }
 
-<h1 class="text-white">@ViewBag.Title</h1>
-<table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
-    <tr>
-        <th>Title</th>
-        <th>Description</th>
-        <th>Answer Options</th>
-        <th>Actions</th>
-    </tr>
-    @foreach (ScoreQuestion scoreQuestion in scoreQuestions)
-    {
-        <tr>
-            <td>@scoreQuestion.Title</td>
-            <td>@scoreQuestion.Description</td>
-            <td>
-                @foreach (var answerOption in scoreQuestion.AnswerOptions.Values)
-                {
-                    <div>@answerOption.Score pts - @answerOption.Description</div>
-                }
-            </td>
-            <td>
-                <a class="btn btn-sm btn-primary" style="margin-bottom:5px;" asp-action="UpdateScoreQuestion" asp-route-id="@scoreQuestion.Id">Update</a>
-                <form asp-action="DeleteScoreQuestion" asp-route-id="@scoreQuestion.Id" method="post"><button type="submit" class="btn btn-sm btn-danger">Delete</button></form>
-            </td>
-        </tr>
+<style>
+    .answer-option {
+        white-space: nowrap;
     }
-    <tr>
-    <td colspan="5">
-        <a asp-action="CreateScoreQuestion" class="btn btn-secondary">Add a Question</a>
-    </td>
-    </tr>
-</table>
+</style>
+
+<h1 class="text-white">@ViewBag.Title</h1>
+
+@foreach (var group in groupedQuestions)
+{
+    <h3 class="text-white">@group.Key</h3>
+    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Answer Options</th>
+            <th>Actions</th>
+        </tr>
+        @foreach (ScoreQuestion scoreQuestion in group)
+        {
+            <tr>
+                <td>@scoreQuestion.Title</td>
+                <td>@scoreQuestion.Description</td>
+                <td>
+                    @foreach (var answerOption in scoreQuestion.AnswerOptions.Values)
+                    {
+                        <div class="answer-option">@answerOption.Score pts - @answerOption.Description</div>
+                    }
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-primary" style="margin-bottom:5px;" asp-action="UpdateScoreQuestion" asp-route-id="@scoreQuestion.Id">Update</a>
+                    <form asp-action="DeleteScoreQuestion" asp-route-id="@scoreQuestion.Id" method="post"><button type="submit" class="btn btn-sm btn-danger">Delete</button></form>
+                </td>
+            </tr>
+        }
+    </table>
+}
+<a asp-action="CreateScoreQuestion" class="btn btn-secondary" style="margin: 0 0 50px 0;">Add a Question</a>
+
+
