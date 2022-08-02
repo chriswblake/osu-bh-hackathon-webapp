@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -324,6 +324,10 @@ namespace HackathonWebApp.Controllers
                 // Set ID if missing
                 if (scoringRole.Id == ObjectId.Empty)
                     scoringRole.Id = ObjectId.GenerateNewId();
+
+                // Check for no roles
+                if (scoringRole.ScoreQuestionsIds == null)
+                    scoringRole.ScoreQuestionsIds = new List<string>();
 
                 // Create change set
                 var key = scoringRole.Id.ToString();
