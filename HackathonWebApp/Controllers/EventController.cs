@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -348,6 +348,21 @@ namespace HackathonWebApp.Controllers
             }
             return View(scoringRole);
         }
+        public ViewResult UpdateScoringRole(string id) {
+            var scoringRole = activeEvent.ScoringRoles[id];
+            ViewBag.ScoringQuestions = EventController.activeEvent.ScoringQuestions;
+            return View(scoringRole);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateScoringRole(string id, ScoringRole scoringRole)
+        {
+            // Set ID so it stays the same
+            scoringRole.Id = ObjectId.Parse(id);
+
+            // Forward input to creation method, which is updating the hackathon event.
+            return await CreateScoringRole(scoringRole);
+        }
+
         // Errors
         private void Errors(Task result)
         {
