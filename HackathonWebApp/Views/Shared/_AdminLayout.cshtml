@@ -3,7 +3,16 @@
 }
 
 <style>
-
+    .left-nav .settings-header {
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .left-nav hr {
+        border-top: 1px solid var(--bh-green);
+        margin: 3px 0 3px 0;
+    }
 </style>
 
 <!-- Content Body -->
@@ -21,8 +30,33 @@
                     <hr/>
                 </center>
                 <!-- Links -->
-                <div class="leftnavbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="leftnavbar-collapse collapse d-sm-inline flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
+                        @* Accounts *@
+                        <li class="nav-item settings-header">
+                            Accounts
+                            <hr/>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="Users">
+                                <i class="fa-solid fa-users"></i>
+                                Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="Roles">
+                                <i class="fa-solid fa-id-badge"></i>
+                                Roles
+                            </a>
+                        </li>
+
+
+                        @* Events *@
+                        <li class="nav-item settings-header">
+                            Events
+                            <hr/>
+                        </li>
                         <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Index">
                                 <i class="fa-solid fa-gear"></i>
@@ -36,33 +70,28 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Event" asp-action="ScoreQuestions">
-                                <i class="fa-solid fa-clipboard-question"></i>
-                                Score Questions
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-controller="Admin" asp-action="Roles">
-                                <i class="fa-solid fa-id-badge"></i>
-                                Roles
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-controller="Admin" asp-action="Users">
-                                <i class="fa-solid fa-users"></i>
-                                Users
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Organizers">
                                 <i class="fa-solid fa-people-group"></i>
-                                Organizers
+                                Team
                             </a>
                         </li>
                         <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Sponsors">
                                 <i class="fa-solid fa-rectangle-ad"></i>
                                 Sponsors
+                            </a>
+                        </li>
+
+
+                        @* Voting *@
+                        <li class="nav-item settings-header">
+                            Voting
+                            <hr/>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="ScoreQuestions">
+                                <i class="fa-solid fa-clipboard-question"></i>
+                                Questions
                             </a>
                         </li>
                         
