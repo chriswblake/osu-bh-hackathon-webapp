@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -366,6 +366,31 @@ namespace HackathonWebApp.Controllers
             // Forward input to creation method, which is updating the hackathon event.
             return await CreateScoringRole(scoringRole);
         }
+        [HttpPost]
+        public async Task<IActionResult> DeleteScoringRole(string id)
+        {
+            try
+            {
+                // Create change set
+                var updateDefinition = Builders<HackathonEvent>.Update.Unset("scoring_roles." + id);
+
+                // Update in DB
+                string eventId = activeEvent.Id.ToString();
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == ObjectId.Parse(eventId),
+                    updateDefinition
+                );
+
+                // Clear Active Event, so it is triggered to be refreshed on next request.
+                EventController.activeEvent = null;
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return RedirectToAction("ScoringRoles");
+        }
+        
 
         // Errors
         private void Errors(Task result)

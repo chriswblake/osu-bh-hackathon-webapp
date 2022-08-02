@@ -44,6 +44,7 @@
             </td>
             <td>
                 <a class="btn btn-sm btn-primary" style="margin-bottom:5px;" asp-action="UpdateScoringRole" asp-route-id="@scoringRole.Id">Update</a>
+                <form asp-action="DeleteScoringRole" asp-route-id="@scoringRole.Id" method="post"><button type="submit" class="btn btn-sm btn-danger">Delete</button></form>
             </td>
         </tr>
     }
