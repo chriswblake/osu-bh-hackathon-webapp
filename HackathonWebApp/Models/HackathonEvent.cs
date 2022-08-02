@@ -33,6 +33,10 @@ namespace HackathonWebApp.Models
         [BsonElement("scoring_questions")]
         public Dictionary<string,ScoreQuestion> ScoringQuestions { get; set; } = new Dictionary<string, ScoreQuestion>();
 
+        [Required]
+        [BsonElement("scoring_roles")]
+        public Dictionary<string,ScoringRole> ScoringRoles { get; set; } = new Dictionary<string, ScoringRole>();
+
         // Fields that would need aggregated from other collections
         [BsonIgnore]
         public Dictionary<ObjectId, Team> Teams {get; set;} = new Dictionary<ObjectId, Team>();

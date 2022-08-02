@@ -1,0 +1,50 @@
+﻿@model List<ScoringRole>
+@{
+    Layout = "_AdminLayout";
+    ViewBag.Title = "Scoring Roles";
+    var scoringRoles = Model;
+    Dictionary<string, ScoreQuestion> scoringQuestions = ViewBag.ScoringQuestions;
+}
+
+<style>
+    .role-name {
+        font-size: large;
+    }
+    .role-description {
+        font-size: small;
+    }
+    .question-title {
+        font-size: large;
+    }
+    .question-description {
+        font-size: small;
+    }
+</style>
+
+<h1 class="text-white">@ViewBag.Title</h1>
+<table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
+    <tr>
+        <th>Role</th>
+        <th>Questions</th>
+    </tr>
+    @foreach (ScoringRole scoringRole in scoringRoles)
+    {   
+        <tr>
+            <td>
+                <div class="role-name">@scoringRole.Name</div>
+                <div class="role-description">@scoringRole.Description</div>
+            </td>
+            <td>
+                @foreach (string scoreQuestionId in scoringRole.ScoreQuestionsIds)
+                {
+                    var scoreQuestion = scoringQuestions[scoreQuestionId];
+                    <div class="question-title">@scoreQuestion.Title</div>
+                    <div class="question-description">@scoreQuestion.Description</div>
+                }
+            </td>
+        </tr>
+    }
+</table>
+<a asp-action="CreateScoringRole" class="btn btn-secondary" style="margin: 0 0 50px 0;">Add a Role</a>
+
+

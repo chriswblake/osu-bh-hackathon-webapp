@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -302,6 +302,51 @@ namespace HackathonWebApp.Controllers
                 Errors(e);
             }
             return RedirectToAction("ScoreQuestions");
+        }
+        
+        // Scoring Roles
+        public ViewResult ScoringRoles()
+        {
+            var scoringRoles = EventController.activeEvent.ScoringRoles.Values.ToList();
+            ViewBag.ScoringQuestions = EventController.activeEvent.ScoringQuestions;
+            return View(scoringRoles);
+        }
+        public IActionResult CreateScoringRole()
+        {
+            ViewBag.ScoringQuestions = EventController.activeEvent.ScoringQuestions;
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateScoringRole(ScoringRole scoringRole)
+        {
+            try
+            {
+                // Set ID if missing
+                if (scoringRole.Id == ObjectId.Empty)
+                    scoringRole.Id = ObjectId.GenerateNewId();
+
+                // Create change set
+                var key = scoringRole.Id.ToString();
+                var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.ScoringRoles[key], scoringRole);
+
+                // Update in DB
+                string eventId = activeEvent.Id.ToString();
+                await eventCollection.FindOneAndUpdateAsync(
+                   s => s.Id == ObjectId.Parse(eventId),
+                    updateDefinition
+                );
+
+                // Clear Active Event, so it is triggered to be refreshed on next request.
+                EventController.activeEvent = null;
+
+                // Go back to list
+                return RedirectToAction("ScoringRoles");
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return View(scoringRole);
         }
         // Errors
         private void Errors(Task result)
