@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -42,25 +42,25 @@ namespace HackathonWebApp.Controllers
             get {
                 if (ScoringController._exampleTeams == null)
                 {
-                    var objectId1 = ObjectId.GenerateNewId();
-                    var objectId2 = ObjectId.GenerateNewId();
+                    var objectId1 = new ObjectId("62ea9d525e41bf4189147387");
+                    var objectId2 = new ObjectId("62ea9d525e41bf4189147386");
                     ScoringController._exampleTeams =  new Dictionary<string, Team> {
                         {objectId1.ToString(), new Team() {
                             Id = objectId1,
                             Name="Team Won",
                             TeamMembers = new Dictionary<Guid, ApplicationUser>() {
-                                {Guid.NewGuid(), new ApplicationUser() {FirstName="John", LastName="Smith", Email="john.smith@gmail.com"}},
-                                {Guid.NewGuid(), new ApplicationUser() {FirstName="Susan", LastName="James", Email="susan@gmail.com"}},
-                                {Guid.NewGuid(), new ApplicationUser() {FirstName="David", LastName="Woams", Email="davidw@gmail.com"}}
+                                {new Guid("dee27cff-7c95-4427-90ce-bd041388c1c9"), new ApplicationUser() {FirstName="John", LastName="Smith", Email="john.smith@gmail.com"}},
+                                {new Guid("745c87e0-93f7-44e2-92fe-1082256ab086"), new ApplicationUser() {FirstName="Susan", LastName="James", Email="susan@gmail.com"}},
+                                {new Guid("37f12881-c4bb-4851-be29-4f133db4e5e8"), new ApplicationUser() {FirstName="David", LastName="Woams", Email="davidw@gmail.com"}}
                             }
                         }},
                         {objectId2.ToString(), new Team() {
                             Id = objectId2,
                             Name="Dos Noches",
                             TeamMembers = new Dictionary<Guid, ApplicationUser>() {
-                                {Guid.NewGuid(), new ApplicationUser() {FirstName="Brooks", LastName="Angel", Email="Brangel.smith@gmail.com"}},
-                                {Guid.NewGuid(), new ApplicationUser() {FirstName="Carrie", LastName="Dorae", Email="cardo@gmail.com"}},
-                                {Guid.NewGuid(), new ApplicationUser() {FirstName="William", LastName="Bracky", Email="willb@gmail.com"}}
+                                {new Guid("8d2f31d2-1081-4e60-b2ee-e2d5378483b0"), new ApplicationUser() {FirstName="Brooks", LastName="Angel", Email="Brangel.smith@gmail.com"}},
+                                {new Guid("992d805b-9e1e-46e9-91ad-9475e194afbc"), new ApplicationUser() {FirstName="Carrie", LastName="Dorae", Email="cardo@gmail.com"}},
+                                {new Guid("908f7d24-edb6-48f7-88ca-d2feef5b83fe"), new ApplicationUser() {FirstName="William", LastName="Bracky", Email="willb@gmail.com"}}
                             }
                         }},
                     };
@@ -92,6 +92,7 @@ namespace HackathonWebApp.Controllers
             // HackathonEvent does not have a list of teams yet. Using hardcoded example teams for development.
             ViewBag.AllTeams = this.exampleTeams;
             ViewBag.ActiveTeam = this.activeTeam;
+            ViewBag.ScoringSubmissions = this.activeEvent.ScoringSubmissions;
             return View();
         }
         [HttpPost]
@@ -158,8 +159,8 @@ namespace HackathonWebApp.Controllers
                 updateDefinition
             );
 
-            // Clear Active Event, so it is triggered to be refreshed on next request.
-            this.activeEvent = null;
+            // Update in memory
+            this.activeEvent.ScoringSubmissions.Add(key, scoringSubmission);
 
             return RedirectToAction("SubmitScore");
         }
