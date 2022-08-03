@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -147,7 +147,7 @@ namespace HackathonWebApp.Controllers
             );
 
             // Update in memory
-            this.activeEvent.ScoringSubmissions.Add(key, scoringSubmission);
+            this.activeEvent.ScoringSubmissions[key] = scoringSubmission;
 
             return RedirectToAction("SubmitScore");
         }
