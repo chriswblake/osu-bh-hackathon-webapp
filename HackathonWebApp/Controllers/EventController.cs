@@ -391,6 +391,38 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("ScoringRoles");
         }
         
+        // User Scoring Roles
+        public ViewResult UserScoringRoles()
+        {
+            ViewBag.AppUsers = this.userManager.Users.ToList();
+            ViewBag.ScoringRoles = EventController.activeEvent.ScoringRoles;
+            ViewBag.UserScoringRoles = EventController.activeEvent.UserScoringRoles;
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateUserScoringRoles(Dictionary<string,string> userScoringRoles)
+        {
+            try
+            {
+                // Create change set
+                var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.UserScoringRoles, userScoringRoles);
+
+                // Update in DB
+                string eventId = activeEvent.Id.ToString();
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == ObjectId.Parse(eventId),
+                    updateDefinition
+                );
+
+                // Clear Active Event, so it is triggered to be refreshed on next request.
+                EventController.activeEvent = null;
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return RedirectToAction("UserScoringRoles");
+        }
 
         // Errors
         private void Errors(Task result)

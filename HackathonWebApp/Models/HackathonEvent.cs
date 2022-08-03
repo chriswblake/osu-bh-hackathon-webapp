@@ -37,6 +37,13 @@ namespace HackathonWebApp.Models
         [BsonElement("scoring_roles")]
         public Dictionary<string,ScoringRole> ScoringRoles { get; set; } = new Dictionary<string, ScoringRole>();
 
+        /// <summary>
+        /// A mapping of ApplicationUser Guids to ScoringRole ObjectIds, but stored as strings. Each user may have only 1 role.
+        /// </summary>
+        [Required]
+        [BsonElement("user_scoring_roles")]
+        public Dictionary<string,string> UserScoringRoles { get; set; } = new Dictionary<string, string>();
+
         // Fields that would need aggregated from other collections
         [BsonIgnore]
         public Dictionary<ObjectId, Team> Teams {get; set;} = new Dictionary<ObjectId, Team>();
