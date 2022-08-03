@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -20,6 +20,7 @@ namespace HackathonWebApp.Controllers
         private readonly ILogger<EventController> _logger;
         private UserManager<ApplicationUser> userManager;
         private IMongoCollection<HackathonEvent> eventCollection;
+        private Team activeTeam;
 
         // Constructor
         public ScoringController(ILogger<EventController> logger, UserManager<ApplicationUser> userManager, IMongoDatabase database)
@@ -41,6 +42,61 @@ namespace HackathonWebApp.Controllers
                 var eventController = (EventController) this.HttpContext.RequestServices.GetService(typeof(EventController));
                 eventController.activeEvent = value;
             }
+        }
+
+        // Submit Score
+        public IActionResult Index () {
+            return RedirectToAction("SubmitScore");
+        }
+        [Authorize]
+        public ViewResult SubmitScore () {
+            // Get User info
+            string userName = User.Identity.Name;
+            ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+
+            // Get User's Scoring Role
+            var scoringRoleId = this.activeEvent.UserScoringRoles[appUser.Id.ToString()];
+            var scoringRole = this.activeEvent.ScoringRoles[scoringRoleId];
+
+            // Get only related questions to this role
+            var scoringQuestions = this.activeEvent.ScoringQuestions;
+            var roleScoringQuestions = scoringRole.ScoreQuestionsIds.Select(id => scoringQuestions[id]).ToList();
+
+            // Share active team for reference
+            ViewBag.RoleScoringQuestions = roleScoringQuestions;
+            ViewBag.ActiveTeam = this.activeTeam;
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> SubmitScore(Dictionary<string,int> scores)
+        {
+            // Get User info
+            string userName = User.Identity.Name;
+            ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+
+            // Create Project Score object
+            var projectScore = new ScoringSubmission() {
+                Id = ObjectId.GenerateNewId(),
+                ProjectId = this.activeTeam.Id.ToString(),
+                UserId = appUser.Id.ToString(),
+                Scores = scores
+            };
+
+            // Create change set
+            var key = projectScore.UserId + "+" + projectScore.UserId;
+            var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.ProjectScores[key], projectScore);
+
+            // Update in DB
+            string eventId = activeEvent.Id.ToString();
+            await eventCollection.FindOneAndUpdateAsync(
+                s => s.Id == ObjectId.Parse(eventId),
+                updateDefinition
+            );
+
+            // Clear Active Event, so it is triggered to be refreshed on next request.
+            this.activeEvent = null;
+
+            return RedirectToAction("SubmitScore");
         }
 
         // Score Questions
