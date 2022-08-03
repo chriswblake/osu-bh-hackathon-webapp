@@ -1,0 +1,60 @@
+﻿@model HackathonWebApp.Models.ScoringRole
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Update Scoring Role";
+    ScoringRole scoringRole = Model;
+    Dictionary<string, ScoreQuestion> scoringQuestions = ViewBag.ScoringQuestions;
+}
+<div class="container text-white">
+    <h1>Update Scoring Role</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="UpdateScoringRole" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" name="id" value="@scoringRole.Id">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Questions
+                    <table>
+                    @foreach (var scoreQuestion in scoringQuestions.Values)
+                    {
+                        <tr>
+                            @if(scoringRole.ScoreQuestionsIds.Contains(scoreQuestion.Id.ToString()))
+                            {
+                                <td><input type="checkbox" name="ScoreQuestionsIds" value="@scoreQuestion.Id" checked></td>
+                            }else
+                            {
+                                <td><input type="checkbox" name="ScoreQuestionsIds" value="@scoreQuestion.Id"></td>
+                            }
+                            <td>@scoreQuestion.Title</td>
+                        </tr>
+                    }
+                    </table>
+                </div>
+                
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="ScoringRoles">Back to List</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

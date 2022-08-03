@@ -3,7 +3,16 @@
 }
 
 <style>
-
+    .left-nav .settings-header {
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .left-nav hr {
+        border-top: 1px solid var(--bh-green);
+        margin: 3px 0 3px 0;
+    }
 </style>
 
 <!-- Content Body -->
@@ -21,8 +30,33 @@
                     <hr/>
                 </center>
                 <!-- Links -->
-                <div class="leftnavbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="leftnavbar-collapse collapse d-sm-inline flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
+                        @* Accounts *@
+                        <li class="nav-item settings-header">
+                            Accounts
+                            <hr/>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="Users">
+                                <i class="fa-solid fa-users"></i>
+                                Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="Roles">
+                                <i class="fa-solid fa-id-badge"></i>
+                                Roles
+                            </a>
+                        </li>
+
+
+                        @* Events *@
+                        <li class="nav-item settings-header">
+                            Events
+                            <hr/>
+                        </li>
                         <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Index">
                                 <i class="fa-solid fa-gear"></i>
@@ -36,21 +70,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Admin" asp-action="Roles">
-                                <i class="fa-solid fa-id-badge"></i>
-                                Roles
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-controller="Admin" asp-action="Users">
-                                <i class="fa-solid fa-users"></i>
-                                Users
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Organizers">
                                 <i class="fa-solid fa-people-group"></i>
-                                Organizers
+                                Team
                             </a>
                         </li>
                         <li class="nav-item">
@@ -59,6 +81,43 @@
                                 Sponsors
                             </a>
                         </li>
+
+                        @* Scoring *@
+                        <li class="nav-item settings-header">
+                            Scoring
+                            <hr/>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Scoring" asp-action="ScoringDashboard">
+                                <i class="fa-solid fa-square-poll-vertical"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Scoring" asp-action="ScoreQuestions">
+                                <i class="fa-solid fa-clipboard-question"></i>
+                                Questions
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Scoring" asp-action="ScoringRoles">
+                                <i class="fa-solid fa-address-book"></i>
+                                Role Types
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Scoring" asp-action="UserScoringRoles">
+                                <i class="fa-solid fa-user-check"></i>
+                                User Roles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Scoring" asp-action="SubmitScore">
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                                Submit Score
+                            </a>
+                        </li>
+                        
                     </ul>
                 </div>
             </nav>

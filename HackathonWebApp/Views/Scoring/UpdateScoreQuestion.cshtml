@@ -1,0 +1,84 @@
+﻿@model HackathonWebApp.Models.ScoreQuestion
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Update Score Question";
+    var scoreQuestion = Model;
+    
+    // Set missing keys to null
+    var answerOptions = scoreQuestion.AnswerOptions;
+    if (!answerOptions.ContainsKey("0")) { answerOptions["0"] = new AnswerOption() { Score = 0 } ; }
+    if (!answerOptions.ContainsKey("1")) { answerOptions["1"] = new AnswerOption() { Score = 1 } ; }
+    if (!answerOptions.ContainsKey("2")) { answerOptions["2"] = new AnswerOption() { Score = 2 } ; }
+    if (!answerOptions.ContainsKey("3")) { answerOptions["3"] = new AnswerOption() { Score = 3 } ; }
+    if (!answerOptions.ContainsKey("4")) { answerOptions["4"] = new AnswerOption() { Score = 4 } ; }
+    if (!answerOptions.ContainsKey("5")) { answerOptions["5"] = new AnswerOption() { Score = 5 } ; }
+    var a = 1;
+}
+<style>
+    .answer-option {
+        display: inline-block;
+        width: 85%;
+        margin: 5px 0 0 0;
+    }
+</style>
+<div class="container text-white">
+    <h1>Update Score Question</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="UpdateScoreQuestion" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" name="id" value="@scoreQuestion.Id">
+                <div class="form-group">
+                    <label asp-for="Group" class="control-label"></label>
+                    <input asp-for="Group" class="form-control" />
+                    <span asp-validation-for="Group" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    Answer Options<br/>
+                    0 pts <input type="hidden" name="AnswerOptions[0].Score" value="0"/>
+                    <input name="AnswerOptions[0].Description" class="form-control answer-option" value='@answerOptions["0"].Description'/><br/>
+
+                    1 pts <input type="hidden" name="AnswerOptions[1].Score" value="1"/>
+                    <input name="AnswerOptions[1].Description" class="form-control answer-option" value='@answerOptions["1"].Description'/><br/>
+
+                    2 pts <input type="hidden" name="AnswerOptions[2].Score" value="2"/>
+                    <input name="AnswerOptions[2].Description" class="form-control answer-option" value='@answerOptions["2"].Description'/><br/>
+
+                    3 pts <input type="hidden" name="AnswerOptions[3].Score" value="3"/>
+                    <input name="AnswerOptions[3].Description" class="form-control answer-option" value='@answerOptions["3"].Description'/><br/>
+
+                    4 pts <input type="hidden" name="AnswerOptions[4].Score" value="4"/>
+                    <input name="AnswerOptions[4].Description" class="form-control answer-option" value='@answerOptions["4"].Description'/><br/>
+
+                    5 pts <input type="hidden" name="AnswerOptions[5].Score" value="5"/>
+                    <input name="AnswerOptions[5].Description" class="form-control answer-option" value='@answerOptions["5"].Description'/><br/>
+                    Note: Blanks are ignored.<br/>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Update" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="ScoreQuestions">Back to List</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
