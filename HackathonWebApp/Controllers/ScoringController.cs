@@ -75,7 +75,7 @@ namespace HackathonWebApp.Controllers
             ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
 
             // Create Project Score object
-            var projectScore = new ScoringSubmission() {
+            var scoringSubmission = new ScoringSubmission() {
                 Id = ObjectId.GenerateNewId(),
                 ProjectId = this.activeTeam.Id.ToString(),
                 UserId = appUser.Id.ToString(),
@@ -83,8 +83,8 @@ namespace HackathonWebApp.Controllers
             };
 
             // Create change set
-            var key = projectScore.UserId + "+" + projectScore.UserId;
-            var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.ProjectScores[key], projectScore);
+            var key = scoringSubmission.ProjectId + ", " + scoringSubmission.UserId;
+            var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.ScoringSubmissions[key], scoringSubmission);
 
             // Update in DB
             string eventId = activeEvent.Id.ToString();

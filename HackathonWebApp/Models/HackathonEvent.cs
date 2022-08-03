@@ -46,7 +46,7 @@ namespace HackathonWebApp.Models
 
         [Required]
         [BsonElement("scoring_submissions")]
-        public Dictionary<string,ScoringSubmission> ProjectScores { get; set; } = new Dictionary<string, ScoringSubmission>();
+        public Dictionary<string,ScoringSubmission> ScoringSubmissions { get; set; } = new Dictionary<string, ScoringSubmission>();
 
 
         // Fields that would need aggregated from other collections
