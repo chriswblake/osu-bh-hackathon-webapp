@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace HackathonWebApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class ScoringController : Controller
     {
         // Class Fields
@@ -86,31 +86,9 @@ namespace HackathonWebApp.Controllers
                 ScoringController._activeTeam = value;
             }
         }
-
-        // Dashboard
-        public ViewResult ScoringDashboard () {
-            // HackathonEvent does not have a list of teams yet. Using hardcoded example teams for development.
-            ViewBag.AllTeams = this.exampleTeams;
-            ViewBag.ActiveTeam = this.activeTeam;
-            ViewBag.ScoringSubmissions = this.activeEvent.ScoringSubmissions;
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> SetActiveTeam(string activeTeamId)
-        {
-            if (activeTeamId != "null") {
-                // Find the actual team using the id
-                Team team = this.exampleTeams[activeTeamId];
-                // Set this team as the active team for scoring.
-                this.activeTeam = team;
-            }else {
-                // Set the active team to none.
-                this.activeTeam = null;
-            }
-            return RedirectToAction("ScoringDashboard");
-        }
-
-        // Submit Score
+        
+        // Submit Score (this is the only area that non-admins can access)
+        [Authorize]
         public IActionResult Index () {
             return RedirectToAction("SubmitScore");
         }
@@ -133,6 +111,7 @@ namespace HackathonWebApp.Controllers
             ViewBag.ActiveTeam = this.activeTeam;
             return View();
         }
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> SubmitScore(Dictionary<string,int> scores)
         {
@@ -165,13 +144,41 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("SubmitScore");
         }
 
+        // Dashboard
+        [Authorize(Roles = "Admin")]
+        public ViewResult ScoringDashboard () {
+            // HackathonEvent does not have a list of teams yet. Using hardcoded example teams for development.
+            ViewBag.AllTeams = this.exampleTeams;
+            ViewBag.ActiveTeam = this.activeTeam;
+            ViewBag.ScoringSubmissions = this.activeEvent.ScoringSubmissions;
+            return View();
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> SetActiveTeam(string activeTeamId)
+        {
+            if (activeTeamId != "null") {
+                // Find the actual team using the id
+                Team team = this.exampleTeams[activeTeamId];
+                // Set this team as the active team for scoring.
+                this.activeTeam = team;
+            }else {
+                // Set the active team to none.
+                this.activeTeam = null;
+            }
+            return RedirectToAction("ScoringDashboard");
+        }
+
         // Score Questions
+        [Authorize(Roles = "Admin")]
         public ViewResult ScoreQuestions()
         {
             var scoreQuestions = this.activeEvent.ScoringQuestions.Values.ToList();
             return View(scoreQuestions);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateScoreQuestion() => View();
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateScoreQuestion(ScoreQuestion scoreQuestion)
         {
@@ -207,10 +214,12 @@ namespace HackathonWebApp.Controllers
             }
             return View(scoreQuestion);
         }
+        [Authorize(Roles = "Admin")]
         public ViewResult UpdateScoreQuestion(string id) {
             var scoreQuestion = activeEvent.ScoringQuestions[id];
             return View(scoreQuestion);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> UpdateScoreQuestion(string id, ScoreQuestion scoreQuestion)
         {
@@ -220,6 +229,7 @@ namespace HackathonWebApp.Controllers
             // Forward input to creation method, which is updating the hackathon event.
             return await CreateScoreQuestion(scoreQuestion);
         }
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteScoreQuestion(string id)
         {
             try
@@ -245,17 +255,20 @@ namespace HackathonWebApp.Controllers
         }
         
         // Scoring Roles
+        [Authorize(Roles = "Admin")]
         public ViewResult ScoringRoles()
         {
             var scoringRoles = this.activeEvent.ScoringRoles.Values.ToList();
             ViewBag.ScoringQuestions = this.activeEvent.ScoringQuestions;
             return View(scoringRoles);
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult CreateScoringRole()
         {
             ViewBag.ScoringQuestions = this.activeEvent.ScoringQuestions;
             return View();
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateScoringRole(ScoringRole scoringRole)
         {
@@ -292,11 +305,13 @@ namespace HackathonWebApp.Controllers
             }
             return View(scoringRole);
         }
+        [Authorize(Roles = "Admin")]
         public ViewResult UpdateScoringRole(string id) {
             var scoringRole = activeEvent.ScoringRoles[id];
             ViewBag.ScoringQuestions = this.activeEvent.ScoringQuestions;
             return View(scoringRole);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> UpdateScoringRole(string id, ScoringRole scoringRole)
         {
@@ -306,6 +321,7 @@ namespace HackathonWebApp.Controllers
             // Forward input to creation method, which is updating the hackathon event.
             return await CreateScoringRole(scoringRole);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> DeleteScoringRole(string id)
         {
@@ -332,6 +348,7 @@ namespace HackathonWebApp.Controllers
         }
         
         // User Scoring Roles
+        [Authorize(Roles = "Admin")]
         public ViewResult UserScoringRoles()
         {
             ViewBag.AppUsers = this.userManager.Users.ToList();
@@ -339,6 +356,7 @@ namespace HackathonWebApp.Controllers
             ViewBag.UserScoringRoles = this.activeEvent.UserScoringRoles;
             return View();
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> UpdateUserScoringRoles(Dictionary<string,string> userScoringRoles)
         {
