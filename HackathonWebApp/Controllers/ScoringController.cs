@@ -98,17 +98,25 @@ namespace HackathonWebApp.Controllers
             string userName = User.Identity.Name;
             ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
 
-            // Get User's Scoring Role
-            var scoringRoleId = this.activeEvent.UserScoringRoles[appUser.Id.ToString()];
-            var scoringRole = this.activeEvent.ScoringRoles[scoringRoleId];
+            try {
+                // Get User's Scoring Role
+                var scoringRoleId = this.activeEvent.UserScoringRoles[appUser.Id.ToString()];
+                var scoringRole = this.activeEvent.ScoringRoles[scoringRoleId];
 
-            // Get only related questions to this role
-            var scoringQuestions = this.activeEvent.ScoringQuestions;
-            var roleScoringQuestions = scoringRole.ScoreQuestionsIds.Select(id => scoringQuestions[id]).ToList();
+                // Get only related questions to this role
+                var scoringQuestions = this.activeEvent.ScoringQuestions;
+                var roleScoringQuestions = scoringRole.ScoreQuestionsIds.Select(id => scoringQuestions[id]).ToList();
 
-            // Share active team for reference
-            ViewBag.RoleScoringQuestions = roleScoringQuestions;
-            ViewBag.ActiveTeam = this.activeTeam;
+                // Share active team for reference
+                ViewBag.RoleScoringQuestions = roleScoringQuestions;
+                ViewBag.ActiveTeam = this.activeTeam;
+            } catch (Exception e) {
+                // Set Empty
+                ViewBag.RoleScoringQuestions = null;
+                ViewBag.ActiveTeam = null;
+                // Provide error information
+                this.Errors(e);
+            }
             return View();
         }
         [Authorize]
