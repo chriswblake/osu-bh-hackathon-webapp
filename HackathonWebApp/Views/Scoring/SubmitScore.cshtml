@@ -43,50 +43,58 @@
         cursor: pointer;
     }
 </style>
-
-<center>
-<div class="text-white col-xs-12 col-sm-10 col-md-7 col-lg-6 col-xl-4" style="margin-bottom:75px; text-align:left;">
+<div class="text-white" style="margin-bottom:75px;">
+    <center>
     <h1>Submit Score</h1>
-
-    <div class="submission-info">
-        <div>You are submitting a score for "@activeTeam.Name".</div>
-        <div>
-            @foreach (ApplicationUser appUser in activeTeam.TeamMembers.Values)
-            {
-                <div>- @appUser.FirstName @appUser.LastName</div>
-            }
+    @if (activeTeam != null)
+    {
+    <div class="col-xs-12 col-sm-10 col-md-7 col-lg-6 col-xl-4" style="text-align:left;">
+        @* Active Team *@
+        <div class="submission-info">
+            <div>You are submitting a score for "@activeTeam.Name".</div>
+            <div>
+                @foreach (ApplicationUser appUser in activeTeam.TeamMembers.Values)
+                {
+                    <div>- @appUser.FirstName @appUser.LastName</div>
+                }
+            </div>
+            <a href="/Scoring/SubmitScore" class="btn btn-secondary btn-lg btn-block">Refresh</a>
         </div>
+
+        @* Questions *@
+        <form asp-action="SubmitScore" enctype="multipart/form-data">
+            @foreach (var scoreQuestion in scoreQuestions)
+            {
+                <div class="question-title">@scoreQuestion.Title</div>
+                <div class="question-card">
+                    <div class="question-description">@scoreQuestion.Description</div>
+                    <div>
+                        @foreach (var answerOption in scoreQuestion.AnswerOptions.Values)
+                        {
+                            <div class="answer-option">
+                                <input type="radio" name="scores[@scoreQuestion.Id]" value="@answerOption.Score">
+                                @answerOption.Score - @answerOption.Description
+
+                            </div>
+
+                            
+                        }
+                    </div>
+                </div>
+            }
+            <input type="submit" value="Submit" class="btn btn-primary btn-lg btn-block" />
+        </form>
+    </div>
+    }else
+    {
+    <div class="col-xs-12 col-sm-10 col-md-7 col-lg-6 col-xl-4">
+        Submitting scores is currently disabled.<br/>
+        Please check back when the administrator says judging has started.<br/>
         <a href="/Scoring/SubmitScore" class="btn btn-secondary btn-lg btn-block">Refresh</a>
     </div>
-
-    <div>
-    </div>
-
-    <form asp-action="SubmitScore" enctype="multipart/form-data">
-        @foreach (var scoreQuestion in scoreQuestions)
-        {
-            <div class="question-title">@scoreQuestion.Title</div>
-            <div class="question-card">
-                <div class="question-description">@scoreQuestion.Description</div>
-                <div>
-                    @foreach (var answerOption in scoreQuestion.AnswerOptions.Values)
-                    {
-                        <div class="answer-option">
-                            <input type="radio" name="scores[@scoreQuestion.Id]" value="@answerOption.Score">
-                            @answerOption.Score - @answerOption.Description
-
-                        </div>
-
-                        
-                    }
-                </div>
-            </div>
-        }
-        <input type="submit" value="Submit" class="btn btn-primary btn-lg btn-block" />
-    </form>
+    }
+    </center>
 </div>
-</center>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
