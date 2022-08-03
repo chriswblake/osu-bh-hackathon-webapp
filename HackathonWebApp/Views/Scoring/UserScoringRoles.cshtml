@@ -40,19 +40,19 @@
                 <td>
                     <div class="user-name">@appUser.FirstName @appUser.LastName</div>
                     <div class="user-subtext">@appUser.Email</div>
+                    <div class="user-subtext" style="font-size: xx-small">@appUser.Id</div>
                 </td>
                 @* Build Selector *@
                 <td>
                     <select name="UserScoringRoles[@appUser.Id]">
+                        <option style="display:none;" disabled selected>-- Please select a role -- </option>")
                         @foreach (var scoringRole in scoringRoles.Values)
-                        {
-                            @if(scoringRole.Id.ToString() == userScoringRoles[userScoringRoleId])
-                            {
-                                <option value="@scoringRole.Id" selected><b>@scoringRole.Name</b> - @scoringRole.Description</option>
-                            }else
-                            {
-                                <option value="@scoringRole.Id"><b>@scoringRole.Name</b> - @scoringRole.Description</option>
+                        {   
+                            var isSelectedAttr = "";
+                            if (userScoringRoles.ContainsKey(userScoringRoleId) && (scoringRole.Id.ToString() == userScoringRoles[userScoringRoleId])) {
+                                isSelectedAttr = "selected";
                             }
+                            @Html.Raw($"<option value='{scoringRole.Id}' {isSelectedAttr}>{scoringRole.Name} - {scoringRole.Description}</option>")
                         }
                     </select>
                 </td>
