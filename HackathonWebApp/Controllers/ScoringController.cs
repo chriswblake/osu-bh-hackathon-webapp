@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,11 +16,14 @@ namespace HackathonWebApp.Controllers
     [Authorize(Roles = "Admin")]
     public class ScoringController : Controller
     {
+        // Class Fields
+        private static Dictionary<string, Team> _exampleTeams=null;
+        private static Team _activeTeam;
+
         // Fields
         private readonly ILogger<EventController> _logger;
         private UserManager<ApplicationUser> userManager;
         private IMongoCollection<HackathonEvent> eventCollection;
-        private Team activeTeam;
 
         // Constructor
         public ScoringController(ILogger<EventController> logger, UserManager<ApplicationUser> userManager, IMongoDatabase database)
@@ -33,6 +36,38 @@ namespace HackathonWebApp.Controllers
         }
 
         // Properties
+        private Dictionary<string, Team> exampleTeams {
+            /// This is a tempory method for development. The current database does not store any information about teams.
+            /// Once the DB has team information, it should be pulled dynamically.
+            get {
+                if (ScoringController._exampleTeams == null)
+                {
+                    var objectId1 = ObjectId.GenerateNewId();
+                    var objectId2 = ObjectId.GenerateNewId();
+                    ScoringController._exampleTeams =  new Dictionary<string, Team> {
+                        {objectId1.ToString(), new Team() {
+                            Id = objectId1,
+                            Name="Team Won",
+                            TeamMembers = new Dictionary<Guid, ApplicationUser>() {
+                                {Guid.NewGuid(), new ApplicationUser() {FirstName="John", LastName="Smith", Email="john.smith@gmail.com"}},
+                                {Guid.NewGuid(), new ApplicationUser() {FirstName="Susan", LastName="James", Email="susan@gmail.com"}},
+                                {Guid.NewGuid(), new ApplicationUser() {FirstName="David", LastName="Woams", Email="davidw@gmail.com"}}
+                            }
+                        }},
+                        {objectId2.ToString(), new Team() {
+                            Id = objectId2,
+                            Name="Dos Noches",
+                            TeamMembers = new Dictionary<Guid, ApplicationUser>() {
+                                {Guid.NewGuid(), new ApplicationUser() {FirstName="Brooks", LastName="Angel", Email="Brangel.smith@gmail.com"}},
+                                {Guid.NewGuid(), new ApplicationUser() {FirstName="Carrie", LastName="Dorae", Email="cardo@gmail.com"}},
+                                {Guid.NewGuid(), new ApplicationUser() {FirstName="William", LastName="Bracky", Email="willb@gmail.com"}}
+                            }
+                        }},
+                    };
+                }
+                return ScoringController._exampleTeams;
+            }
+        }
         private HackathonEvent activeEvent {
             get {
                 var eventController = (EventController) this.HttpContext.RequestServices.GetService(typeof(EventController));
@@ -42,6 +77,36 @@ namespace HackathonWebApp.Controllers
                 var eventController = (EventController) this.HttpContext.RequestServices.GetService(typeof(EventController));
                 eventController.activeEvent = value;
             }
+        }
+        public Team activeTeam {
+            get {
+                return ScoringController._activeTeam;
+            }
+            set {
+                ScoringController._activeTeam = value;
+            }
+        }
+
+        // Dashboard
+        public ViewResult ScoringDashboard () {
+            // HackathonEvent does not have a list of teams yet. Using hardcoded example teams for development.
+            ViewBag.AllTeams = this.exampleTeams;
+            ViewBag.ActiveTeam = this.activeTeam;
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> SetActiveTeam(string activeTeamId)
+        {
+            if (activeTeamId != "null") {
+                // Find the actual team using the id
+                Team team = this.exampleTeams[activeTeamId];
+                // Set this team as the active team for scoring.
+                this.activeTeam = team;
+            }else {
+                // Set the active team to none.
+                this.activeTeam = null;
+            }
+            return RedirectToAction("ScoringDashboard");
         }
 
         // Submit Score
