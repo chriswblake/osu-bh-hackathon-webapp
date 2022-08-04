@@ -15,7 +15,7 @@
             "console": "internalConsole",
             "stopAtEntry": false,
             "env": {
-                "ASPNETCORE_URLS": "https://*:5001",
+                "ASPNETCORE_URLS": "https://localhost:5001",
                 "ASPNETCORE_ENVIRONMENT": "Production"
             },
             "envFile": "${workspaceFolder}/prod.env"
@@ -31,7 +31,7 @@
             "console": "internalConsole",
             "stopAtEntry": false,
             "env": {
-                "ASPNETCORE_URLS": "https://*:5001",
+                "ASPNETCORE_URLS": "https://localhost:5001",
                 "ASPNETCORE_ENVIRONMENT": "Development",
             },
             "envFile": "${workspaceFolder}/develop.env"
