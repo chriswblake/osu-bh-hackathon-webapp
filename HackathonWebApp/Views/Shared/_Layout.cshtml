@@ -40,13 +40,9 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Sponsors">Sponsors</a>
                         </li>
-                        @*<li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Prizes">Prizes</a>
-                        </li>*@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Team">Team</a>
                         </li>
-
                         <li class="nav-item">
                             @if (User?.Identity?.IsAuthenticated ?? false)
                             {
@@ -71,38 +67,9 @@
                             }
                             else
                             {
-                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login" style="color:var(--bh-light-green);">Sign In</a>
+                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login" style="color:var(--bh-light-green); white-space:nowrap;">Sign In</a>
                             }
                         </li>
-                        @*
-                        @{
-                            if (User?.IsInRole("Admin") ?? false)
-                            {
-                                <li>
-                                    <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin</a>
-                                </li>
-                            }
-                        }
-                        *@
-
-                        @*@{
-                            if (User?.Identity?.IsAuthenticated ?? false)
-                            {
-                                    <li class="nav-item">
-                                        <a class="nav-link" asp-controller="Account" asp-action="Index">@User.Identity.Name</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a asp-controller="Account" asp-action="Logout" class="btn btn-danger">Logout</a>
-                                    </li>
-                            }
-                            else
-                            {
-                                    <li class="nav-item">
-                                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
-                                    </li>
-                            }
-                        }
-*@
                     </ul>
                 </div>
             </div>
