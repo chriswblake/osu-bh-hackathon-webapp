@@ -47,12 +47,18 @@
     .sponsors-container {
       display: inline-block;
       padding: 1em;
+      margin: 0 15px 0 15px;
       border-radius: 10px;
     }
     .sponsor-container {
       position: relative;
       display: inline-block;
       padding: 1em;
+    }
+    .sponsor-container img {
+      object-fit:contain;
+      max-width:250px;
+      max-height:100px;
     }
     .medal {
       position: absolute;
@@ -83,7 +89,7 @@
             {
               <div class="sponsor-container">
                 <a href="@sponsor.WebsiteUrl" target="_blank">
-                  <img style="width:250px; max-height:100px;" src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" alt="@sponsor.Name"/>
+                  <img src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" alt="@sponsor.Name"/>
                 </a>
                 @if (sponsor.YearsConsecutiveSuppport > 0)
                 {
@@ -103,13 +109,16 @@
 
       <!-- Hosted by -->
       <div class="tier-container">
-          <h3 style="color: #cccccc">— Hosted by —</h3>
-          <a href="https://go.okstate.edu/"><img class="sponsors-img" src="~/img/osu_logo.svg" style="height:10em;"/></a>
-          <a href="https://www.bakerhughes.com"><img class="sponsors-img" src="~/img/bh_logo.png" style="width:10em;"/></a>
+        <h3 style="color: #cccccc">— Hosted by —</h3>
+        <div class="sponsors-container">
+          <div class="sponsor-container">
+            <a href="https://go.okstate.edu" target="_blank"><img src="~/img/osu_logo.svg"/></a>
+          </div>
+          <div class="sponsor-container">
+            <a href="https://www.bakerhughes.com" target="_blank"><img src="~/img/bh_logo_centered_dark.png"/></a>
+          </div>
+        </div>
       </div>
-    </div>
-	</section>
-
 
 </div>
 

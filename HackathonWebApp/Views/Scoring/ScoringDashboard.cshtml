@@ -1,0 +1,94 @@
+﻿@model ScoringSubmission
+@{
+    Layout = "_AdminLayout";
+    ViewBag.Title = "Scoring Dashboard";
+    Dictionary<string, Team> allTeams = ViewBag.AllTeams;
+    Team activeTeam = ViewBag.ActiveTeam;
+}
+
+<style>
+    .team-card {
+        display: inline-block;
+        background-color: var(--bh-dark-green);
+        border: 1px solid var(--bh-green);
+        border-radius: 10px;
+        padding: 3px 10px 3px 10px;
+        margin: 3px;
+    }
+
+    
+</style>
+
+<span class="text-white">
+<h1>Scoring Dashboard</h1>
+
+<h3>Active Team</h3>
+@if (activeTeam != null)
+{
+    <div>This is the team that score submissions will be contributed to.</div>
+    <div class="team-card">
+        <div>@activeTeam.Name</div>
+        <ul>
+            @foreach (ApplicationUser appUser in activeTeam.TeamMembers.Values)
+            {
+                <li>@appUser.FirstName @appUser.LastName</li>
+            }
+        </ul>
+    </div>
+}
+else {
+    <div>No team is active. Please set an active team below.</div>
+}
+
+<h3 style="margin-top:15px;">Change Active Team</h3>
+<form method="post" asp-action="SetActiveTeam" enctype="multipart/form-data">
+    @* Show option for each team *@
+    @foreach (Team team in allTeams.Values)
+    {
+        string isCheckedTag = "";
+        if (team == activeTeam) {isCheckedTag = "checked";}
+        <div class="team-card">
+            <input type="radio" name="activeTeamId" value="@team.Id" @isCheckedTag>
+            @team.Name
+            <ul class="active-team-members">
+                @foreach (ApplicationUser appUser in team.TeamMembers.Values)
+                {
+                    <li>@appUser.FirstName @appUser.LastName</li>
+                }
+            </ul>
+        </div>
+    }
+
+    @* Option to disable scoring *@
+    <br/>
+    <div class="team-card">
+        @{
+            var isCheckedTagNull = "";
+            if (activeTeam == null) {isCheckedTagNull = "checked";}
+        }
+        <input type="radio" name="activeTeamId" value="null" @isCheckedTagNull>
+        Disable Scoring<br/>
+        <div>No active team.</div>
+    </div>
+    <br/>
+    <input type="submit" value="Save" class="btn btn-primary" style="margin-top:15px;"/>
+</form>
+</span>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+    $( document ).ready(function() {
+        $(".answer-option").click(function() {
+            console.log('clicked');
+            // Reset selected outfit
+            $(this).parent().find(".answer-option").removeClass("selected");
+            $(this).addClass("selected");
+            // Select this item's radio button
+            var radioBtn = $(this).find('input');
+            radioBtn.prop("checked", true);
+        });
+    });
+    </script>
+}

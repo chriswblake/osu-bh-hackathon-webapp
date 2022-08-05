@@ -3,14 +3,23 @@
 }
 
 <style>
-
+    .left-nav .settings-header {
+        display: inline-block;
+        text-align: center;
+        width: 100%;
+        margin-top: 10px;
+    }
+    .left-nav hr {
+        border-top: 1px solid var(--bh-green);
+        margin: 3px 0 3px 0;
+    }
 </style>
 
 <!-- Content Body -->
 <div class="container" style="padding:0;">
     <div class="row">
         <!-- Left Navigation-->
-        <div class="col-sm-4 col-md-3 col-xl-2">
+        <div class="col-sm-4 col-md-3 col-lg-3 col-xl-2">
             <nav class="left-nav">
                 <!-- Menu Button-->
                 <button class="navbar-toggler d-inline d-sm-none" type="button" data-toggle="collapse" data-target=".leftnavbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,18 +30,24 @@
                     <hr/>
                 </center>
                 <!-- Links -->
-                <div class="leftnavbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <div class="leftnavbar-collapse collapse d-sm-inline flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Index">
-                                <i class="fa-solid fa-gear"></i>
-                                General
+                                <i class="fa-solid fa-clipboard"></i>
+                                Overview
                             </a>
                         </li>
+                        @* Accounts *@
+                        <li class="nav-item settings-header">
+                            Accounts
+                            <hr/>
+                        </li>
+
                         <li class="nav-item">
-                            <a asp-controller="Event" asp-action="Index">
-                                <i class="fa-solid fa-calendar"></i>
-                                Events
+                            <a asp-controller="Admin" asp-action="Users">
+                                <i class="fa-solid fa-users"></i>
+                                Users
                             </a>
                         </li>
                         <li class="nav-item">
@@ -41,16 +56,24 @@
                                 Roles
                             </a>
                         </li>
+
+
+                        @* Events *@
+                        <li class="nav-item settings-header">
+                            Events
+                            <hr/>
+                        </li>
+                        
                         <li class="nav-item">
-                            <a asp-controller="Admin" asp-action="Users">
-                                <i class="fa-solid fa-users"></i>
-                                Users
+                            <a asp-controller="Event" asp-action="Index">
+                                <i class="fa-solid fa-calendar"></i>
+                                Events
                             </a>
                         </li>
                         <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Organizers">
                                 <i class="fa-solid fa-people-group"></i>
-                                Organizers
+                                Team
                             </a>
                         </li>
                         <li class="nav-item">
@@ -59,12 +82,55 @@
                                 Sponsors
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="Apply" target="_blank">
+                                <i class="fa-brands fa-wpforms"></i>
+                                Apply
+                            </a>
+                        </li>
+
+                        @* Scoring *@
+                        <li class="nav-item settings-header">
+                            Scoring
+                            <hr/>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Scoring" asp-action="ScoringDashboard">
+                                <i class="fa-solid fa-square-poll-vertical"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Scoring" asp-action="ScoreQuestions">
+                                <i class="fa-solid fa-clipboard-question"></i>
+                                Questions
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Scoring" asp-action="ScoringRoles">
+                                <i class="fa-solid fa-address-book"></i>
+                                Role Types
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Scoring" asp-action="UserScoringRoles">
+                                <i class="fa-solid fa-user-check"></i>
+                                User Roles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Scoring" asp-action="SubmitScore" target="_blank">
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                                Vote
+                            </a>
+                        </li>
+                        
                     </ul>
                 </div>
             </nav>
         </div>
         <!-- Main Content -->
-        <div class="col-sm-8 col-md-9 col-xl-10 m-2 m-sm-0">
+        <div class="col-sm-8 col-md-9 col-lg-9 col-xl-10 m-2 m-sm-0">
             @RenderBody()
         </div>
     </div>

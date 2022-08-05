@@ -1,0 +1,73 @@
+﻿@model HackathonWebApp.Models.ScoreQuestion
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Create Score Question";
+}
+<style>
+    .answer-option {
+        display: inline-block;
+        width: 85%;
+        margin: 5px 0 0 0;
+    }
+</style>
+<div class="container text-white">
+    <h1>Create Score Question</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="CreateScoreQuestion" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Group" class="control-label"></label>
+                    <input asp-for="Group" class="form-control" />
+                    <span asp-validation-for="Group" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    Answer Options<br/>
+                    0 pts <input type="hidden" name="AnswerOptions[0].Score" value="0"/>
+                    <input name="AnswerOptions[0].Description" class="form-control answer-option"/><br/>
+
+                    1 pts <input type="hidden" name="AnswerOptions[1].Score" value="1"/>
+                    <input name="AnswerOptions[1].Description" class="form-control answer-option"/><br/>
+
+                    2 pts <input type="hidden" name="AnswerOptions[2].Score" value="2"/>
+                    <input name="AnswerOptions[2].Description" class="form-control answer-option"/><br/>
+
+                    3 pts <input type="hidden" name="AnswerOptions[3].Score" value="3"/>
+                    <input name="AnswerOptions[3].Description" class="form-control answer-option"/><br/>
+
+                    4 pts <input type="hidden" name="AnswerOptions[4].Score" value="4"/>
+                    <input name="AnswerOptions[4].Description" class="form-control answer-option"/><br/>
+
+                    5 pts <input type="hidden" name="AnswerOptions[5].Score" value="5"/>
+                    <input name="AnswerOptions[5].Description" class="form-control answer-option"/><br/>
+                    Note: Blanks are ignored.<br/>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="ScoreQuestions">Back to List</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
