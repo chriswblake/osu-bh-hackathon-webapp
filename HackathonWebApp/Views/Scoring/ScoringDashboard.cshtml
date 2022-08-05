@@ -8,15 +8,21 @@
     Dictionary<string, ScoreQuestion> scoringQuestions = ViewBag.ScoringQuestions;
 }
 @functions {
-    string ToChartDataArray(Team team) {
+    
+    string ToChartQuestionLabelArray(Team team, Dictionary<string, ScoreQuestion> scoringQuestions) {
+        var dataLabelKeys = team.AvgScoresByQuestionId.Keys;
+        var dataLabelQuestionTitles = dataLabelKeys.Select(k=> "'"+scoringQuestions[k].Title+"'");
+		string delimetedString = "["+String.Join(",", dataLabelQuestionTitles)+"]";
+		return delimetedString;
+	}
+    string ToChartAvgsDataArray(Team team) {
         var dataPoints = team.AvgScoresByQuestionId.Values;
 		string delimetedString = "["+String.Join(",", dataPoints)+"]";
 		return delimetedString;
 	}
-    string ToChartLabelArray(Team team, Dictionary<string, ScoreQuestion> scoringQuestions) {
-        var dataLabelKeys = team.AvgScoresByQuestionId.Keys;
-        var dataLabelQuestionTitles = dataLabelKeys.Select(k=> "'"+scoringQuestions[k].Title+"'");
-		string delimetedString = "["+String.Join(",", dataLabelQuestionTitles)+"]";
+    string ToChartCountsDataArray(Team team) {
+        var dataPoints = team.CountScoresByQuestionId.Values;
+		string delimetedString = "["+String.Join(",", dataPoints)+"]";
 		return delimetedString;
 	}
 }
@@ -142,8 +148,24 @@ else {
 								color: bh_green,
 								anchor: 'end',
 								align: 'end',
-							}
-						}]
+							},
+                            yAxisID: 'y',
+                            order: 1,
+						},
+                        {
+							data: [23,15,16],
+                            borderColor: "#AAA",
+                            backgroundColor: "#AAA",
+                            type: 'line',
+                            datalabels: {
+								color: "#AAA",
+								anchor: 'end',
+								align: 'end',
+							},
+                            yAxisID: 'y2',
+                            order: 0
+                        }
+                        ]
 					},
 					options: {
 						scales: {
@@ -165,8 +187,22 @@ else {
                                     color: '#666',
                                     borderColor: bh_green
                                 }
-
 							},
+                            y2: {
+                                min: 0,
+                                max: 50,
+                                title: {
+									display: true,
+                                    color: "#AAA",
+									text: 'Count Scores'
+								},
+                                ticks: {
+                                    color: "#AAA",
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
 							x: {
 								title: {
 									display: true,
@@ -204,10 +240,12 @@ else {
 			// Add  data to charts
             @foreach (Team team in allTeams.Values)
             {
-                var labels = ToChartLabelArray(team, scoringQuestions);
-                var data = ToChartDataArray(team);
+                var labels = ToChartQuestionLabelArray(team, scoringQuestions);
+                var dataAvgs = ToChartAvgsDataArray(team);
+                var dataCounts = ToChartCountsDataArray(team);
                 @Html.Raw($"charts['bar-chart-team-{team.Id}'].data.labels = {labels};\n")
-                @Html.Raw($"charts['bar-chart-team-{team.Id}'].data.datasets[0].data = {data};\n")
+                @Html.Raw($"charts['bar-chart-team-{team.Id}'].data.datasets[0].data = {dataAvgs};\n")
+                @Html.Raw($"charts['bar-chart-team-{team.Id}'].data.datasets[1].data = {dataCounts};\n")
             }
 
 			// Update display for charts
