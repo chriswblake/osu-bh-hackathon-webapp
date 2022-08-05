@@ -159,6 +159,7 @@ namespace HackathonWebApp.Controllers
             ViewBag.AllTeams = this.exampleTeams;
             ViewBag.ActiveTeam = this.activeTeam;
             ViewBag.ScoringSubmissions = this.activeEvent.ScoringSubmissions;
+            ViewBag.ScoringQuestions = this.activeEvent.ScoringQuestions;
             return View();
         }
         [Authorize(Roles = "Admin")]
