@@ -31,6 +31,16 @@ namespace HackathonWebApp.Models
         public Dictionary<string, ScoringSubmission> ScoringSubmissions {get; set; } = new Dictionary<string, ScoringSubmission>();
 
         // Calculated Results
+        public Dictionary<string, int> CountScoresByQuestionId { get {
+
+            // Collapse to just the questions
+            var allQuestions = this.ScoringSubmissions.Values.Select(p=> p.Scores).SelectMany(x => x).ToList();
+            
+            // Count by question ID
+            var counts = allQuestions.GroupBy(p=> p.Key).ToDictionary(p=> p.Key, p=> p.Count());
+
+            return counts;
+        }}
         public Dictionary<string, double> AvgScoresByQuestionId { get {
             var counts = new Dictionary<string, int>();
             var sums = new Dictionary<string, int>();
