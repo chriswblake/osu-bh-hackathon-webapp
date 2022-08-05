@@ -1,4 +1,4 @@
-@{
+﻿@{
     Layout = "_Layout";
 }
 
@@ -19,7 +19,7 @@
 <div class="container" style="padding:0;">
     <div class="row">
         <!-- Left Navigation-->
-        <div class="col-sm-4 col-md-3 col-xl-2">
+        <div class="col-sm-4 col-md-3 col-lg-3 col-xl-2">
             <nav class="left-nav">
                 <!-- Menu Button-->
                 <button class="navbar-toggler d-inline d-sm-none" type="button" data-toggle="collapse" data-target=".leftnavbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,12 @@
                 <!-- Links -->
                 <div class="leftnavbar-collapse collapse d-sm-inline flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="Index">
+                                <i class="fa-solid fa-clipboard"></i>
+                                Overview
+                            </a>
+                        </li>
                         @* Accounts *@
                         <li class="nav-item settings-header">
                             Accounts
@@ -57,12 +63,7 @@
                             Events
                             <hr/>
                         </li>
-                        <li class="nav-item">
-                            <a asp-controller="Admin" asp-action="Index">
-                                <i class="fa-solid fa-gear"></i>
-                                General
-                            </a>
-                        </li>
+                        
                         <li class="nav-item">
                             <a asp-controller="Event" asp-action="Index">
                                 <i class="fa-solid fa-calendar"></i>
@@ -118,9 +119,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Scoring" asp-action="SubmitScore">
+                            <a asp-controller="Scoring" asp-action="SubmitScore" target="_blank">
                                 <i class="fa-solid fa-star-half-stroke"></i>
-                                Submit Score
+                                Vote
                             </a>
                         </li>
                         
@@ -129,7 +130,7 @@
             </nav>
         </div>
         <!-- Main Content -->
-        <div class="col-sm-8 col-md-9 col-xl-10 m-2 m-sm-0">
+        <div class="col-sm-8 col-md-9 col-lg-9 col-xl-10 m-2 m-sm-0">
             @RenderBody()
         </div>
     </div>
