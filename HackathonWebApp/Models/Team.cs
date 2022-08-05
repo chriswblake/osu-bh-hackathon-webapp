@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
@@ -27,6 +27,8 @@ namespace HackathonWebApp.Models
         // Fields that would need aggregated from other collections
         [BsonIgnore]
         public Dictionary<Guid, EventApplication> TeamMemberApplications { get; set; } = new Dictionary<Guid, EventApplication>();
+        [BsonIgnore]
+        public Dictionary<string, ScoringSubmission> ScoringSubmissions {get; set; } = new Dictionary<string, ScoringSubmission>();
 
         // Calculated Properties
         public double HackathonExperience { get {
