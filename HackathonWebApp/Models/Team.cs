@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
@@ -29,6 +29,37 @@ namespace HackathonWebApp.Models
         public Dictionary<Guid, EventApplication> TeamMemberApplications { get; set; } = new Dictionary<Guid, EventApplication>();
         [BsonIgnore]
         public Dictionary<string, ScoringSubmission> ScoringSubmissions {get; set; } = new Dictionary<string, ScoringSubmission>();
+
+        // Calculated Results
+        public Dictionary<string, double> AvgScoresByQuestionId { get {
+            var counts = new Dictionary<string, int>();
+            var sums = new Dictionary<string, int>();
+            var avgs = new Dictionary<string, double>();
+
+            foreach(var scoreSubmission in this.ScoringSubmissions.Values)
+            {
+                foreach(var kvp in scoreSubmission.Scores) {
+                    string questionId = kvp.Key;
+                    int score = kvp.Value;
+                    if (!sums.Keys.Contains(questionId))
+                    {
+                        counts[questionId] = 0;
+                        sums[questionId] = 0;
+                    }
+                    // Track count and sum
+                    counts[questionId] += 1;
+                    sums[questionId] += score;
+                }
+            }
+
+            // Calculate average
+            foreach (var kvp in sums)
+            {
+                avgs[kvp.Key] = sums[kvp.Key] / (double) counts [kvp.Key];
+            }
+
+            return avgs;
+        }}
 
         // Calculated Properties
         public double HackathonExperience { get {

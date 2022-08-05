@@ -114,6 +114,72 @@ namespace HackathonWebAppTests
 
         }
 
+        #region Calculated Results
+        /// <summary>
+        /// Description: Verifies that multiple score submission across several questions can be properally averaged.
+        /// </summary> 
+        [Fact]
+        public void Test_AvgScoresByQuestionId() {
+            // Define
+            var team = new Team() { Id=ObjectId.GenerateNewId() };
+
+            var ss1 = new ScoringSubmission () { 
+                ProjectId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId1", 2},
+                    { "questionId2", 1},
+                    { "questionId3", 3}
+                }
+            };
+            team.ScoringSubmissions.Add(ss1.ProjectId + ", " + ss1.UserId, ss1);
+
+            var ss2 = new ScoringSubmission () { 
+                ProjectId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId1", 5},
+                    { "questionId2", 5},
+                    { "questionId3", 5}
+                }
+            };
+            team.ScoringSubmissions.Add(ss2.ProjectId + ", " + ss2.UserId, ss2);
+
+            var ss3 = new ScoringSubmission () { 
+                ProjectId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId3", 1},
+                    { "questionId4", 1},
+                    { "questionId5", 1}
+                }
+            };
+            team.ScoringSubmissions.Add(ss3.ProjectId + ", " + ss3.UserId, ss3);
+            
+            var ss4 = new ScoringSubmission () { 
+                ProjectId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId3", 5},
+                    { "questionId4", 5},
+                    { "questionId5", 2}
+                }
+            };
+            team.ScoringSubmissions.Add(ss4.ProjectId + ", " + ss4.UserId, ss4);
+
+            // Process
+            var avgScores = team.AvgScoresByQuestionId;
+
+            // Assert
+            Assert.Equal((2+5)/2.0,     avgScores["questionId1"]);
+            Assert.Equal((1+5)/2.0,     avgScores["questionId2"]);
+            Assert.Equal((3+5+1+5)/4.0, avgScores["questionId3"]);
+            Assert.Equal((1+5)/2.0,     avgScores["questionId4"]);
+            Assert.Equal((1+2)/2.0,     avgScores["questionId5"]);
+        }
+        #endregion
+
+        # region Calculated Properties
         /// <summary>
         /// Description: Verifies that the combined hackathon experience for the team is calculated correctly.
         /// </summary> 
@@ -340,5 +406,6 @@ namespace HackathonWebAppTests
             // Assert
             Assert.Equal(Math.Round(avgExp, 2), 2.20);
         }
+        #endregion
     }
 }
