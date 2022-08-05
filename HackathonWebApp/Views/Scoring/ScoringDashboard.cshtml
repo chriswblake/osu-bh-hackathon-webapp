@@ -4,6 +4,21 @@
     ViewBag.Title = "Scoring Dashboard";
     Dictionary<string, Team> allTeams = ViewBag.AllTeams;
     Team activeTeam = ViewBag.ActiveTeam;
+    Dictionary<string, ScoringSubmission> scoringSubmissions = ViewBag.ScoringSubmissions;
+    Dictionary<string, ScoreQuestion> scoringQuestions = ViewBag.ScoringQuestions;
+}
+@functions {
+    string ToChartDataArray(Team team) {
+        var dataPoints = team.AvgScoresByQuestionId.Values;
+		string delimetedString = "["+String.Join(",", dataPoints)+"]";
+		return delimetedString;
+	}
+    string ToChartLabelArray(Team team, Dictionary<string, ScoreQuestion> scoringQuestions) {
+        var dataLabelKeys = team.AvgScoresByQuestionId.Keys;
+        var dataLabelQuestionTitles = dataLabelKeys.Select(k=> "'"+scoringQuestions[k].Title+"'");
+		string delimetedString = "["+String.Join(",", dataLabelQuestionTitles)+"]";
+		return delimetedString;
+	}
 }
 
 <style>
@@ -22,6 +37,8 @@
 <span class="text-white">
 <h1>Scoring Dashboard</h1>
 
+
+@* Show Active Team *@
 <h3>Active Team</h3>
 @if (activeTeam != null)
 {
@@ -40,6 +57,8 @@ else {
     <div>No team is active. Please set an active team below.</div>
 }
 
+
+@* Change Active Team *@
 <h3 style="margin-top:15px;">Change Active Team</h3>
 <form method="post" asp-action="SetActiveTeam" enctype="multipart/form-data">
     @* Show option for each team *@
@@ -73,22 +92,129 @@ else {
     <br/>
     <input type="submit" value="Save" class="btn btn-primary" style="margin-top:15px;"/>
 </form>
+
+
+@* Team Score Summaries *@
+<h3 style="margin-top:15px;">Team Summaries</h3>
+<div style="margin-bottom:100px;" class="row">
+    @foreach (Team team in allTeams.Values)
+    {
+        <div class="col-xs-12, col-sm-6" style="text-align:center;">
+            <h5>@team.Name</h5>
+            <canvas id="bar-chart-team-@team.Id" class="team-scores-bar-chart" height="150" ></canvas>
+        </div>
+    }
+</div>
+
 </span>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0" asp-append-version="true"></script>
+	@* Reference: https://www.chartjs.org/docs/latest/samples/information.html *@
+	@* Reference: https://chartjs-plugin-datalabels.netlify.app/guide/#table-of-contents *@
 
-    <script>
-    $( document ).ready(function() {
-        $(".answer-option").click(function() {
-            console.log('clicked');
-            // Reset selected outfit
-            $(this).parent().find(".answer-option").removeClass("selected");
-            $(this).addClass("selected");
-            // Select this item's radio button
-            var radioBtn = $(this).find('input');
-            radioBtn.prop("checked", true);
-        });
-    });
-    </script>
+    @* Score Charts *@
+	<script>
+		$(document).ready(function(){
+			Chart.register(ChartDataLabels);
+			
+			// Colors
+			const bh_dark_green = '#05322B';
+			const bh_green =  '#018374';
+			const osu_orange = '#FE5C00';
+
+			// Format all score charts the same
+			charts = {};
+			$(".team-scores-bar-chart").each(function() {
+				let chartId = $(this).attr('id');
+				const ctx = document.getElementById(chartId).getContext('2d');
+				const myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						@* labels: [1,2,3,4,5], *@
+						datasets: [{
+							@* data: [1.1,1.2,1.3], *@
+							backgroundColor: osu_orange,
+							borderColor: bh_green,
+							borderWidth: 1,
+                            datalabels: {
+								color: bh_green,
+								anchor: 'end',
+								align: 'end',
+							}
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								min: 0,
+                                max: 5,
+                                title: {
+									display: true,
+                                    color: bh_green,
+									text: 'Avg. Score'
+								},
+								ticks: {
+                                    color: bh_green,
+                                    autoSkip: false,
+									stepSize: 1
+								},
+                                grid: {
+                                    display: false,
+                                    color: '#666',
+                                    borderColor: bh_green
+                                }
+
+							},
+							x: {
+								title: {
+									display: true,
+                                    color: osu_orange,
+									text: 'Question'
+								},
+                                ticks: {
+                                    color: osu_orange,
+                                    autoSkip: false,
+                                    maxRotation: 90
+                                    @* minRotation: 45 *@
+                                },
+                                grid: {
+                                    display: false,
+                                    color: bh_green,
+                                    borderColor: bh_green
+                                }
+							}
+						},
+						layout: {
+							padding: {
+								top: 25
+							}
+						},
+						plugins: {
+							legend: {
+								display: false
+							}
+						}
+					}
+				});
+				charts[chartId] = myChart;
+			});
+
+			// Add  data to charts
+            @foreach (Team team in allTeams.Values)
+            {
+                var labels = ToChartLabelArray(team, scoringQuestions);
+                var data = ToChartDataArray(team);
+                @Html.Raw($"charts['bar-chart-team-{team.Id}'].data.labels = {labels};\n")
+                @Html.Raw($"charts['bar-chart-team-{team.Id}'].data.datasets[0].data = {data};\n")
+            }
+
+			// Update display for charts
+            @foreach (Team team in allTeams.Values)
+            {
+                @Html.Raw($"charts['bar-chart-team-{team.Id}'].update();\n")
+            }
+		});
+	</script>
 }
