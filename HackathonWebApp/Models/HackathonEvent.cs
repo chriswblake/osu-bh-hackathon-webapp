@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HackathonWebApp.Models
 {
+    [BsonIgnoreExtraElements]
     public class HackathonEvent
     {
         [BsonId]
@@ -50,8 +51,8 @@ namespace HackathonWebApp.Models
 
 
         // Fields that would need aggregated from other collections
-        [BsonIgnore]
-        public Dictionary<ObjectId, Team> Teams {get; set;} = new Dictionary<ObjectId, Team>();
+        [BsonElement("teams")]
+        public Dictionary<string, Team> Teams {get; set;} = new Dictionary<string, Team>();
 
 
         // Calculated Properties
@@ -125,19 +126,19 @@ namespace HackathonWebApp.Models
         /// <para>eventApplications: List<EventApplications>: A list of event applications, representing the experience of various application users.</para>
         /// <para>numTeams: Int: The number of teams to assign the applications to.</para>
         /// </summary>
-        public static Dictionary<ObjectId, Team> AssignTeams(List<EventApplication> eventApplications, int numTeams) {
-            var assignedTeams = new Dictionary<ObjectId, Team>();
+        public static Dictionary<string, Team> AssignTeams(List<EventApplication> eventApplications, int numTeams) {
+            var assignedTeams = new Dictionary<string, Team>();
 
 
             // Example: Adding a team to the dictionary
             // The team is stored in the dictionary using the team ID, so it can be quickly retrieved in other operations.
             var myTeam = new Team() {Id = ObjectId.GenerateNewId() };
-            assignedTeams.Add(myTeam.Id, myTeam);
+            assignedTeams.Add(myTeam.Id.ToString(), myTeam);
 
             // Example" Adding an EventApplication to a team.
             // The appliction is stored in the dictionary using their ID, so it can be quickly retrieved in other operations.
             var userEventApplication = eventApplications.First();
-            myTeam.TeamMemberApplications.Add(userEventApplication.UserId, userEventApplication);
+            myTeam.EventApplications.Add(userEventApplication.UserId, userEventApplication);
 
 
             // Write some optimization code here to move event applications on to various teams.
