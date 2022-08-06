@@ -35,14 +35,16 @@ namespace HackathonWebAppTests
                             OrganizationExperience = Convert.ToInt32(values[5]),
                             DocumentationExperience = Convert.ToInt32(values[6]),
                             BusinessExperience = Convert.ToInt32(values[7]),
-                            CreativityExperience = Convert.ToInt32(values[8])
+                            CreativityExperience = Convert.ToInt32(values[8]),
+                            Major = values[9],
+                            SchoolYear = values[10]
                         });
                     }
                 }                
                 return eventApplications;
             }}
         }
-
+        
         /// <summary>
         /// Description: Verifies that event applications can be assigned to teams such that they can be fairly balanced.
         /// </summary> 
