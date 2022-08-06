@@ -12,11 +12,6 @@ namespace HackathonWebApp.Models
         [BsonId]
         public ObjectId Id {get; set;}
         
-        // Associated Event
-        [Required]
-        [BsonElement("event_id")]
-        public ObjectId EventId { get; set; }
-
         // Associated User
         [Required]
         [BsonElement("user_id")]

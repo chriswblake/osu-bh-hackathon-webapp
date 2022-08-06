@@ -13,6 +13,10 @@ namespace HackathonWebApp.Models
     {
         [BsonId]
         public ObjectId Id {get; set;}
+
+        [Required]
+        [BsonElement("is_active")]
+        public bool IsActive { get; set; }
         
         [Required]
         [BsonElement("name")]
@@ -27,8 +31,21 @@ namespace HackathonWebApp.Models
         public DateTime EndTime { get; set; }
 
         [Required]
+        [BsonElement("sponsors")]
+        public Dictionary<string,Sponsor> Sponsors { get; set; } = new Dictionary<string, Sponsor>();
+
+        [Required]
+        [BsonElement("organizers")]
+        public Dictionary<string,Organizer> Organizers { get; set; } = new Dictionary<string, Organizer>();
+
+        [Required]
         [BsonElement("registration_settings")]
         public RegistrationSettings RegistrationSettings { get; set; }
+        
+
+        [Required]
+        [BsonElement("event_applications")]
+        public Dictionary<string,EventApplication> EventApplications { get; set; } = new Dictionary<string, EventApplication>();
 
         [Required]
         [BsonElement("scoring_questions")]
