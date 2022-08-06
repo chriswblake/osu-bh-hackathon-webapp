@@ -12,21 +12,15 @@ namespace HackathonWebApp.Models
         [BsonId]
         public ObjectId Id {get; set;}
 
-        [BsonId]
-        [BsonElement("event_id")]
-        public ObjectId EventId {get; set;}
-
         [Required]
         [BsonElement("name")]
         public string Name { get; set; }
 
-        [Required]
-        [BsonElement("team_members")]
-        public Dictionary<Guid, ApplicationUser> TeamMembers { get; set; } = new Dictionary<Guid, ApplicationUser>();
-
-        // Fields that would need aggregated from other collections
+        // Fields that would need aggregated from other data
         [BsonIgnore]
-        public Dictionary<Guid, EventApplication> TeamMemberApplications { get; set; } = new Dictionary<Guid, EventApplication>();
+        public Dictionary<Guid, ApplicationUser> TeamMembers { get; set; } = new Dictionary<Guid, ApplicationUser>();
+        [BsonIgnore]
+        public Dictionary<Guid, EventApplication> EventApplications { get; set; } = new Dictionary<Guid, EventApplication>();
         [BsonIgnore]
         public Dictionary<string, ScoringSubmission> ScoringSubmissions {get; set; } = new Dictionary<string, ScoringSubmission>();
 
@@ -72,48 +66,83 @@ namespace HackathonWebApp.Models
         }}
 
         // Calculated Properties
+        [BsonIgnore]
         public double HackathonExperience { get {
-            return this.TeamMemberApplications.Values.Sum(ea => ea.HackathonExperience);
+            return this.EventApplications.Values.Sum(ea => ea.HackathonExperience);
         }}
+        [BsonIgnore]
         public double CodingExperience { get {
-            return this.TeamMemberApplications.Values.Sum(ea => ea.CodingExperience);
+            return this.EventApplications.Values.Sum(ea => ea.CodingExperience);
         }}
+        [BsonIgnore]
         public double CommunicationExperience { get {
-            return this.TeamMemberApplications.Values.Sum(ea => ea.CommunicationExperience);
+            return this.EventApplications.Values.Sum(ea => ea.CommunicationExperience);
         }}
+        [BsonIgnore]
         public double OrganizationExperience { get {
-            return this.TeamMemberApplications.Values.Sum(ea => ea.OrganizationExperience);
+            return this.EventApplications.Values.Sum(ea => ea.OrganizationExperience);
         }}
+        [BsonIgnore]
         public double DocumentationExperience { get {
-            return this.TeamMemberApplications.Values.Sum(ea => ea.DocumentationExperience);
+            return this.EventApplications.Values.Sum(ea => ea.DocumentationExperience);
         }}
+        [BsonIgnore]
         public double BusinessExperience { get {
-            return this.TeamMemberApplications.Values.Sum(ea => ea.BusinessExperience);
+            return this.EventApplications.Values.Sum(ea => ea.BusinessExperience);
         }}
+        [BsonIgnore]
         public double CreativityExperience { get {
-            return this.TeamMemberApplications.Values.Sum(ea => ea.CreativityExperience);
+            return this.EventApplications.Values.Sum(ea => ea.CreativityExperience);
         }}
 
+        [BsonIgnore]
         public double AvgHackathonExperience { get {
-            return this.TeamMemberApplications.Values.Average(ea => ea.HackathonExperience);
+            if (this.EventApplications.Count() > 0)
+                return this.EventApplications.Values.Average(ea => ea.HackathonExperience);
+            else
+                return 0;
         }}
+        [BsonIgnore]
         public double AvgCodingExperience { get {
-            return this.TeamMemberApplications.Values.Average(ea => ea.CodingExperience);
+            if (this.EventApplications.Count() > 0)
+                return this.EventApplications.Values.Average(ea => ea.CodingExperience);    
+            else
+                return 0;
         }}
+        [BsonIgnore]
         public double AvgCommunicationExperience { get {
-            return this.TeamMemberApplications.Values.Average(ea => ea.CommunicationExperience);
+            if (this.EventApplications.Count() > 0)
+                return this.EventApplications.Values.Average(ea => ea.CommunicationExperience); 
+            else
+                return 0;
         }}
+        [BsonIgnore]
         public double AvgOrganizationExperience { get {
-            return this.TeamMemberApplications.Values.Average(ea => ea.OrganizationExperience);
+            if (this.EventApplications.Count() > 0)
+                return this.EventApplications.Values.Average(ea => ea.OrganizationExperience);  
+            else
+                return 0;
         }}
+        [BsonIgnore]
         public double AvgDocumentationExperience { get {
-            return this.TeamMemberApplications.Values.Average(ea => ea.DocumentationExperience);
+            if (this.EventApplications.Count() > 0)
+                return this.EventApplications.Values.Average(ea => ea.DocumentationExperience); 
+            else
+                return 0;
         }}
+        [BsonIgnore]
         public double AvgBusinessExperience { get {
-            return this.TeamMemberApplications.Values.Average(ea => ea.BusinessExperience);
+            if (this.EventApplications.Count() > 0)
+                return this.EventApplications.Values.Average(ea => ea.BusinessExperience);  
+            else
+                return 0;
         }}
+        [BsonIgnore]
         public double AvgCreativityExperience { get {
-            return this.TeamMemberApplications.Values.Average(ea => ea.CreativityExperience);
+            if (this.EventApplications.Count() > 0)
+                return this.EventApplications.Values.Average(ea => ea.CreativityExperience);    
+            else
+                return 0;
         }}
     }
 }

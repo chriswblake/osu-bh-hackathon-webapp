@@ -234,7 +234,51 @@ namespace HackathonWebApp.Controllers
             return View();
         }
         
+        // Team Placement
+        public IActionResult TeamPlacement()
+        {
+            // Get events and applications for current event
+            List<EventApplication> activeEventApplications = eventApplicationCollection.Find(s => s.EventId == this.activeEvent.Id).ToList<EventApplication>();
 
+            ViewBag.Teams = this.activeEvent.Teams;
+            return View(activeEventApplications);
+        }
+        public IActionResult CreateTeam() => View();
+        [HttpPost]
+        public async Task<IActionResult> CreateTeam(Team team)
+        {
+            try
+            {
+                // Set Ids
+                team.Id = ObjectId.GenerateNewId();
+
+                // Create change set
+                string key = team.Id.ToString();
+                var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.Teams[key], team);
+
+                // Update in DB
+                string eventId = activeEvent.Id.ToString();
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == ObjectId.Parse(eventId),
+                    updateDefinition
+                );
+
+                // Clear Active Event, so it is triggered to be refreshed on next request.
+                this.activeEvent = null;
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return RedirectToAction("TeamPlacement");
+        }
+        [HttpPost]
+        public async Task<IActionResult> AssignTeams(Dictionary<string,string> eventApplicationTeams)
+        {
+            var activeEventApplications = eventApplicationCollection.Find(s => s.EventId == this.activeEvent.Id).ToList<EventApplication>().ToDictionary(p=> p.Id.ToString(), p=> p);
+
+            return RedirectToAction("TeamPlacement");
+        }
         // Score Questions
         public ViewResult ScoreQuestions()
         {

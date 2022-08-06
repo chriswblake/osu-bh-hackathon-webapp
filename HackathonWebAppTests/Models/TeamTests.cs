@@ -75,11 +75,11 @@ namespace HackathonWebAppTests
                     BusinessExperience = 4,
                     CreativityExperience = 5
                 };
-                team.TeamMemberApplications.Add(user1.Id, eventApp1);
-                team.TeamMemberApplications.Add(user2.Id, eventApp2);
-                team.TeamMemberApplications.Add(user3.Id, eventApp3);
-                team.TeamMemberApplications.Add(user4.Id, eventApp4);
-                team.TeamMemberApplications.Add(user5.Id, eventApp5);
+                team.EventApplications.Add(user1.Id, eventApp1);
+                team.EventApplications.Add(user2.Id, eventApp2);
+                team.EventApplications.Add(user3.Id, eventApp3);
+                team.EventApplications.Add(user4.Id, eventApp4);
+                team.EventApplications.Add(user5.Id, eventApp5);
 
                 return team;
             }}
@@ -99,18 +99,16 @@ namespace HackathonWebAppTests
             var team = new Team()
             {
                 Id = ObjectId.Parse("123412341234123412341234"),
-                EventId = ObjectId.Parse("000000000000000000000006"),
                 Name = "The Shindigs"
             };
             team.TeamMembers.Add(user1.Id, user1);
-            team.TeamMemberApplications.Add(user1.Id, eventApp1);
+            team.EventApplications.Add(user1.Id, eventApp1);
 
             // Assert
             Assert.Equal(ObjectId.Parse("123412341234123412341234"), team.Id);
-            Assert.Equal(ObjectId.Parse("000000000000000000000006"), team.EventId);
             Assert.Equal("The Shindigs", team.Name);
             Assert.Equal(1, team.TeamMembers.Count);
-            Assert.Equal(1, team.TeamMemberApplications.Count);
+            Assert.Equal(1, team.EventApplications.Count);
 
         }
 
