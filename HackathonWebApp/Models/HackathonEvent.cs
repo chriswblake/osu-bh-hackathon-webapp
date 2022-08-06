@@ -31,6 +31,10 @@ namespace HackathonWebApp.Models
         public Dictionary<string,Sponsor> Sponsors { get; set; } = new Dictionary<string, Sponsor>();
 
         [Required]
+        [BsonElement("organizers")]
+        public Dictionary<string,Organizer> Organizers { get; set; } = new Dictionary<string, Organizer>();
+
+        [Required]
         [BsonElement("registration_settings")]
         public RegistrationSettings RegistrationSettings { get; set; }
         

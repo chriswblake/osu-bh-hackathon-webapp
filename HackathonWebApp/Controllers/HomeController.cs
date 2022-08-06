@@ -114,7 +114,7 @@ namespace HackathonWebApp.Controllers
 
         public IActionResult Team()
         {
-            var organizers = organizerCollection.Find(s => true).ToList<Organizer>();
+            var organizers = this.activeEvent.Organizers.Values.ToList();
             return View(organizers);
         }
 
