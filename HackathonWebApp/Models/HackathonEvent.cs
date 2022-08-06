@@ -27,8 +27,13 @@ namespace HackathonWebApp.Models
         public DateTime EndTime { get; set; }
 
         [Required]
+        [BsonElement("sponsors")]
+        public Dictionary<string,Sponsor> Sponsors { get; set; } = new Dictionary<string, Sponsor>();
+
+        [Required]
         [BsonElement("registration_settings")]
         public RegistrationSettings RegistrationSettings { get; set; }
+        
 
         [Required]
         [BsonElement("event_applications")]

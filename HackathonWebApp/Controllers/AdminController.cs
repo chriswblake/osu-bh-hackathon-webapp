@@ -23,9 +23,11 @@ namespace HackathonWebApp.Controllers
         private UserManager<ApplicationUser> userManager;
         private IMongoCollection<Sponsor> sponsorCollection;
         private IMongoCollection<Organizer> organizerCollection;
+        private EventController eventController;
+        private IMongoCollection<HackathonEvent> eventCollection;
 
         // Constructors
-        public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IMongoDatabase database)
+        public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IMongoDatabase database, EventController eventController)
         {
             // Identity
             this.roleManager = roleManager;
@@ -34,6 +36,15 @@ namespace HackathonWebApp.Controllers
             // Hackathon DBs
             this.sponsorCollection = database.GetCollection<Sponsor>("Sponsor");
             this.organizerCollection = database.GetCollection<Organizer>("Organizer");
+            this.eventController = eventController;
+            this.eventCollection = database.GetCollection<HackathonEvent>("Events");
+        }
+
+        // Properties
+        private HackathonEvent activeEvent {
+            get {
+                return this.eventController.activeEvent;
+            }
         }
 
         // Index
@@ -142,12 +153,12 @@ namespace HackathonWebApp.Controllers
         // Methods - Sponsor
         public ViewResult Sponsors()
         {
-            var sponsors = sponsorCollection.Find(s => true).ToList<Sponsor>();
+            var sponsors = this.activeEvent.Sponsors.Values.ToList();
             return View(sponsors);
         }
         public IActionResult CreateSponsor() => View();
         [HttpPost]
-        public async Task<IActionResult> CreateSponsor(Sponsor model, IFormFile Logo)
+        public async Task<IActionResult> CreateSponsor(Sponsor sponsor, IFormFile Logo)
         {
             if (ModelState.IsValid)
             {
@@ -157,15 +168,30 @@ namespace HackathonWebApp.Controllers
                     {
                         MemoryStream memoryStream = new MemoryStream();
                         Logo.OpenReadStream().CopyTo(memoryStream);
-                        model.Logo = Convert.ToBase64String(memoryStream.ToArray());
+                        sponsor.Logo = Convert.ToBase64String(memoryStream.ToArray());
                     }
                     else
                     {
-                        model.Logo = "";
+                        sponsor.Logo = "";
                     }
 
-                    // Create the sponsor
-                    await sponsorCollection.InsertOneAsync(model);
+                    // Assign sponsor an ID
+                    sponsor.Id = ObjectId.GenerateNewId();
+
+                    // Create change set
+                    var key = sponsor.Id.ToString();
+                    var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.Sponsors[key], sponsor);
+
+                    // Update in DB
+                    string eventId = this.activeEvent.Id.ToString();
+                    await this.eventCollection.FindOneAndUpdateAsync(
+                        s => s.Id == ObjectId.Parse(eventId),
+                        updateDefinition
+                    );
+
+                    // Clear Active Event, so it is triggered to be refreshed on next request.
+                    this.activeEvent.Sponsors.Add(sponsor.Id.ToString(), sponsor);
+
                     return RedirectToAction("Sponsors");
                 }
                 catch (Exception e)
@@ -173,15 +199,26 @@ namespace HackathonWebApp.Controllers
                     Errors(e);
                 }
             }
-            return View(model);
+            return View(sponsor);
         }
         [HttpPost]
         public async Task<IActionResult> DeleteSponsor(string id)
         {
             try
             { 
-                // Delete the sponsor
-                await sponsorCollection.FindOneAndDeleteAsync(s => s.Id == ObjectId.Parse(id));
+                // Create change set
+                var updateDefinition = Builders<HackathonEvent>.Update.Unset(p=> p.Sponsors[id]);
+
+                // Update in DB
+                string eventId = activeEvent.Id.ToString();
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == ObjectId.Parse(eventId),
+                    updateDefinition
+                );
+
+                // Update in Memory
+                this.activeEvent.Sponsors.Remove(id);
+
             }
             catch (Exception e)
             {
@@ -192,33 +229,40 @@ namespace HackathonWebApp.Controllers
         }
         public async Task<IActionResult> UpdateSponsor(string id)
         {
-            var results = await sponsorCollection.FindAsync(s => s.Id == ObjectId.Parse(id));
-            Sponsor sponsor = results.FirstOrDefault();
+            Sponsor sponsor = this.activeEvent.Sponsors[id];
             return View(sponsor);
         }
         [HttpPost]
-        public async Task<IActionResult> UpdateSponsor(string id, Sponsor model, IFormFile NewLogo)
+        public async Task<IActionResult> UpdateSponsor(string id, Sponsor sponsor, IFormFile NewLogo)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     //Set missing id in model
-                    model.Id = ObjectId.Parse(id);
+                    sponsor.Id = ObjectId.Parse(id);
 
                     // If there is a new logo, overwrite the old one. (convert to string)
                     if (NewLogo != null)
                     {
                         MemoryStream memoryStream = new MemoryStream();
                         NewLogo.OpenReadStream().CopyTo(memoryStream);
-                        model.Logo = Convert.ToBase64String(memoryStream.ToArray());
+                        sponsor.Logo = Convert.ToBase64String(memoryStream.ToArray());
                     }
 
-                    // Update in database
-                    await sponsorCollection.FindOneAndUpdateAsync(
-                        s => s.Id == ObjectId.Parse(id),
-                        new ObjectUpdateDefinition<Sponsor>(model)
+                    // Create change set
+                    var key = sponsor.Id.ToString();
+                    var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.Sponsors[key], sponsor);
+
+                    // Update in DB
+                    string eventId = activeEvent.Id.ToString();
+                    await eventCollection.FindOneAndUpdateAsync(
+                        s => s.Id == ObjectId.Parse(eventId),
+                        updateDefinition
                     );
+
+                    // Update in Memory
+                    this.activeEvent.Sponsors[id] = sponsor;
                     
                     // Return to table view
                     return RedirectToAction("Sponsors");
@@ -228,7 +272,7 @@ namespace HackathonWebApp.Controllers
                     Errors(e);
                 }
             }
-            return View(model);
+            return View(sponsor);
         }
 
         // Methods - Organizers
@@ -333,7 +377,6 @@ namespace HackathonWebApp.Controllers
         {
             ModelState.AddModelError("", e.Message);
         }
-
         private void Errors(IdentityResult result)
         {
             foreach (IdentityError error in result.Errors)
