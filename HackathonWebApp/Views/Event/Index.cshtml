@@ -9,13 +9,20 @@
 
 <h1 class="text-white">Hackathon Events</h1>
 <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
-    <tr><th>Name</th><th>Start Time</th><th>End Time</th><th>Update</th></tr>
+    <tr>
+        <th>Name</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Is Active</th>
+        <th>Update</th>
+    </tr>
     @foreach (HackathonEvent hackathonEvent in events)
     {
         <tr>
             <td>@hackathonEvent.Name</td>
             <td>@hackathonEvent.StartTime.Date.ToString("d")</td>
             <td>@hackathonEvent.EndTime.Date.ToString("d")</td>
+            <td>@hackathonEvent.IsActive</td>
             <td><a class="btn btn-sm btn-primary" asp-action="UpdateHackathonEvent" asp-route-id="@hackathonEvent.Id">Update</a></td>
         </tr>
     }

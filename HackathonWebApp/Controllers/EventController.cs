@@ -32,39 +32,39 @@ namespace HackathonWebApp.Controllers
             // Hackathon DBs
             this.userManager = userManager;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
-
-            // Load active hackathon event, if not previously loaded
-            if (this.activeEvent == null)
-            {
-                // Try to get the defined event
-                var results = this.eventCollection.Find(h => h.Id == ObjectId.Parse("62d0913c493ff39662d52fba"));
-
-                // If not found, pick the first one
-                if (results.CountDocuments() == 0)
-                    results = this.eventCollection.Find(h => true);
-
-                // If still not found, create default event
-                if (results.CountDocuments() == 0)
-                {
-                    // Create event
-                    CreateHackathonEvent(new HackathonEvent() {
-                        Name = "Default Event",
-                        StartTime = DateTime.Now,
-                        EndTime = DateTime.Now
-                    }).Wait();
-                    // Retrieve the event
-                    results = this.eventCollection.Find(h => true);
-                }
-
-                // Set active event for controller
-                this.activeEvent = results.First();
-            }
-
         }
 
         // Properties
         public HackathonEvent activeEvent {
             get {
+                // Load active hackathon event, if not previously loaded
+                if (EventController._activeEvent == null)
+                {
+                    // Try to get the event that is set as active
+                    var results = this.eventCollection.Find(h => h.IsActive == true);
+
+                    // If not found, pick the first one
+                    if (results.CountDocuments() == 0)
+                        results = this.eventCollection.Find(h => true);
+
+                    // If still not found, create default event
+                    if (results.CountDocuments() == 0)
+                    {
+                        // Create event
+                        CreateHackathonEvent(new HackathonEvent() {
+                            Name = "Default Event",
+                            StartTime = DateTime.Now,
+                            EndTime = DateTime.Now,
+                            IsActive = true
+                        }).Wait();
+                        // Retrieve the event
+                        results = this.eventCollection.Find(h => true);
+                    }
+
+                    // Set active event for controller
+                    EventController._activeEvent = results.First();
+                }
+
                 return EventController._activeEvent;
             }
             set {
@@ -116,29 +116,42 @@ namespace HackathonWebApp.Controllers
         {
             try
             {
-                // Form change set
+                // Update this hackathon
                 var updateDefinition = Builders<HackathonEvent>.Update
                     .Set(p => p.Name, hackathonEvent.Name)
                     .Set(p => p.StartTime, hackathonEvent.StartTime)
-                    .Set(p => p.EndTime, hackathonEvent.EndTime);
-                // Update in DB
+                    .Set(p => p.EndTime, hackathonEvent.EndTime)
+                    .Set(p => p.IsActive, hackathonEvent.IsActive);
                 await eventCollection.FindOneAndUpdateAsync(
                     s => s.Id == ObjectId.Parse(id),
                     updateDefinition
                 );
+
+                // If it was set to active, make all others inactive
+                if (hackathonEvent.IsActive)
+                {
+                    var updateDefinitionInactive = Builders<HackathonEvent>.Update.Set(p => p.IsActive, false);
+                    await eventCollection.FindOneAndUpdateAsync(
+                        s => s.Id != ObjectId.Parse(id),
+                        updateDefinitionInactive
+                    );
+                }
+
+                // Clear active event so it is refreshed
+                this.activeEvent = null;
             }
             catch (Exception e)
             {
                 Errors(e);
             }
-            return View(hackathonEvent);
+            return RedirectToAction("Index");
         }
         [HttpPost]
         public async Task<IActionResult> DeleteHackathonEvent(string id)
         {
             try
             { 
-                await eventCollection.FindOneAndDeleteAsync(s => s.Id == ObjectId.Parse(id));
+                await eventCollection.FindOneAndDeleteAsync(s => s.Id == ObjectId.Parse(id) && s.IsActive==false);
             }
             catch (Exception e)
             {

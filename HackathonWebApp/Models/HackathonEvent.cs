@@ -13,6 +13,10 @@ namespace HackathonWebApp.Models
     {
         [BsonId]
         public ObjectId Id {get; set;}
+
+        [Required]
+        [BsonElement("is_active")]
+        public bool IsActive { get; set; }
         
         [Required]
         [BsonElement("name")]

@@ -29,6 +29,14 @@
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="IsActive" class="control-label"></label><br/>
+                    @Html.DropDownListFor(m => m.IsActive, new SelectList( new Dictionary<bool, string>() {
+                            { false, "Inactive"},
+                            { true, "Active"}
+                        }, "Key", "Value"), "Select Active", new { @class="basic-info-selector" })
+                    <span asp-validation-for="IsActive" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <input type="submit" value="Save" class="btn btn-primary" />
                 </div>
             </form>
@@ -49,7 +57,13 @@
 
                 <div class="form-group">
                     This will permantently delete the event and all associated settings/information.
-                    <input type="submit" value="Delete" class="btn btn-danger" /> 
+                    @if(!hackathonEvent.IsActive)
+                    {
+                        <input type="submit" value="Delete" class="btn btn-danger" /> 
+                    }else {
+                        <input type="submit" value="Delete" class="btn btn-danger" disabled/> 
+                        <div style="margin-top:5px;">*The active event may not be deleted.</div>
+                    }
                 </div>
             </form>
         </div>
