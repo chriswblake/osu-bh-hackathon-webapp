@@ -23,7 +23,6 @@ namespace HackathonWebApp.Controllers
         private readonly ILogger<EventController> _logger;
         private UserManager<ApplicationUser> userManager;
         private IMongoCollection<HackathonEvent> eventCollection;
-        private IMongoCollection<EventApplication> eventApplicationCollection;
 
         // Constructor
         public EventController(ILogger<EventController> logger, UserManager<ApplicationUser> userManager, IMongoDatabase database)
@@ -33,7 +32,6 @@ namespace HackathonWebApp.Controllers
             // Hackathon DBs
             this.userManager = userManager;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
-            this.eventApplicationCollection = database.GetCollection<EventApplication>("EventApplications");
 
             // Load active hackathon event, if not previously loaded
             if (this.activeEvent == null)
@@ -79,7 +77,7 @@ namespace HackathonWebApp.Controllers
         {
             // Get events and applications for current event
             var events = eventCollection.Find(s => true).ToList<HackathonEvent>();
-            var activeEventApplications = eventApplicationCollection.Find(s => s.EventId == this.activeEvent.Id).ToList<EventApplication>();
+            var activeEventApplications = this.activeEvent.EventApplications.Values.ToList();
 
             // Add to view's data
             ViewBag.events = events;
@@ -153,7 +151,7 @@ namespace HackathonWebApp.Controllers
         // Applications
         public List<EventApplication> GetActiveEventApplications()
         {
-           var activeEventApplications = this.eventApplicationCollection.Find(p => p.EventId == this.activeEvent.Id).ToList<EventApplication>();
+           var activeEventApplications = this.activeEvent.EventApplications.Values.ToList();
            return activeEventApplications;
         }
         [AllowAnonymous]
@@ -166,11 +164,9 @@ namespace HackathonWebApp.Controllers
                 string userName = User.Identity.Name;
                 ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
 
-                // Check if already applied
-                var existingApps = eventApplicationCollection.Find(a => a.EventId == this.activeEvent.Id && a.UserId == appUser.Id).ToList<EventApplication>();
-
                 // If already applied forward to Thank You page
-                if (existingApps.Count > 0)
+                bool eventAppExists = this.activeEvent.EventApplications.ContainsKey(appUser.Id.ToString());
+                if (eventAppExists)
                    return RedirectToAction("ThankYou");
             }
 
@@ -183,8 +179,8 @@ namespace HackathonWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Apply(EventApplication eventApplication)
         {
-            // Set application's associated event to the active event
-            eventApplication.EventId = this.activeEvent.Id;
+            // Set unique id for this application
+            eventApplication.Id = ObjectId.GenerateNewId();
             
             // Associated logged in user, or create the user then associate it
             if (User?.Identity?.IsAuthenticated ?? false)
@@ -220,7 +216,19 @@ namespace HackathonWebApp.Controllers
             if (ModelState.IsValid)
             {
                 try {
-                    await eventApplicationCollection.InsertOneAsync(eventApplication);
+                    // Create change set
+                    var key = eventApplication.UserId.ToString();
+                    var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.EventApplications[key], eventApplication);
+
+                    // Update in DB
+                    string eventId = activeEvent.Id.ToString();
+                    await eventCollection.FindOneAndUpdateAsync(
+                        s => s.Id == ObjectId.Parse(eventId),
+                        updateDefinition
+                    );
+
+                    // Update in memory
+                    this.activeEvent.EventApplications[key] = eventApplication;
                 }
                 catch (Exception e)
                 {
@@ -238,7 +246,7 @@ namespace HackathonWebApp.Controllers
         public IActionResult TeamPlacement()
         {
             // Get events and applications for current event
-            List<EventApplication> activeEventApplications = eventApplicationCollection.Find(s => s.EventId == this.activeEvent.Id).ToList<EventApplication>();
+            List<EventApplication> activeEventApplications = this.activeEvent.EventApplications.Values.ToList();
 
             ViewBag.Teams = this.activeEvent.Teams;
             return View(activeEventApplications);
@@ -275,7 +283,7 @@ namespace HackathonWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignTeams(Dictionary<string,string> eventApplicationTeams)
         {
-            var activeEventApplications = eventApplicationCollection.Find(s => s.EventId == this.activeEvent.Id).ToList<EventApplication>().ToDictionary(p=> p.Id.ToString(), p=> p);
+            var activeEventApplications = this.activeEvent.EventApplications;
 
             return RedirectToAction("TeamPlacement");
         }
