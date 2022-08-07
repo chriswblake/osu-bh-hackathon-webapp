@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -127,6 +127,15 @@ namespace HackathonWebApp.Controllers
             ViewBag.ActiveTeam = this.activeTeam;
             ViewBag.ScoringSubmissions = this.activeEvent.ScoringSubmissions;
             ViewBag.ScoringQuestions = this.activeEvent.ScoringQuestions;
+
+            // Put scoring submissions in teams
+            foreach (ScoringSubmission scoringSubmission in this.activeEvent.ScoringSubmissions.Values)
+            {
+                string teamId = scoringSubmission.TeamId;
+                Team team = this.activeEvent.Teams[teamId];
+                team.ScoringSubmissions[scoringSubmission.UserId.ToString()] = scoringSubmission;
+            }
+
             return View();
         }
         [Authorize(Roles = "Admin")]
