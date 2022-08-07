@@ -9,8 +9,8 @@ namespace HackathonWebApp.Models
         [BsonId]
         public ObjectId Id {get; set;}
 
-        [BsonElement("project_id")]
-        public string ProjectId { get; set; }
+        [BsonElement("team_id")]
+        public string TeamId { get; set; }
         
         [BsonElement("user_id")]
         public string UserId { get; set; }

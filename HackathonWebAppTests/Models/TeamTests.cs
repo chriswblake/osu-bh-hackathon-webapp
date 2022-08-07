@@ -122,7 +122,7 @@ namespace HackathonWebAppTests
             var team = new Team() { Id=ObjectId.GenerateNewId() };
 
             var ss1 = new ScoringSubmission () { 
-                ProjectId=team.Id.ToString(),
+                TeamId=team.Id.ToString(),
                 UserId = Guid.NewGuid().ToString(),
                 Scores = new System.Collections.Generic.Dictionary<string, int>() {
                     { "questionId1", 2},
@@ -130,10 +130,10 @@ namespace HackathonWebAppTests
                     { "questionId3", 3}
                 }
             };
-            team.ScoringSubmissions.Add(ss1.ProjectId + ", " + ss1.UserId, ss1);
+            team.ScoringSubmissions.Add(ss1.TeamId + ", " + ss1.UserId, ss1);
 
             var ss2 = new ScoringSubmission () { 
-                ProjectId=team.Id.ToString(),
+                TeamId=team.Id.ToString(),
                 UserId = Guid.NewGuid().ToString(),
                 Scores = new System.Collections.Generic.Dictionary<string, int>() {
                     { "questionId2", 5},
@@ -141,10 +141,10 @@ namespace HackathonWebAppTests
                     { "questionId4", 5}
                 }
             };
-            team.ScoringSubmissions.Add(ss2.ProjectId + ", " + ss2.UserId, ss2);
+            team.ScoringSubmissions.Add(ss2.TeamId + ", " + ss2.UserId, ss2);
 
             var ss3 = new ScoringSubmission () { 
-                ProjectId=team.Id.ToString(),
+                TeamId=team.Id.ToString(),
                 UserId = Guid.NewGuid().ToString(),
                 Scores = new System.Collections.Generic.Dictionary<string, int>() {
                     { "questionId3", 1},
@@ -152,10 +152,10 @@ namespace HackathonWebAppTests
                     { "questionId5", 1}
                 }
             };
-            team.ScoringSubmissions.Add(ss3.ProjectId + ", " + ss3.UserId, ss3);
+            team.ScoringSubmissions.Add(ss3.TeamId + ", " + ss3.UserId, ss3);
             
             var ss4 = new ScoringSubmission () { 
-                ProjectId=team.Id.ToString(),
+                TeamId=team.Id.ToString(),
                 UserId = Guid.NewGuid().ToString(),
                 Scores = new System.Collections.Generic.Dictionary<string, int>() {
                     { "questionId3", 5},
@@ -163,7 +163,7 @@ namespace HackathonWebAppTests
                     { "questionId5", 2}
                 }
             };
-            team.ScoringSubmissions.Add(ss4.ProjectId + ", " + ss4.UserId, ss4);
+            team.ScoringSubmissions.Add(ss4.TeamId + ", " + ss4.UserId, ss4);
 
             // Process
             var countScores = team.CountScoresByQuestionId;
@@ -185,7 +185,7 @@ namespace HackathonWebAppTests
             var team = new Team() { Id=ObjectId.GenerateNewId() };
 
             var ss1 = new ScoringSubmission () { 
-                ProjectId=team.Id.ToString(),
+                TeamId=team.Id.ToString(),
                 UserId = Guid.NewGuid().ToString(),
                 Scores = new System.Collections.Generic.Dictionary<string, int>() {
                     { "questionId1", 2},
@@ -193,10 +193,10 @@ namespace HackathonWebAppTests
                     { "questionId3", 3}
                 }
             };
-            team.ScoringSubmissions.Add(ss1.ProjectId + ", " + ss1.UserId, ss1);
+            team.ScoringSubmissions.Add(ss1.TeamId + ", " + ss1.UserId, ss1);
 
             var ss2 = new ScoringSubmission () { 
-                ProjectId=team.Id.ToString(),
+                TeamId=team.Id.ToString(),
                 UserId = Guid.NewGuid().ToString(),
                 Scores = new System.Collections.Generic.Dictionary<string, int>() {
                     { "questionId1", 5},
@@ -204,10 +204,10 @@ namespace HackathonWebAppTests
                     { "questionId3", 5}
                 }
             };
-            team.ScoringSubmissions.Add(ss2.ProjectId + ", " + ss2.UserId, ss2);
+            team.ScoringSubmissions.Add(ss2.TeamId + ", " + ss2.UserId, ss2);
 
             var ss3 = new ScoringSubmission () { 
-                ProjectId=team.Id.ToString(),
+                TeamId=team.Id.ToString(),
                 UserId = Guid.NewGuid().ToString(),
                 Scores = new System.Collections.Generic.Dictionary<string, int>() {
                     { "questionId3", 1},
@@ -215,10 +215,10 @@ namespace HackathonWebAppTests
                     { "questionId5", 1}
                 }
             };
-            team.ScoringSubmissions.Add(ss3.ProjectId + ", " + ss3.UserId, ss3);
+            team.ScoringSubmissions.Add(ss3.TeamId + ", " + ss3.UserId, ss3);
             
             var ss4 = new ScoringSubmission () { 
-                ProjectId=team.Id.ToString(),
+                TeamId=team.Id.ToString(),
                 UserId = Guid.NewGuid().ToString(),
                 Scores = new System.Collections.Generic.Dictionary<string, int>() {
                     { "questionId3", 5},
@@ -226,7 +226,7 @@ namespace HackathonWebAppTests
                     { "questionId5", 2}
                 }
             };
-            team.ScoringSubmissions.Add(ss4.ProjectId + ", " + ss4.UserId, ss4);
+            team.ScoringSubmissions.Add(ss4.TeamId + ", " + ss4.UserId, ss4);
 
             // Process
             var avgScores = team.AvgScoresByQuestionId;

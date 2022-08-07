@@ -130,13 +130,13 @@ namespace HackathonWebApp.Controllers
             // Create Project Score object
             var scoringSubmission = new ScoringSubmission() {
                 Id = ObjectId.GenerateNewId(),
-                ProjectId = this.activeTeam.Id.ToString(),
+                TeamId = this.activeTeam.Id.ToString(),
                 UserId = appUser.Id.ToString(),
                 Scores = scores
             };
 
             // Create change set
-            var key = scoringSubmission.ProjectId + ", " + scoringSubmission.UserId;
+            var key = scoringSubmission.TeamId + ", " + scoringSubmission.UserId;
             var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.ScoringSubmissions[key], scoringSubmission);
 
             // Update in DB

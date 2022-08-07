@@ -47,6 +47,18 @@ namespace HackathonWebApp.Models
         [BsonElement("event_applications")]
         public Dictionary<string,EventApplication> EventApplications { get; set; } = new Dictionary<string, EventApplication>();
 
+        /// <summary>
+        /// A mapping of EventApplication UserIds (key) to Team ObjectIds (value), but stored as strings. Each Event application may be assigned to only 1 team.
+        /// </summary>
+        [Required]
+        [BsonElement("event_app_teams")]
+        public Dictionary<string,string> EventAppTeams { get; set; } = new Dictionary<string, string>();
+
+        // Fields that would need aggregated from other collections
+        [BsonElement("teams")]
+        public Dictionary<string, Team> Teams {get; set;} = new Dictionary<string, Team>();
+
+
         [Required]
         [BsonElement("scoring_questions")]
         public Dictionary<string,ScoreQuestion> ScoringQuestions { get; set; } = new Dictionary<string, ScoreQuestion>();
@@ -56,7 +68,7 @@ namespace HackathonWebApp.Models
         public Dictionary<string,ScoringRole> ScoringRoles { get; set; } = new Dictionary<string, ScoringRole>();
 
         /// <summary>
-        /// A mapping of ApplicationUser Guids to ScoringRole ObjectIds, but stored as strings. Each user may have only 1 role.
+        /// A mapping of ApplicationUser Guids (key) to ScoringRole ObjectIds (key), but stored as strings. Each user may have only 1 role.
         /// </summary>
         [Required]
         [BsonElement("user_scoring_roles")]
@@ -67,9 +79,7 @@ namespace HackathonWebApp.Models
         public Dictionary<string,ScoringSubmission> ScoringSubmissions { get; set; } = new Dictionary<string, ScoringSubmission>();
 
 
-        // Fields that would need aggregated from other collections
-        [BsonElement("teams")]
-        public Dictionary<string, Team> Teams {get; set;} = new Dictionary<string, Team>();
+        
 
 
         // Calculated Properties
@@ -155,7 +165,7 @@ namespace HackathonWebApp.Models
             // Example" Adding an EventApplication to a team.
             // The appliction is stored in the dictionary using their ID, so it can be quickly retrieved in other operations.
             var userEventApplication = eventApplications.First();
-            myTeam.EventApplications.Add(userEventApplication.UserId, userEventApplication);
+            //myTeam.EventApplications.Add(userEventApplication.UserId.ToString(), userEventApplication);
 
 
             // Write some optimization code here to move event applications on to various teams.
