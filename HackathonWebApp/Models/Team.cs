@@ -16,11 +16,26 @@ namespace HackathonWebApp.Models
         [BsonElement("name")]
         public string Name { get; set; }
 
+        [BsonIgnore]
+        public HackathonEvent ReferenceEvent {get; set;}
+
+        // Properties
+        [BsonIgnore]
+        public Dictionary<Guid, EventApplication> EventApplications {
+            get {
+                if (ReferenceEvent == null) 
+                    return new Dictionary<Guid, EventApplication>();
+                
+                // Uses mapping of event applications to teams to build dictionary.
+                var eventApplicationIds = this.ReferenceEvent.EventAppTeams.Where(kvp=> kvp.Value == this.Id.ToString()).Select(kvp => kvp.Key);
+                var eventApplications = eventApplicationIds.Select(p => this.ReferenceEvent.EventApplications[p]).ToDictionary(p=> p.UserId, p=> p);
+                return eventApplications;
+            }
+        }
+
         // Fields that would need aggregated from other data
         [BsonIgnore]
         public Dictionary<Guid, ApplicationUser> TeamMembers { get; set; } = new Dictionary<Guid, ApplicationUser>();
-        [BsonIgnore]
-        public Dictionary<Guid, EventApplication> EventApplications { get; set; } = new Dictionary<Guid, EventApplication>();
         [BsonIgnore]
         public Dictionary<string, ScoringSubmission> ScoringSubmissions {get; set; } = new Dictionary<string, ScoringSubmission>();
 

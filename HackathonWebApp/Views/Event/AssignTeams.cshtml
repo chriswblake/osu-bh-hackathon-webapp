@@ -1,0 +1,360 @@
+﻿@model List<EventApplication>
+@{
+    Layout = "_AdminLayout";
+    ViewBag.Title = "Team Placement";
+    HackathonEvent activeEvent = ViewBag.ActiveEvent;
+    List<EventApplication> eventApplications = activeEvent.EventApplications.Values.ToList();
+    Dictionary<string, Team> teams = activeEvent.Teams;
+    Dictionary<string, string> eventAppTeams = activeEvent.EventAppTeams;
+}
+@functions {
+    string ToChartSumExpDataArray(Team team) {
+        var dataPoints = new double[] { 
+            team.HackathonExperience,
+            team.CodingExperience,
+            team.CommunicationExperience,
+            team.OrganizationExperience,
+            team.DocumentationExperience,
+            team.BusinessExperience,
+            team.CreativityExperience
+        };
+		string delimetedString = "["+String.Join(",", dataPoints)+"]";
+		return delimetedString;
+	}
+    string ToChartSumExpDataArray(EventApplication eventApplication) {
+        var dataPoints = new double[] { 
+            eventApplication.HackathonExperience,
+            eventApplication.CodingExperience,
+            eventApplication.CommunicationExperience,
+            eventApplication.OrganizationExperience,
+            eventApplication.DocumentationExperience,
+            eventApplication.BusinessExperience,
+            eventApplication.CreativityExperience
+        };
+		string delimetedString = "["+String.Join(",", dataPoints)+"]";
+		return delimetedString;
+	}
+    string ToLabelsArray(List<EventApplication> eventApplication) {
+        var labels = eventApplication.Select(p => $"'{p.Id.ToString()}'");
+		string delimetedString = "["+String.Join(",", labels)+"]";
+		return delimetedString;
+	}
+}
+
+
+@* Combined Chart *@
+<div class="col-12 text-white">
+    <h4>Sum Experience Per Team</h4>
+    <canvas id="bar-chart-team-combined" class="experience-barchart-combined"></canvas>
+</div>
+
+@* Individual Team Charts *@
+<a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Show/Hide Team Charts
+</a>
+<div class="row text-white collapse" id="collapseExample">
+    @foreach (var team in activeEvent.Teams.Values.OrderBy(t=> t.Name))
+    {
+    <div class="col-6">
+        <h4>@team.Name</h4>
+        <canvas id="bar-chart-team-@team.Id" class="experience-barchart"></canvas>
+    </div>
+    }
+</div>
+
+<br/>
+<br/>
+
+@* List of applications *@
+<form method="post" asp-action="AssignTeams" enctype="multipart/form-data" style="margin-bottom:75px;">
+    <h1 class="text-white">Applications (active event)</h1>
+    <a asp-action="CreateTeam" class="btn btn-secondary">Create Team</a>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small;">
+        <tr>
+            <th>UserId</th>
+            <th>Major</th>
+            <th>School Year</th>
+            <th>Hackathon</th>
+            <th>Coding</th>
+            <th>Communication</th>
+            <th>Organization</th>
+            <th>Documentation</th>
+            <th>Business</th>
+            <th>Creativity</th>
+            <th>Team</th>
+        </tr>
+        @foreach (EventApplication eventApplication in eventApplications.OrderBy(p=> (eventAppTeams.ContainsKey(p.UserId.ToString()) ? eventAppTeams[p.UserId.ToString()] : "zzzzz")                ))
+        {
+            <tr>
+                <td style="font-size:x-small; white-space: nowrap;">@eventApplication.UserId</td>
+                <td>@eventApplication.Major</td>
+                <td>@eventApplication.SchoolYear</td>
+                <td>@eventApplication.HackathonExperience</td>
+                <td>@eventApplication.CodingExperience</td>
+                <td>@eventApplication.CommunicationExperience</td>
+                <td>@eventApplication.OrganizationExperience</td>
+                <td>@eventApplication.DocumentationExperience</td>
+                <td>@eventApplication.BusinessExperience</td>
+                <td>@eventApplication.CreativityExperience</td>
+                <td>
+                    <select name="TeamAssignments[@eventApplication.UserId]">
+                        <option style="display:none;" disabled selected>-- Please select a team -- </option>"
+                        @foreach (Team team in teams.Values.OrderBy(p=> p.Name))
+                        {   
+                            var isSelectedAttr = "";
+                            var userId = eventApplication.UserId.ToString();
+                            if (eventAppTeams.ContainsKey(userId) && eventAppTeams[userId] == team.Id.ToString()) {
+                                isSelectedAttr = "selected";
+                            }
+                            @Html.Raw($"<option value='{team.Id}' {isSelectedAttr}>{team.Name}</option>")
+                        }
+                    </select>
+                </td>
+            </tr>
+        }
+    </table>
+</form>
+
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0" asp-append-version="true"></script>
+	@* Reference: https://www.chartjs.org/docs/latest/samples/information.html *@
+	@* Reference: https://chartjs-plugin-datalabels.netlify.app/guide/#table-of-contents *@
+
+	@* Experience Charts *@
+	<script>
+        var stringToColour = function(str) {
+            var hash = 0;
+            for (var i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            var colour = '#';
+            for (var i = 0; i < 3; i++) {
+                var value = (hash >> (i * 8)) & 0xFF;
+                colour += ('00' + value.toString(16)).substr(-2);
+            }
+            return colour;
+        }
+
+		$(document).ready(function(){
+			Chart.register(ChartDataLabels);
+
+			
+			// Colors
+			const bh_dark_green = '#05322B';
+			const bh_green =  '#018374';
+			const osu_orange = '#FE5C00';
+
+			// Format all histograms the same
+			charts = {};
+			$(".experience-barchart").each(function() {
+				let chartId = $(this).attr('id');
+				const ctx = document.getElementById(chartId).getContext('2d');
+				const myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						labels: [
+                            'Hackathon',
+                            'Coding',
+                            'Communications',
+                            'Organization',
+                            'Documentation',
+                            'Business',
+                            'Creativity'
+                        ],
+						datasets: []
+					},
+					options: {
+						scales: {
+							y: {
+								min: 0,
+                                title: {
+									display: true,
+									text: 'Experience',
+                                    color: bh_green
+								},
+                                grid: {
+                                    display: false,
+                                    color: "#999",
+                                    borderColor: bh_green
+                                },
+								ticks: {
+                                    color: bh_green,
+                                    autoSkip: false,
+									stepSize: 1
+								}
+							},
+							x: {
+								title: {
+									display: true,
+									text: 'Exp. Type',
+                                    color: bh_green
+								},
+                                grid: {
+                                    display: true,
+                                    color: "#555",
+                                    borderColor: bh_green
+                                },
+                                ticks: {
+                                    color: bh_green,
+                                    autoSkip: false,
+									stepSize: 1
+								},
+							}
+						},
+						layout: {
+							padding: {
+								top: 25
+							}
+						},
+						plugins: {
+							legend: {
+								display: false
+							}
+						}
+					}
+				});
+				charts[chartId] = myChart;
+			});
+            $(".experience-barchart-combined").each(function() {
+				let chartId = $(this).attr('id');
+				const ctx = document.getElementById(chartId).getContext('2d');
+				const myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+                        labels: [
+                            'Hackathon',
+                            'Coding',
+                            'Communications',
+                            'Organization',
+                            'Documentation',
+                            'Business',
+                            'Creativity'
+                        ],
+						datasets: [
+                            {
+                                label: 'Group 1',
+                                backgroundColor: "red",
+                                borderColor: bh_green,
+                                borderWidth: 1,
+                                datalabels: {
+                                    color: bh_green,
+                                    anchor: 'end',
+                                    align: 'end'
+                                }
+						    }
+                        ]
+					},
+					options: {
+						scales: {
+							y: {
+								min: 0,
+								
+								title: {
+									display: true,
+									text: 'Sum Experience',
+                                    color: bh_green
+								},
+                                grid: {
+                                    display: false,
+                                    color: '#555',
+                                    borderColor: bh_green
+                                },
+                                ticks: {
+									stepSize: 5
+								}
+							},
+							x: {
+								title: {
+									display: true,
+									text: 'Exp. Type',
+                                    color: bh_green
+								},
+                                grid: {
+                                    display: true,
+                                    color: "#555",
+                                    borderColor: bh_green
+                                },
+                                ticks: {
+                                    color: bh_green,
+                                    autoSkip: false,
+									stepSize: 1
+								}
+							}
+						},
+						layout: {
+							padding: {
+								top: 25
+							}
+						},
+						plugins: {
+							legend: {
+								display: true
+							}
+						}
+					}
+				});
+				charts[chartId] = myChart;
+			});
+
+            @{
+            var datasetStyle = @"
+                    {
+                        backgroundColor: 'red',
+                        datalabels: {
+                            color: bh_green,
+                            anchor: 'end',
+                            align: 'end'
+                        }
+                    }
+                ";
+            }
+
+            // Add  data to charts
+            @foreach (Team team in activeEvent.Teams.Values)
+            {
+                // Add data for each event appliccation
+                int ea = 0;
+                foreach(EventApplication eventApplication in team.EventApplications.Values)
+                {
+                    var dataCounts = ToChartSumExpDataArray(eventApplication);
+                    @Html.Raw($"charts['bar-chart-team-{team.Id}'].data.datasets[{ea}] = "+datasetStyle+";\n")
+                    @Html.Raw($"charts['bar-chart-team-{team.Id}'].data.datasets[{ea}].label = '{eventApplication.Id}';\n")
+                     @Html.Raw($"charts['bar-chart-team-{team.Id}'].data.datasets[{ea}].backgroundColor = stringToColour('{eventApplication.UserId.ToString()+team.Id}');\n")
+                    @Html.Raw($"charts['bar-chart-team-{team.Id}'].data.datasets[{ea}].data = {dataCounts};\n")
+                    ea+=1;
+                }
+
+                // Update
+                @Html.Raw($"charts['bar-chart-team-{team.Id}'].update();\n")
+                
+            }
+
+			// Update display for charts
+            @foreach (Team team in activeEvent.Teams.Values)
+            {
+            }
+
+            // Combined chart
+            @{ int n = 0; }
+            @foreach (Team team in activeEvent.Teams.Values.OrderBy(t=>t.Name))
+            {
+                
+                var dataCounts = ToChartSumExpDataArray(team);
+                @Html.Raw("charts['bar-chart-team-combined'].data.datasets["+n+"] = "+datasetStyle+";\n")
+                @Html.Raw($"charts['bar-chart-team-combined'].data.datasets[{n}].label = '{team.Name}';\n")
+                @Html.Raw($"charts['bar-chart-team-combined'].data.datasets[{n}].backgroundColor = stringToColour('{team.Id+team.Name}');\n")
+                @Html.Raw($"charts['bar-chart-team-combined'].data.datasets[{n}].data = {dataCounts};\n")
+                
+                n += 1;
+            }
+            @Html.Raw($"charts['bar-chart-team-combined'].update();\n")
+			
+
+		});
+	</script>
+}

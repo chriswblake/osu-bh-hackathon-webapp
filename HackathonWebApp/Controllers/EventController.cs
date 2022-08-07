@@ -32,6 +32,12 @@ namespace HackathonWebApp.Controllers
             // Hackathon DBs
             this.userManager = userManager;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
+
+            // Set reference event for all teams
+            foreach(var team in this.activeEvent.Teams.Values)
+            {
+                team.ReferenceEvent = this.activeEvent;
+            }
         }
 
         // Properties
@@ -256,14 +262,44 @@ namespace HackathonWebApp.Controllers
         }
         
         // Team Placement
-        public IActionResult TeamPlacement()
+        public IActionResult AssignTeams()
         {
             // Get events and applications for current event
-            List<EventApplication> activeEventApplications = this.activeEvent.EventApplications.Values.ToList();
-
+            ViewBag.EventApplications = this.activeEvent.EventApplications.Values.ToList();
             ViewBag.Teams = this.activeEvent.Teams;
-            return View(activeEventApplications);
+            ViewBag.EventAppTeams = this.activeEvent.EventAppTeams;
+            ViewBag.ActiveEvent = this.activeEvent;
+            return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> AssignTeams(Dictionary<string,string> teamAssignments)
+        {
+            var activeEventApplications = this.activeEvent.EventApplications;
+
+            // Create change set
+            var update = Builders<HackathonEvent>.Update;
+            var updates = new List<UpdateDefinition<HackathonEvent>>();
+            foreach(var teamAssignment in teamAssignments)
+            {
+                string userId = teamAssignment.Key;
+                string teamId = teamAssignment.Value;
+                var updateDefinition = update.Set(p => p.EventAppTeams[userId], teamId);
+                updates.Add(updateDefinition);
+            }
+
+            // Update in DB
+            string eventId = activeEvent.Id.ToString();
+            await eventCollection.FindOneAndUpdateAsync(
+                s => s.Id == ObjectId.Parse(eventId),
+                update.Combine(updates)
+            );
+
+            // Clear Active Event, so it is triggered to be refreshed on next request.
+            this.activeEvent = null;
+
+            return RedirectToAction("AssignTeams");
+        }
+
         public IActionResult CreateTeam() => View();
         [HttpPost]
         public async Task<IActionResult> CreateTeam(Team team)
@@ -291,15 +327,10 @@ namespace HackathonWebApp.Controllers
             {
                 Errors(e);
             }
-            return RedirectToAction("TeamPlacement");
+            return RedirectToAction("AssignTeams");
         }
-        [HttpPost]
-        public async Task<IActionResult> AssignTeams(Dictionary<string,string> eventApplicationTeams)
-        {
-            var activeEventApplications = this.activeEvent.EventApplications;
-
-            return RedirectToAction("TeamPlacement");
-        }
+        
+       
         // Score Questions
         public ViewResult ScoreQuestions()
         {
