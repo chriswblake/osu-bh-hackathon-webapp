@@ -27,21 +27,23 @@ namespace HackathonWebAppTests
                         var values = line.Split(',');
                         eventApplications.Add( new EventApplication(){
                             Id = ObjectId.GenerateNewId(),
-                            UserId = Guid.NewGuid(),
+                            UserId = Guid.Parse(values[0]),
                             HackathonExperience = Convert.ToInt32(values[1]),
                             CodingExperience = Convert.ToInt32(values[2]),
                             CommunicationExperience = Convert.ToInt32(values[3]),
                             OrganizationExperience = Convert.ToInt32(values[4]),
                             DocumentationExperience = Convert.ToInt32(values[5]),
                             BusinessExperience = Convert.ToInt32(values[6]),
-                            CreativityExperience = Convert.ToInt32(values[7])
+                            CreativityExperience = Convert.ToInt32(values[7]),
+                            Major = values[8],
+                            SchoolYear = values[9]
                         });
                     }
                 }                
                 return eventApplications;
             }}
         }
-
+        
         /// <summary>
         /// Description: Verifies that event applications can be assigned to teams such that they can be fairly balanced.
         /// </summary> 

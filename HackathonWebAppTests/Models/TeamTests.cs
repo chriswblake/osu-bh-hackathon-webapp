@@ -75,11 +75,11 @@ namespace HackathonWebAppTests
                     BusinessExperience = 4,
                     CreativityExperience = 5
                 };
-                team.TeamMemberApplications.Add(user1.Id, eventApp1);
-                team.TeamMemberApplications.Add(user2.Id, eventApp2);
-                team.TeamMemberApplications.Add(user3.Id, eventApp3);
-                team.TeamMemberApplications.Add(user4.Id, eventApp4);
-                team.TeamMemberApplications.Add(user5.Id, eventApp5);
+                team.EventApplications.Add(user1.Id, eventApp1);
+                team.EventApplications.Add(user2.Id, eventApp2);
+                team.EventApplications.Add(user3.Id, eventApp3);
+                team.EventApplications.Add(user4.Id, eventApp4);
+                team.EventApplications.Add(user5.Id, eventApp5);
 
                 return team;
             }}
@@ -99,21 +99,148 @@ namespace HackathonWebAppTests
             var team = new Team()
             {
                 Id = ObjectId.Parse("123412341234123412341234"),
-                EventId = ObjectId.Parse("000000000000000000000006"),
                 Name = "The Shindigs"
             };
             team.TeamMembers.Add(user1.Id, user1);
-            team.TeamMemberApplications.Add(user1.Id, eventApp1);
+            team.EventApplications.Add(user1.Id, eventApp1);
 
             // Assert
             Assert.Equal(ObjectId.Parse("123412341234123412341234"), team.Id);
-            Assert.Equal(ObjectId.Parse("000000000000000000000006"), team.EventId);
             Assert.Equal("The Shindigs", team.Name);
             Assert.Equal(1, team.TeamMembers.Count);
-            Assert.Equal(1, team.TeamMemberApplications.Count);
+            Assert.Equal(1, team.EventApplications.Count);
 
         }
 
+        #region Calculated Results
+        /// <summary>
+        /// Description: Verifies that multiple score submission across several questions can be properally counted.
+        /// </summary> 
+        [Fact]
+        public void Test_CountScoresByQuestionId() {
+            // Define
+            var team = new Team() { Id=ObjectId.GenerateNewId() };
+
+            var ss1 = new ScoringSubmission () { 
+                TeamId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId1", 2},
+                    { "questionId2", 1},
+                    { "questionId3", 3}
+                }
+            };
+            team.ScoringSubmissions.Add(ss1.TeamId + ", " + ss1.UserId, ss1);
+
+            var ss2 = new ScoringSubmission () { 
+                TeamId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId2", 5},
+                    { "questionId3", 5},
+                    { "questionId4", 5}
+                }
+            };
+            team.ScoringSubmissions.Add(ss2.TeamId + ", " + ss2.UserId, ss2);
+
+            var ss3 = new ScoringSubmission () { 
+                TeamId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId3", 1},
+                    { "questionId4", 1},
+                    { "questionId5", 1}
+                }
+            };
+            team.ScoringSubmissions.Add(ss3.TeamId + ", " + ss3.UserId, ss3);
+            
+            var ss4 = new ScoringSubmission () { 
+                TeamId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId3", 5},
+                    { "questionId4", 5},
+                    { "questionId5", 2}
+                }
+            };
+            team.ScoringSubmissions.Add(ss4.TeamId + ", " + ss4.UserId, ss4);
+
+            // Process
+            var countScores = team.CountScoresByQuestionId;
+
+            // Assert
+            Assert.Equal(1, countScores["questionId1"]);
+            Assert.Equal(2, countScores["questionId2"]);
+            Assert.Equal(4, countScores["questionId3"]);
+            Assert.Equal(3, countScores["questionId4"]);
+            Assert.Equal(2, countScores["questionId5"]);
+        }
+
+        /// <summary>
+        /// Description: Verifies that multiple score submission across several questions can be properally averaged.
+        /// </summary> 
+        [Fact]
+        public void Test_AvgScoresByQuestionId() {
+            // Define
+            var team = new Team() { Id=ObjectId.GenerateNewId() };
+
+            var ss1 = new ScoringSubmission () { 
+                TeamId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId1", 2},
+                    { "questionId2", 1},
+                    { "questionId3", 3}
+                }
+            };
+            team.ScoringSubmissions.Add(ss1.TeamId + ", " + ss1.UserId, ss1);
+
+            var ss2 = new ScoringSubmission () { 
+                TeamId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId1", 5},
+                    { "questionId2", 5},
+                    { "questionId3", 5}
+                }
+            };
+            team.ScoringSubmissions.Add(ss2.TeamId + ", " + ss2.UserId, ss2);
+
+            var ss3 = new ScoringSubmission () { 
+                TeamId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId3", 1},
+                    { "questionId4", 1},
+                    { "questionId5", 1}
+                }
+            };
+            team.ScoringSubmissions.Add(ss3.TeamId + ", " + ss3.UserId, ss3);
+            
+            var ss4 = new ScoringSubmission () { 
+                TeamId=team.Id.ToString(),
+                UserId = Guid.NewGuid().ToString(),
+                Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                    { "questionId3", 5},
+                    { "questionId4", 5},
+                    { "questionId5", 2}
+                }
+            };
+            team.ScoringSubmissions.Add(ss4.TeamId + ", " + ss4.UserId, ss4);
+
+            // Process
+            var avgScores = team.AvgScoresByQuestionId;
+
+            // Assert
+            Assert.Equal((2+5)/2.0,     avgScores["questionId1"]);
+            Assert.Equal((1+5)/2.0,     avgScores["questionId2"]);
+            Assert.Equal((3+5+1+5)/4.0, avgScores["questionId3"]);
+            Assert.Equal((1+5)/2.0,     avgScores["questionId4"]);
+            Assert.Equal((1+2)/2.0,     avgScores["questionId5"]);
+        }
+        #endregion
+
+        # region Calculated Properties
         /// <summary>
         /// Description: Verifies that the combined hackathon experience for the team is calculated correctly.
         /// </summary> 
@@ -340,5 +467,6 @@ namespace HackathonWebAppTests
             // Assert
             Assert.Equal(Math.Round(avgExp, 2), 2.20);
         }
+        #endregion
     }
 }

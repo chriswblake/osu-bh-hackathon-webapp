@@ -89,6 +89,24 @@
                             </a>
                         </li>
 
+                        @* Teams *@
+                        <li class="nav-item settings-header">
+                            Teams
+                            <hr/>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="CreateTeam">
+                                <i class="fa-solid fa-square-plus"></i>
+                                Create
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="AssignTeams">
+                                <i class="fa-solid fa-bucket"></i>
+                                Placement
+                            </a>
+                        </li>
+
                         @* Scoring *@
                         <li class="nav-item settings-header">
                             Scoring
