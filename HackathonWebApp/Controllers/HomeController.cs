@@ -44,6 +44,11 @@ namespace HackathonWebApp.Controllers
             return View();
         }
 
+        public IActionResult GettingReady()
+        {
+            return View();
+        }
+
         public IActionResult Selection()
         {
             // Use Event Controller to get all event applications for the active event.

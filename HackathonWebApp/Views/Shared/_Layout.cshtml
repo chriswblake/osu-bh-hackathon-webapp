@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -33,6 +33,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="FAQs">FAQs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="GettingReady">Prepare</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Selection">Selection</a>
@@ -101,7 +104,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <!-- Particle library -->
 	<script src="~/js/particles/particles.js"></script>
-	<script src="~/js/particles/app.js"></script>
+	@* <script src="~/js/particles/app.js"></script> *@
     @RenderSection("Scripts", required: false)
 </body>
 </html>
