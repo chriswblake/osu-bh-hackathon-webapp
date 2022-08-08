@@ -13,6 +13,8 @@
             <form asp-action="UpdateHackathonEvent">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="Id" class="form-control" />
+
+                <h2>Basics</h2>
                 <div class="form-group">
                     <label asp-for="Name" class="control-label"></label>
                     <input asp-for="Name" class="form-control" />
@@ -35,6 +37,13 @@
                             { true, "Active"}
                         }, "Key", "Value"), "Select Active", new { @class="basic-info-selector" })
                     <span asp-validation-for="IsActive" class="text-danger"></span>
+                </div>
+
+                <h2>Registration Settings</h2>
+                <div class="form-group">
+                    @{ var majorOptions = String.Join("\n", hackathonEvent.RegistrationSettings.MajorOptions.Values).Trim(); }
+                    <label class="control-label" for="MajorOptions">Major Options</label>
+                    <textarea style="width:100%;" id="majorOptionsTextArea" rows="@(hackathonEvent.RegistrationSettings.MajorOptions.Count()+1)">@majorOptions</textarea>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Save" class="btn btn-primary" />
@@ -72,4 +81,36 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+    $( document ).ready(function() {
+
+        // Pre-generate hidden inputs for MajorOptions
+        regenerateHiddenInputsMajorOptions()
+        // Regenerate hidden inputs for Majore Options, if changed.
+        $("#majorOptionsTextArea").change(regenerateHiddenInputsMajorOptions)
+        
+    });
+
+    function regenerateHiddenInputsMajorOptions() {
+        // Retrieve element with textual list of major options
+        var majorOptionsTextArea =  $("#majorOptionsTextArea");
+        
+        // Delete existing major options (stored as hidden inputs)
+        $(".major-option-input").remove();
+
+        // Regenerate them as hidden inputs
+        var majorOptionsText = majorOptionsTextArea.val();
+        var majorOptionsList = majorOptionsText.split("\n")
+            .filter(a=>a)
+            .sort(function (a, b) {
+                return a.toLowerCase().localeCompare(b.toLowerCase());
+            });
+        $.each(majorOptionsList.reverse(), function(index, majorOption) {
+            var key = majorOption.toLowerCase().replace(' ', '_');
+            var htmlInput = `<input type="hidden" class="major-option-input" name="RegistrationSettings.MajorOptions['${key}']" value="${majorOption}"/>`;
+            majorOptionsTextArea.after(htmlInput);
+        });
+    }
+</script>
 }

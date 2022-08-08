@@ -127,7 +127,8 @@ namespace HackathonWebApp.Controllers
                     .Set(p => p.Name, hackathonEvent.Name)
                     .Set(p => p.StartTime, hackathonEvent.StartTime)
                     .Set(p => p.EndTime, hackathonEvent.EndTime)
-                    .Set(p => p.IsActive, hackathonEvent.IsActive);
+                    .Set(p => p.IsActive, hackathonEvent.IsActive)
+                    .Set(p => p.RegistrationSettings.MajorOptions, hackathonEvent.RegistrationSettings.MajorOptions);
                 await eventCollection.FindOneAndUpdateAsync(
                     s => s.Id == ObjectId.Parse(id),
                     updateDefinition
@@ -150,7 +151,7 @@ namespace HackathonWebApp.Controllers
             {
                 Errors(e);
             }
-            return RedirectToAction("Index");
+            return View(hackathonEvent);
         }
         [HttpPost]
         public async Task<IActionResult> DeleteHackathonEvent(string id)
