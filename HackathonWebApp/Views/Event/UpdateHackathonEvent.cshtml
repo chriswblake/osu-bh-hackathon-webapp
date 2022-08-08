@@ -132,7 +132,7 @@
         });
 
         // Update length of text area
-        optionsTextArea.attr('rows', optionsList.length);
+        optionsTextArea.attr('rows', Math.min(10, optionsList.length));
     }
 </script>
 }
