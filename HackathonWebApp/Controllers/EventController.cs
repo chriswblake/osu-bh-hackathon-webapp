@@ -129,7 +129,8 @@ namespace HackathonWebApp.Controllers
                     .Set(p => p.EndTime, hackathonEvent.EndTime)
                     .Set(p => p.IsActive, hackathonEvent.IsActive)
                     .Set(p => p.RegistrationSettings.MajorOptions, hackathonEvent.RegistrationSettings.MajorOptions)
-                    .Set(p => p.RegistrationSettings.TrainingsAcquiredOptions, hackathonEvent.RegistrationSettings.TrainingsAcquiredOptions);
+                    .Set(p => p.RegistrationSettings.TrainingsAcquiredOptions, hackathonEvent.RegistrationSettings.TrainingsAcquiredOptions)
+                    .Set(p => p.RegistrationSettings.TShirtSizeOptions, hackathonEvent.RegistrationSettings.TShirtSizeOptions);
                 await eventCollection.FindOneAndUpdateAsync(
                     s => s.Id == ObjectId.Parse(id),
                     updateDefinition

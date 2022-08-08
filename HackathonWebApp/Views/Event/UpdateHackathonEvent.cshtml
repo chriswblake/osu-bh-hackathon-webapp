@@ -50,6 +50,11 @@
                     <label class="control-label" for="TrainingsAcquiredOptions">Trainings Acquired Options</label>
                     <textarea style="width:100%;" id="TrainingsAcquiredOptions" name="TrainingsAcquiredOptions">@trainingsAcquiredOptionsText</textarea>
                 </div>
+                <div class="form-group">
+                    @{ var tShirtSizeOptionsText = String.Join("\n", hackathonEvent.RegistrationSettings.TShirtSizeOptions.Values).Trim(); }
+                    <label class="control-label" for="TShirtSizeOptions">T-Shirt Size Options</label>
+                    <textarea style="width:100%;" id="TShirtSizeOptions" name="TShirtSizeOptions">@tShirtSizeOptionsText</textarea>
+                </div>
 
                 @* Save Options *@
                 <div class="form-group">
@@ -96,6 +101,8 @@
         $("#MajorOptions").change(textAreaToHiddenInputs);
         textAreaToHiddenInputs($("#TrainingsAcquiredOptions"));
         $("#TrainingsAcquiredOptions").change(textAreaToHiddenInputs);
+        textAreaToHiddenInputs($("#TShirtSizeOptions"));
+        $("#TShirtSizeOptions").change(textAreaToHiddenInputs);
         
     });
 
