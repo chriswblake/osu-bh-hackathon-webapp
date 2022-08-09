@@ -103,8 +103,7 @@ namespace HackathonWebApp.Controllers
             };
 
             // Create change set
-            var key = scoringSubmission.TeamId + ", " + scoringSubmission.UserId;
-            var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.ScoringSubmissions[key], scoringSubmission);
+            var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.Teams[scoringSubmission.TeamId].ScoringSubmissions[scoringSubmission.UserId], scoringSubmission);
 
             // Update in DB
             string eventId = activeEvent.Id.ToString();
@@ -114,7 +113,7 @@ namespace HackathonWebApp.Controllers
             );
 
             // Update in memory
-            this.activeEvent.ScoringSubmissions[key] = scoringSubmission;
+            this.activeEvent.Teams[scoringSubmission.TeamId].ScoringSubmissions[scoringSubmission.UserId] = scoringSubmission;
 
             return RedirectToAction("SubmitScore");
         }
@@ -122,20 +121,9 @@ namespace HackathonWebApp.Controllers
         // Dashboard
         [Authorize(Roles = "Admin")]
         public ViewResult ScoringDashboard () {
-            // HackathonEvent does not have a list of teams yet. Using hardcoded example teams for development.
             ViewBag.AllTeams = this.activeEvent.Teams;
             ViewBag.ActiveTeam = this.activeTeam;
-            ViewBag.ScoringSubmissions = this.activeEvent.ScoringSubmissions;
             ViewBag.ScoringQuestions = this.activeEvent.ScoringQuestions;
-
-            // Put scoring submissions in teams
-            foreach (ScoringSubmission scoringSubmission in this.activeEvent.ScoringSubmissions.Values)
-            {
-                string teamId = scoringSubmission.TeamId;
-                Team team = this.activeEvent.Teams[teamId];
-                team.ScoringSubmissions[scoringSubmission.UserId.ToString()] = scoringSubmission;
-            }
-
             return View();
         }
         [Authorize(Roles = "Admin")]

@@ -36,10 +36,12 @@ namespace HackathonWebApp.Models
         // Fields that would need aggregated from other data
         [BsonIgnore]
         public Dictionary<Guid, ApplicationUser> TeamMembers { get; set; } = new Dictionary<Guid, ApplicationUser>();
-        [BsonIgnore]
-        public Dictionary<string, ScoringSubmission> ScoringSubmissions {get; set; } = new Dictionary<string, ScoringSubmission>();
 
-        // Calculated Results
+        // Scoring
+        [Required]
+        [BsonElement("scoring_submissions")]
+        public Dictionary<string, ScoringSubmission> ScoringSubmissions {get; set; } = new Dictionary<string, ScoringSubmission>();
+        [BsonIgnore]
         public Dictionary<string, int> CountScoresByQuestionId { get {
 
             // Collapse to just the questions
@@ -50,6 +52,7 @@ namespace HackathonWebApp.Models
 
             return counts;
         }}
+        [BsonIgnore]
         public Dictionary<string, double> AvgScoresByQuestionId { get {
             var counts = new Dictionary<string, int>();
             var sums = new Dictionary<string, int>();

@@ -77,13 +77,6 @@ namespace HackathonWebApp.Models
         [BsonElement("user_scoring_roles")]
         public Dictionary<string,string> UserScoringRoles { get; set; } = new Dictionary<string, string>();
 
-        [Required]
-        [BsonElement("scoring_submissions")]
-        public Dictionary<string,ScoringSubmission> ScoringSubmissions { get; set; } = new Dictionary<string, ScoringSubmission>();
-
-
-        
-
 
         // Calculated Properties
         [BsonIgnore]
