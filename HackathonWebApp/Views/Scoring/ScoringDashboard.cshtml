@@ -9,13 +9,13 @@
 @functions {
     
     string ToChartQuestionLabelArray(Team team, Dictionary<string, ScoreQuestion> scoringQuestions) {
-        var dataLabelKeys = team.AvgScoresByQuestionId.Keys;
+        var dataLabelKeys = team.AvgUnweightedScoresByQuestionId.Keys;
         var dataLabelQuestionTitles = dataLabelKeys.Select(k=> "'"+scoringQuestions[k].Title+"'");
 		string delimetedString = "["+String.Join(",", dataLabelQuestionTitles)+"]";
 		return delimetedString;
 	}
     string ToChartAvgsDataArray(Team team) {
-        var dataPoints = team.AvgScoresByQuestionId.Values;
+        var dataPoints = team.AvgUnweightedScoresByQuestionId.Values;
 		string delimetedString = "["+String.Join(",", dataPoints)+"]";
 		return delimetedString;
 	}

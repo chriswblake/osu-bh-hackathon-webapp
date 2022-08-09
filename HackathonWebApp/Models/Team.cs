@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
@@ -135,7 +135,7 @@ namespace HackathonWebApp.Models
             return counts;
         }}
         [BsonIgnore]
-        public Dictionary<string, double> AvgScoresByQuestionId { get {
+        public Dictionary<string, double> AvgUnweightedScoresByQuestionId { get {
             var counts = new Dictionary<string, int>();
             var sums = new Dictionary<string, int>();
             var avgs = new Dictionary<string, double>();

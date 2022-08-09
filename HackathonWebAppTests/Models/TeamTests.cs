@@ -88,6 +88,74 @@ namespace HackathonWebAppTests
 
                 return team;
             }}
+        
+            /// <summary>
+            /// Description: This hackathon event is used for checking count, sum, and weight sum of scores.
+            /// </summary>
+            public static HackathonEvent SampleHackathonEvent_Scoring { get {
+                // Create a hackathon
+                var hackathonEvent = new HackathonEvent();
+                // Add questions
+                var q1 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000001"), PossiblePoints = 5 };
+                var q2 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000002"), PossiblePoints = 10 };
+                var q3 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000003"), PossiblePoints = 15 };
+                var q4 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000004"), PossiblePoints = 200 };
+                var q5 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000005"), PossiblePoints = 25 };
+                hackathonEvent.ScoringQuestions.Add(q1.Id.ToString(), q1);
+                hackathonEvent.ScoringQuestions.Add(q2.Id.ToString(), q2);
+                hackathonEvent.ScoringQuestions.Add(q3.Id.ToString(), q3);
+                hackathonEvent.ScoringQuestions.Add(q4.Id.ToString(), q4);
+                hackathonEvent.ScoringQuestions.Add(q5.Id.ToString(), q5);
+                // Add a team
+                var team = new Team() { Id=ObjectId.Parse("000000000000000000000111"), ReferenceEvent=hackathonEvent};
+                hackathonEvent.Teams.Add(team.Id.ToString(), team);
+                // Add score submissions to the team
+                var ss1 = new ScoringSubmission () { 
+                    TeamId=team.Id.ToString(),
+                    UserId = Guid.NewGuid().ToString(),
+                    Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                        { q1.Id.ToString(), 2 },
+                        { q2.Id.ToString(), 1 },
+                        { q3.Id.ToString(), 3 }
+                    }
+                };
+                team.ScoringSubmissions.Add(ss1.UserId, ss1);
+                
+                var ss2 = new ScoringSubmission () { 
+                    TeamId=team.Id.ToString(),
+                    UserId = Guid.NewGuid().ToString(),
+                    Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                        { q2.Id.ToString(), 5 },
+                        { q3.Id.ToString(), 5 },
+                        { q4.Id.ToString(), 5 }
+                    }
+                };
+                team.ScoringSubmissions.Add(ss2.UserId, ss2);
+                
+                var ss3 = new ScoringSubmission () { 
+                    TeamId=team.Id.ToString(),
+                    UserId = Guid.NewGuid().ToString(),
+                    Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                        { q3.Id.ToString(), 1 },
+                        { q4.Id.ToString(), 1 },
+                        { q5.Id.ToString(), 1 }
+                    }
+                };
+                team.ScoringSubmissions.Add(ss3.TeamId + ", " + ss3.UserId, ss3);
+                
+                var ss4 = new ScoringSubmission () { 
+                    TeamId=team.Id.ToString(),
+                    UserId = Guid.NewGuid().ToString(),
+                    Scores = new System.Collections.Generic.Dictionary<string, int>() {
+                        { q3.Id.ToString(), 5 },
+                        { q4.Id.ToString(), 5 },
+                        { q5.Id.ToString(), 2 }
+                    }
+                };
+                team.ScoringSubmissions.Add(ss4.UserId, ss4);
+
+                return hackathonEvent;
+            }}
         }
 
         /// <summary>
@@ -120,124 +188,38 @@ namespace HackathonWebAppTests
         [Fact]
         public void Test_CountScoresByQuestionId() {
             // Define
-            var team = new Team() { Id=ObjectId.GenerateNewId() };
-
-            var ss1 = new ScoringSubmission () { 
-                TeamId=team.Id.ToString(),
-                UserId = Guid.NewGuid().ToString(),
-                Scores = new System.Collections.Generic.Dictionary<string, int>() {
-                    { "questionId1", 2},
-                    { "questionId2", 1},
-                    { "questionId3", 3}
-                }
-            };
-            team.ScoringSubmissions.Add(ss1.TeamId + ", " + ss1.UserId, ss1);
-
-            var ss2 = new ScoringSubmission () { 
-                TeamId=team.Id.ToString(),
-                UserId = Guid.NewGuid().ToString(),
-                Scores = new System.Collections.Generic.Dictionary<string, int>() {
-                    { "questionId2", 5},
-                    { "questionId3", 5},
-                    { "questionId4", 5}
-                }
-            };
-            team.ScoringSubmissions.Add(ss2.TeamId + ", " + ss2.UserId, ss2);
-
-            var ss3 = new ScoringSubmission () { 
-                TeamId=team.Id.ToString(),
-                UserId = Guid.NewGuid().ToString(),
-                Scores = new System.Collections.Generic.Dictionary<string, int>() {
-                    { "questionId3", 1},
-                    { "questionId4", 1},
-                    { "questionId5", 1}
-                }
-            };
-            team.ScoringSubmissions.Add(ss3.TeamId + ", " + ss3.UserId, ss3);
-            
-            var ss4 = new ScoringSubmission () { 
-                TeamId=team.Id.ToString(),
-                UserId = Guid.NewGuid().ToString(),
-                Scores = new System.Collections.Generic.Dictionary<string, int>() {
-                    { "questionId3", 5},
-                    { "questionId4", 5},
-                    { "questionId5", 2}
-                }
-            };
-            team.ScoringSubmissions.Add(ss4.TeamId + ", " + ss4.UserId, ss4);
+            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
+            var team = hackathonEvent.Teams["000000000000000000000111"];
 
             // Process
             var countScores = team.CountScoresByQuestionId;
 
             // Assert
-            Assert.Equal(1, countScores["questionId1"]);
-            Assert.Equal(2, countScores["questionId2"]);
-            Assert.Equal(4, countScores["questionId3"]);
-            Assert.Equal(3, countScores["questionId4"]);
-            Assert.Equal(2, countScores["questionId5"]);
+            Assert.Equal(1, countScores["000000000000000000000001"]);
+            Assert.Equal(2, countScores["000000000000000000000002"]);
+            Assert.Equal(4, countScores["000000000000000000000003"]);
+            Assert.Equal(3, countScores["000000000000000000000004"]);
+            Assert.Equal(2, countScores["000000000000000000000005"]);
         }
 
         /// <summary>
         /// Description: Verifies that multiple score submission across several questions can be properally averaged.
         /// </summary> 
         [Fact]
-        public void Test_AvgScoresByQuestionId() {
+        public void Test_AvgUnweightedScoresByQuestionId() {
             // Define
-            var team = new Team() { Id=ObjectId.GenerateNewId() };
-
-            var ss1 = new ScoringSubmission () { 
-                TeamId=team.Id.ToString(),
-                UserId = Guid.NewGuid().ToString(),
-                Scores = new System.Collections.Generic.Dictionary<string, int>() {
-                    { "questionId1", 2},
-                    { "questionId2", 1},
-                    { "questionId3", 3}
-                }
-            };
-            team.ScoringSubmissions.Add(ss1.TeamId + ", " + ss1.UserId, ss1);
-
-            var ss2 = new ScoringSubmission () { 
-                TeamId=team.Id.ToString(),
-                UserId = Guid.NewGuid().ToString(),
-                Scores = new System.Collections.Generic.Dictionary<string, int>() {
-                    { "questionId1", 5},
-                    { "questionId2", 5},
-                    { "questionId3", 5}
-                }
-            };
-            team.ScoringSubmissions.Add(ss2.TeamId + ", " + ss2.UserId, ss2);
-
-            var ss3 = new ScoringSubmission () { 
-                TeamId=team.Id.ToString(),
-                UserId = Guid.NewGuid().ToString(),
-                Scores = new System.Collections.Generic.Dictionary<string, int>() {
-                    { "questionId3", 1},
-                    { "questionId4", 1},
-                    { "questionId5", 1}
-                }
-            };
-            team.ScoringSubmissions.Add(ss3.TeamId + ", " + ss3.UserId, ss3);
-            
-            var ss4 = new ScoringSubmission () { 
-                TeamId=team.Id.ToString(),
-                UserId = Guid.NewGuid().ToString(),
-                Scores = new System.Collections.Generic.Dictionary<string, int>() {
-                    { "questionId3", 5},
-                    { "questionId4", 5},
-                    { "questionId5", 2}
-                }
-            };
-            team.ScoringSubmissions.Add(ss4.TeamId + ", " + ss4.UserId, ss4);
+            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
+            var team = hackathonEvent.Teams["000000000000000000000111"];
 
             // Process
-            var avgScores = team.AvgScoresByQuestionId;
+            var avgScores = team.AvgUnweightedScoresByQuestionId;
 
             // Assert
-            Assert.Equal((2+5)/2.0,     avgScores["questionId1"]);
-            Assert.Equal((1+5)/2.0,     avgScores["questionId2"]);
-            Assert.Equal((3+5+1+5)/4.0, avgScores["questionId3"]);
-            Assert.Equal((1+5)/2.0,     avgScores["questionId4"]);
-            Assert.Equal((1+2)/2.0,     avgScores["questionId5"]);
+            Assert.Equal(2,             avgScores["000000000000000000000001"]);
+            Assert.Equal((1+5)/2.0,     avgScores["000000000000000000000002"]);
+            Assert.Equal((3+5+1+5)/4.0, avgScores["000000000000000000000003"]);
+            Assert.Equal((5+1+5)/3.0,   avgScores["000000000000000000000004"]);
+            Assert.Equal((1+2)/2.0,     avgScores["000000000000000000000005"]);
         }
         #endregion
 
