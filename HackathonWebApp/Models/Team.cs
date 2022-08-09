@@ -83,7 +83,7 @@ namespace HackathonWebApp.Models
             return avgs;
         }}
 
-        // Calculated Properties
+        // Experience 
         [BsonIgnore]
         public double HackathonExperience { get {
             return this.EventApplications.Values.Sum(ea => ea.HackathonExperience);

@@ -15,21 +15,19 @@ namespace HackathonWebAppTests
             /// of different experience scores.
             /// </summary> 
             public static Team SampleTeam_AvgsSums { get {
-                var team = new Team();
+                var hackathonEvent = new HackathonEvent();
+                // A team is added to the hackathon event.
+                var team = new Team() { Id = ObjectId.GenerateNewId(), ReferenceEvent=hackathonEvent };
+                hackathonEvent.Teams.Add(team.Id.ToString(), team);
 
-                // Add users
+                // Users create accounts
                 var user1 = new ApplicationUser() { Id = Guid.NewGuid(), UserName = "david_1" };
                 var user2 = new ApplicationUser() { Id = Guid.NewGuid(), UserName = "david_2" };
                 var user3 = new ApplicationUser() { Id = Guid.NewGuid(), UserName = "david_3" };
                 var user4 = new ApplicationUser() { Id = Guid.NewGuid(), UserName = "david_4" };
                 var user5 = new ApplicationUser() { Id = Guid.NewGuid(), UserName = "david_5" };
-                team.TeamMembers.Add(user1.Id, user1);
-                team.TeamMembers.Add(user2.Id, user2);
-                team.TeamMembers.Add(user3.Id, user3);
-                team.TeamMembers.Add(user4.Id, user4);
-                team.TeamMembers.Add(user5.Id, user5);
 
-                // Add users' event applications
+                // Users apply to hackathon event
                 var eventApp1 = new EventApplication() { Id = ObjectId.Parse("000000000000000000000001"), UserId = user1.Id,
                     HackathonExperience = 1,
                     CodingExperience = 1,
@@ -48,7 +46,7 @@ namespace HackathonWebAppTests
                     BusinessExperience = 2,
                     CreativityExperience = 5
                 };
-                var eventApp3 = new EventApplication() { Id = ObjectId.Parse("000000000000000000000002"), UserId = user3.Id,
+                var eventApp3 = new EventApplication() { Id = ObjectId.Parse("000000000000000000000003"), UserId = user3.Id,
                     HackathonExperience = 1,
                     CodingExperience = 1,
                     CommunicationExperience = 4,
@@ -57,7 +55,7 @@ namespace HackathonWebAppTests
                     BusinessExperience = 3,
                     CreativityExperience = 0
                 };
-                var eventApp4 = new EventApplication() { Id = ObjectId.Parse("000000000000000000000002"), UserId = user4.Id,
+                var eventApp4 = new EventApplication() { Id = ObjectId.Parse("000000000000000000000004"), UserId = user4.Id,
                     HackathonExperience = 1,
                     CodingExperience = 3,
                     CommunicationExperience = 5,
@@ -66,7 +64,7 @@ namespace HackathonWebAppTests
                     BusinessExperience = 5,
                     CreativityExperience = 1
                 };
-                var eventApp5 = new EventApplication() { Id = ObjectId.Parse("000000000000000000000002"), UserId = user5.Id,
+                var eventApp5 = new EventApplication() { Id = ObjectId.Parse("000000000000000000000005"), UserId = user5.Id,
                     HackathonExperience = 4,
                     CodingExperience = 5,
                     CommunicationExperience = 4,
@@ -75,11 +73,18 @@ namespace HackathonWebAppTests
                     BusinessExperience = 4,
                     CreativityExperience = 5
                 };
-                team.EventApplications.Add(user1.Id, eventApp1);
-                team.EventApplications.Add(user2.Id, eventApp2);
-                team.EventApplications.Add(user3.Id, eventApp3);
-                team.EventApplications.Add(user4.Id, eventApp4);
-                team.EventApplications.Add(user5.Id, eventApp5);
+                hackathonEvent.EventApplications.Add(eventApp1.Id.ToString(), eventApp1);
+                hackathonEvent.EventApplications.Add(eventApp2.Id.ToString(), eventApp2);
+                hackathonEvent.EventApplications.Add(eventApp3.Id.ToString(), eventApp3);
+                hackathonEvent.EventApplications.Add(eventApp4.Id.ToString(), eventApp4);
+                hackathonEvent.EventApplications.Add(eventApp5.Id.ToString(), eventApp5);
+
+                // Applications are assigned to a team
+                hackathonEvent.EventAppTeams.Add(eventApp1.Id.ToString(), team.Id.ToString());
+                hackathonEvent.EventAppTeams.Add(eventApp2.Id.ToString(), team.Id.ToString());
+                hackathonEvent.EventAppTeams.Add(eventApp3.Id.ToString(), team.Id.ToString());
+                hackathonEvent.EventAppTeams.Add(eventApp4.Id.ToString(), team.Id.ToString());
+                hackathonEvent.EventAppTeams.Add(eventApp5.Id.ToString(), team.Id.ToString());
 
                 return team;
             }}
@@ -93,7 +98,6 @@ namespace HackathonWebAppTests
         {
             // Define
             var user1 = new ApplicationUser() { Id = Guid.NewGuid(), UserName = "david123" };
-            var eventApp1 = new EventApplication() { Id = ObjectId.Parse("000000000000000000000001"), UserId = user1.Id};
 
             // Process
             var team = new Team()
@@ -102,17 +106,14 @@ namespace HackathonWebAppTests
                 Name = "The Shindigs"
             };
             team.TeamMembers.Add(user1.Id, user1);
-            team.EventApplications.Add(user1.Id, eventApp1);
 
             // Assert
             Assert.Equal(ObjectId.Parse("123412341234123412341234"), team.Id);
             Assert.Equal("The Shindigs", team.Name);
             Assert.Equal(1, team.TeamMembers.Count);
-            Assert.Equal(1, team.EventApplications.Count);
-
         }
 
-        #region Calculated Results
+        #region Scoring
         /// <summary>
         /// Description: Verifies that multiple score submission across several questions can be properally counted.
         /// </summary> 
@@ -240,7 +241,7 @@ namespace HackathonWebAppTests
         }
         #endregion
 
-        # region Calculated Properties
+        # region Experience
         /// <summary>
         /// Description: Verifies that the combined hackathon experience for the team is calculated correctly.
         /// </summary> 
@@ -354,8 +355,6 @@ namespace HackathonWebAppTests
         }
 
 
-
-        
         /// <summary>
         /// Description: Verifies that the average hackathon experience for the team is calculated correctly.
         /// </summary> 
