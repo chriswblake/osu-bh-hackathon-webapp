@@ -241,6 +241,21 @@ namespace HackathonWebAppTests
             Assert.Equal((5+1+5)/3.0    /5.0 *20, avgScores["000000000000000000000004"]);
             Assert.Equal((1+2)/2.0      /5.0 *25, avgScores["000000000000000000000005"]);
         }
+        /// <summary>
+        /// Description: Verifies that a rollup of all scoring for this team across all questions and their weights is valid.
+        /// </summary> 
+        [Fact]
+        public void CombinedScore() {
+            // Define
+            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
+            var team = hackathonEvent.Teams["000000000000000000000111"];
+
+            // Process
+            var score = team.CombinedScore;
+
+            // Assert   score/max_score*PossiblePoints
+            Assert.Equal(40.67, Math.Round(score, 2));
+        }
         #endregion
 
         # region Experience

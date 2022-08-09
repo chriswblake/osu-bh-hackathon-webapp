@@ -181,6 +181,10 @@ namespace HackathonWebApp.Models
 
             return weightedScores;
         }}
+        [BsonIgnore]
+        public double CombinedScore {get {
+            return this.AvgWeightedScoresByQuestionId.Values.Sum();
+        }}
         #endregion
     }
 }
