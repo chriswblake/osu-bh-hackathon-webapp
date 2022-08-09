@@ -99,7 +99,7 @@ namespace HackathonWebAppTests
                 var q1 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000001"), PossiblePoints = 5 };
                 var q2 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000002"), PossiblePoints = 10 };
                 var q3 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000003"), PossiblePoints = 15 };
-                var q4 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000004"), PossiblePoints = 200 };
+                var q4 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000004"), PossiblePoints = 20 };
                 var q5 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000005"), PossiblePoints = 25 };
                 hackathonEvent.ScoringQuestions.Add(q1.Id.ToString(), q1);
                 hackathonEvent.ScoringQuestions.Add(q2.Id.ToString(), q2);
@@ -186,7 +186,7 @@ namespace HackathonWebAppTests
         /// Description: Verifies that multiple score submission across several questions can be properally counted.
         /// </summary> 
         [Fact]
-        public void Test_CountScoresByQuestionId() {
+        public void CountScoresByQuestionId() {
             // Define
             var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
             var team = hackathonEvent.Teams["000000000000000000000111"];
@@ -206,7 +206,7 @@ namespace HackathonWebAppTests
         /// Description: Verifies that multiple score submission across several questions can be properally averaged.
         /// </summary> 
         [Fact]
-        public void Test_AvgUnweightedScoresByQuestionId() {
+        public void AvgUnweightedScoresByQuestionId() {
             // Define
             var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
             var team = hackathonEvent.Teams["000000000000000000000111"];
@@ -220,6 +220,26 @@ namespace HackathonWebAppTests
             Assert.Equal((3+5+1+5)/4.0, avgScores["000000000000000000000003"]);
             Assert.Equal((5+1+5)/3.0,   avgScores["000000000000000000000004"]);
             Assert.Equal((1+2)/2.0,     avgScores["000000000000000000000005"]);
+        }
+        
+        /// <summary>
+        /// Description: Verifies that multiple score submission across several questions can be properally averaged, incorporating the weight of the question.
+        /// </summary> 
+        [Fact]
+        public void AvgWeightedScoresByQuestionId() {
+            // Define
+            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
+            var team = hackathonEvent.Teams["000000000000000000000111"];
+
+            // Process
+            var avgScores = team.AvgWeightedScoresByQuestionId;
+
+            // Assert   score/max_score*PossiblePoints
+            Assert.Equal(2              /5.0 *5,  avgScores["000000000000000000000001"]);
+            Assert.Equal((1+5)/2.0      /5.0 *10, avgScores["000000000000000000000002"]);
+            Assert.Equal((3+5+1+5)/4.0  /5.0 *15, avgScores["000000000000000000000003"]);
+            Assert.Equal((5+1+5)/3.0    /5.0 *20, avgScores["000000000000000000000004"]);
+            Assert.Equal((1+2)/2.0      /5.0 *25, avgScores["000000000000000000000005"]);
         }
         #endregion
 

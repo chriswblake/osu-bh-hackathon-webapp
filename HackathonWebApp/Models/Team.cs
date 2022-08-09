@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
@@ -163,6 +163,23 @@ namespace HackathonWebApp.Models
             }
 
             return avgs;
+        }}
+        [BsonIgnore]
+        public Dictionary<string, double> AvgWeightedScoresByQuestionId { get {
+            // Return unweighted scores if no reference event
+            if (this.ReferenceEvent == null)
+            {
+                return this.AvgUnweightedScoresByQuestionId;
+            }
+
+            // Get unweighted averages
+            var unweightedScores = this.AvgUnweightedScoresByQuestionId;
+
+            // Multiply by weight of each question
+            var questions =  this.ReferenceEvent.ScoringQuestions;
+            Dictionary<string, double> weightedScores = unweightedScores.ToDictionary(kvp=> kvp.Key, kvp=> (kvp.Value/5.0)*questions[kvp.Key].PossiblePoints);
+
+            return weightedScores;
         }}
         #endregion
     }
