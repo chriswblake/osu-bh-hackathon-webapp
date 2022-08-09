@@ -41,7 +41,10 @@ namespace HackathonWebApp.Models
         [Required]
         [BsonElement("registration_settings")]
         public RegistrationSettings RegistrationSettings { get; set; }
-        
+
+        [Required]
+        [BsonElement("equipment")]
+        public Dictionary<string,HackingEquipment> Equipment { get; set; } = new Dictionary<string, HackingEquipment>();
 
         [Required]
         [BsonElement("event_applications")]
