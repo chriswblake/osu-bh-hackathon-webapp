@@ -46,7 +46,8 @@ namespace HackathonWebApp.Controllers
 
         public IActionResult GettingReady()
         {
-            return View();
+            var equipment = this.eventController.activeEvent.Equipment.Values.ToList();
+            return View(equipment);
         }
 
         public IActionResult Selection()

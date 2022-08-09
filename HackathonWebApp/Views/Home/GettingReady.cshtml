@@ -1,5 +1,12 @@
+﻿@model List<HackingEquipment>
 @{
     ViewData["Title"] = "Prepare";
+	List<HackingEquipment> equipment = Model;
+
+	// Hide equipment with zero quantity
+    equipment = equipment.Where(p=> p.Quantity > 0).ToList();
+	// Put into groups
+    var groupedEquipment = equipment.GroupBy(p=> p.Category);
 }
 
 <!-- Title -->
@@ -82,5 +89,42 @@
 	</div>
 </section>
 
+@* Equipment & Toys *@
+<style>
+	.equipment-table td {
+        width: 100px;
+    }
+</style>
+<section class="diagonal-section" style="background-color:white;">
+	<div class="mx-auto diagonal-section-content">
+		<center><h1>Equipment & Toys</h1>
+		<div class="row col-md-10 col-lg-8 col-xl-6" style="text-align: left;">
+		@foreach (var group in groupedEquipment)
+		{
+			string category = group.Key;
+			<h2>@category</h2>
+			<table class="table table-sm table-bordered equipment-table text-white" style="background-color:var(--bh-dark-green-gray);">
+				<tr>
+					<th>Name</th>
+					<th>Quantity</th>
+					<th>URL</th>
+				</tr>
+			@foreach (HackingEquipment piece in group)
+			{
+				<tr>
+					<td>@piece.Name</td>
+					<td>@piece.Quantity @piece.Unit</td>
+					<td>
+					@if (piece.UrlMoreInformation != null)
+					{
+						<a href="@piece.UrlMoreInformation" target="_blank">More Information</a>
+					}
+					</td>
+				</tr>
+			}
+			</table>
+		}
+		</div>
+		</center>
 	</div>
 </section>
