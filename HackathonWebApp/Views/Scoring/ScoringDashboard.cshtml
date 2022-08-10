@@ -3,19 +3,38 @@
     Layout = "_AdminLayout";
     ViewBag.Title = "Scoring Dashboard";
     Dictionary<string, Team> allTeams = ViewBag.AllTeams;
+    Dictionary<string, Team> orderedTeams = allTeams.OrderByDescending(t=> t.Value.CombinedScore).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Value);
     Team activeTeam = ViewBag.ActiveTeam;
     Dictionary<string, ScoreQuestion> scoringQuestions = ViewBag.ScoringQuestions;
 }
 @functions {
-    
+
+    string ToChartTeamsLabelArray(Dictionary<string, Team> teams) {
+        var teamNames = teams.Values.Select(t=> "'"+t.Name+"'");
+		string delimetedString = "["+String.Join(",", teamNames)+"]";
+		return delimetedString;
+	}
+    string ToChartTeamsScoresArray(Dictionary<string, Team> teams) {
+        var combinedScores = teams.Values.Select(t=> t.CombinedScore);
+		string delimetedString = "["+String.Join(",", combinedScores)+"]";
+		return delimetedString;
+	}
+    string ToChartTeamsScoresCountArray(Dictionary<string, Team> teams) {
+        var combinedScores = teams.Values.Select(t=> t.CountScoresByQuestionId.Values.Sum());
+		string delimetedString = "["+String.Join(",", combinedScores)+"]";
+		return delimetedString;
+	}
+
+}
+@functions {
     string ToChartQuestionLabelArray(Team team, Dictionary<string, ScoreQuestion> scoringQuestions) {
-        var dataLabelKeys = team.AvgUnweightedScoresByQuestionId.Keys;
+        var dataLabelKeys = team.AvgWeightedScoresByQuestionId.Keys;
         var dataLabelQuestionTitles = dataLabelKeys.Select(k=> "'"+scoringQuestions[k].Title+"'");
 		string delimetedString = "["+String.Join(",", dataLabelQuestionTitles)+"]";
 		return delimetedString;
 	}
     string ToChartAvgsDataArray(Team team) {
-        var dataPoints = team.AvgUnweightedScoresByQuestionId.Values;
+        var dataPoints = team.AvgWeightedScoresByQuestionId.Values;
 		string delimetedString = "["+String.Join(",", dataPoints)+"]";
 		return delimetedString;
 	}
@@ -98,6 +117,13 @@ else {
     <input type="submit" value="Save" class="btn btn-primary" style="margin-top:15px;"/>
 </form>
 
+@* Combined Score *@
+<h3 style="margin-top:15px;">Combined Score</h3>
+<div style="margin-bottom:100px;" class="row">
+    <div class="col-12" style="text-align:center;">
+        <canvas id="bar-chart-teams-combined" class="bar-chart-teams-combined" height="150" ></canvas>
+    </div>
+</div>
 
 @* Team Score Summaries *@
 <h3 style="margin-top:15px;">Team Summaries</h3>
@@ -128,18 +154,16 @@ else {
 			const bh_dark_green = '#05322B';
 			const bh_green =  '#018374';
 			const osu_orange = '#FE5C00';
-
-			// Format all score charts the same
 			charts = {};
-			$(".team-scores-bar-chart").each(function() {
+
+            // Formatting, combined teams
+            $(".bar-chart-teams-combined").each(function() {
 				let chartId = $(this).attr('id');
 				const ctx = document.getElementById(chartId).getContext('2d');
 				const myChart = new Chart(ctx, {
 					type: 'bar',
 					data: {
-						@* labels: [1,2,3,4,5], *@
 						datasets: [{
-							@* data: [1.1,1.2,1.3], *@
 							backgroundColor: osu_orange,
 							borderColor: bh_green,
 							borderWidth: 1,
@@ -152,7 +176,6 @@ else {
                             order: 1,
 						},
                         {
-							data: [23,15,16],
                             borderColor: "#AAA",
                             backgroundColor: "#AAA",
                             type: 'line',
@@ -170,7 +193,121 @@ else {
 						scales: {
 							y: {
 								min: 0,
-                                max: 5,
+                                title: {
+									display: true,
+                                    color: bh_green,
+									text: 'Combined Score'
+								},
+								ticks: {
+                                    color: bh_green,
+                                    autoSkip: false,
+								},
+                                grid: {
+                                    display: false,
+                                    color: '#666',
+                                    borderColor: bh_green
+                                }
+							},
+                            y2: {
+                                min: 0,
+                                max: 50,
+                                title: {
+									display: true,
+                                    color: "#AAA",
+									text: 'Count Scores'
+								},
+                                ticks: {
+                                    color: "#AAA",
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+							x: {
+								title: {
+									display: true,
+                                    color: osu_orange,
+									text: 'Team'
+								},
+                                ticks: {
+                                    color: osu_orange,
+                                    autoSkip: false,
+                                    maxRotation: 90
+                                    @* minRotation: 45 *@
+                                },
+                                grid: {
+                                    display: false,
+                                    color: bh_green,
+                                    borderColor: bh_green
+                                }
+							}
+						},
+						layout: {
+							padding: {
+								top: 25
+							}
+						},
+						plugins: {
+							legend: {
+								display: false
+							}
+						}
+					}
+				});
+				charts[chartId] = myChart;
+			});
+
+            // Add data to combined chart
+            @{
+                var combinedLabels = ToChartTeamsLabelArray(orderedTeams);
+                var combinedScores = ToChartTeamsScoresArray(orderedTeams);
+                var combinedScoresCounts = ToChartTeamsScoresCountArray(orderedTeams);
+            }
+            @* var scoresCountsdataCounts = ToChartCountsDataArray(team); *@
+            @Html.Raw($"charts['bar-chart-teams-combined'].data.labels = {combinedLabels};\n")
+            @Html.Raw($"charts['bar-chart-teams-combined'].data.datasets[0].data = {combinedScores};\n")
+            @Html.Raw($"charts['bar-chart-teams-combined'].data.datasets[1].data = {combinedScoresCounts};\n")
+            @Html.Raw($"charts['bar-chart-teams-combined'].update();\n")
+
+
+            // Formatting, individual teams
+			$(".team-scores-bar-chart").each(function() {
+				let chartId = $(this).attr('id');
+				const ctx = document.getElementById(chartId).getContext('2d');
+				const myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						datasets: [{
+							backgroundColor: osu_orange,
+							borderColor: bh_green,
+							borderWidth: 1,
+                            datalabels: {
+								color: bh_green,
+								anchor: 'end',
+								align: 'end',
+							},
+                            yAxisID: 'y',
+                            order: 1,
+						},
+                        {
+                            borderColor: "#AAA",
+                            backgroundColor: "#AAA",
+                            type: 'line',
+                            datalabels: {
+								color: "#AAA",
+								anchor: 'end',
+								align: 'end',
+							},
+                            yAxisID: 'y2',
+                            order: 0
+                        }
+                        ]
+					},
+					options: {
+						scales: {
+							y: {
+								min: 0,
+                                @* max: 5, *@
                                 title: {
 									display: true,
                                     color: bh_green,
@@ -179,7 +316,7 @@ else {
 								ticks: {
                                     color: bh_green,
                                     autoSkip: false,
-									stepSize: 1
+									@* stepSize: 1 *@
 								},
                                 grid: {
                                     display: false,
