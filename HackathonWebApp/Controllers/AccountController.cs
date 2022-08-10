@@ -261,6 +261,52 @@ namespace HackathonWebApp.Controllers
         public ViewResult ForgotPasswordConfirmation() {
             return View();
         }
+        public async Task<ViewResult> ResetPassword() {
+            string userId = Request.Query["UserId"];
+            string code = Request.Query["code"];
+            var viewModel = new ResetPasswordViewModel();
+
+            //Lookup user
+            ApplicationUser appUser = await this.userManager.FindByIdAsync(userId);
+            if (appUser != null)
+            {
+                viewModel = new ResetPasswordViewModel() {
+                    Email= appUser.Email,
+                    Code = code
+                };
+            }
+
+            return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPassword) {
+            string code = resetPassword.Code;
+            string email = resetPassword.Email;
+            string password = resetPassword.Password;
+            string passwordConfirmation = resetPassword.ConfirmPassword;
+
+            // Verify passwords match
+            if (password != passwordConfirmation)
+            {
+                ModelState.AddModelError("input-error", "Password does not match confirmation.");
+                return View();
+            }
+
+            // Reset the user's password
+            ApplicationUser appUser = await this.userManager.FindByEmailAsync(email);
+            var result = await this.userManager.ResetPasswordAsync(appUser, code, password);
+            if(!result.Succeeded)
+            {
+                Errors(result);
+                return View();
+            }
+
+            // If it made it here, success
+            return RedirectToAction("ResetPasswordConfirmation");
+        }
+        public ViewResult ResetPasswordConfirmation() {
+            return View();
+        }
 
         // Error Messages
         private void Errors(Task result)
