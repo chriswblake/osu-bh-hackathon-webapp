@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -52,7 +53,11 @@ namespace HackathonWebApp
             // Add Identity Store
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(Configuration["MONGODB_URL"], Configuration["MONGODB_IDENTITY_DB_NAME"])
-                .AddTokenProvider("Default", typeof(EmailTwoFactorAuthentication<ApplicationUser>));
+                .AddDefaultTokenProviders();
+
+            // Set timeout for tkens
+            services.Configure<DataProtectionTokenProviderOptions>(opt =>
+                opt.TokenLifespan = TimeSpan.FromHours(24));
 
             // Add database for collections
             var mongo_client = new MongoClient(Configuration["MONGODB_URL"]);

@@ -5,6 +5,9 @@
     ViewData["Title"] = "Create Score Question";
 }
 <style>
+    .answer-points {
+        display: inline-block;
+    }
     .answer-option {
         display: inline-block;
         width: 85%;
@@ -28,30 +31,36 @@
                     <input asp-for="Title" class="form-control" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
+
                 <div class="form-group">
                     <label asp-for="Description" class="control-label"></label>
                     <input asp-for="Description" class="form-control" />
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
+                <div class="form-group">
+                    <label asp-for="PossiblePoints" class="control-label"></label>
+                    <input asp-for="PossiblePoints" class="form-control" />
+                    <span asp-validation-for="PossiblePoints" class="text-danger"></span>
+                </div>
 
                 <div class="form-group">
                     Answer Options<br/>
-                    0 pts <input type="hidden" name="AnswerOptions[0].Score" value="0"/>
+                    <div id="pts0" class="answer-points"></div><input type="hidden" name="AnswerOptions[0].Score" value="0"/>
                     <input name="AnswerOptions[0].Description" class="form-control answer-option"/><br/>
 
-                    1 pts <input type="hidden" name="AnswerOptions[1].Score" value="1"/>
+                    <div id="pts1" class="answer-points"></div><input type="hidden" name="AnswerOptions[1].Score" value="1"/>
                     <input name="AnswerOptions[1].Description" class="form-control answer-option"/><br/>
 
-                    2 pts <input type="hidden" name="AnswerOptions[2].Score" value="2"/>
+                    <div id="pts2" class="answer-points"></div><input type="hidden" name="AnswerOptions[2].Score" value="2"/>
                     <input name="AnswerOptions[2].Description" class="form-control answer-option"/><br/>
 
-                    3 pts <input type="hidden" name="AnswerOptions[3].Score" value="3"/>
+                    <div id="pts3" class="answer-points"></div><input type="hidden" name="AnswerOptions[3].Score" value="3"/>
                     <input name="AnswerOptions[3].Description" class="form-control answer-option"/><br/>
 
-                    4 pts <input type="hidden" name="AnswerOptions[4].Score" value="4"/>
+                    <div id="pts4" class="answer-points"></div><input type="hidden" name="AnswerOptions[4].Score" value="4"/>
                     <input name="AnswerOptions[4].Description" class="form-control answer-option"/><br/>
 
-                    5 pts <input type="hidden" name="AnswerOptions[5].Score" value="5"/>
+                    <div id="pts5" class="answer-points"></div><input type="hidden" name="AnswerOptions[5].Score" value="5"/>
                     <input name="AnswerOptions[5].Description" class="form-control answer-option"/><br/>
                     Note: Blanks are ignored.<br/>
                 </div>
@@ -70,4 +79,18 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+    $( document ).ready(function() {
+        $("#PossiblePoints").change(function() {
+            var possiblePoints = $(this).val();
+            $("#pts0").html(0+"pts");
+            $("#pts1").html(Math.round(1.0/5.0*possiblePoints)+"pts");
+            $("#pts2").html(Math.round(2.0/5.0*possiblePoints)+"pts");
+            $("#pts3").html(Math.round(3.0/5.0*possiblePoints)+"pts");
+            $("#pts4").html(Math.round(4.0/5.0*possiblePoints)+"pts");
+            $("#pts5").html(Math.round(5.0/5.0*possiblePoints)+"pts");
+        })
+    });
+</script>
 }

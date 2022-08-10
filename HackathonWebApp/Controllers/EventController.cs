@@ -2,14 +2,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using CsvHelper;
+using CsvHelper.Configuration;
+using System.Globalization;
 
 namespace HackathonWebApp.Controllers
 {
@@ -127,7 +132,10 @@ namespace HackathonWebApp.Controllers
                     .Set(p => p.Name, hackathonEvent.Name)
                     .Set(p => p.StartTime, hackathonEvent.StartTime)
                     .Set(p => p.EndTime, hackathonEvent.EndTime)
-                    .Set(p => p.IsActive, hackathonEvent.IsActive);
+                    .Set(p => p.IsActive, hackathonEvent.IsActive)
+                    .Set(p => p.RegistrationSettings.MajorOptions, hackathonEvent.RegistrationSettings.MajorOptions)
+                    .Set(p => p.RegistrationSettings.TrainingsAcquiredOptions, hackathonEvent.RegistrationSettings.TrainingsAcquiredOptions)
+                    .Set(p => p.RegistrationSettings.TShirtSizeOptions, hackathonEvent.RegistrationSettings.TShirtSizeOptions);
                 await eventCollection.FindOneAndUpdateAsync(
                     s => s.Id == ObjectId.Parse(id),
                     updateDefinition
@@ -150,7 +158,7 @@ namespace HackathonWebApp.Controllers
             {
                 Errors(e);
             }
-            return RedirectToAction("Index");
+            return View(hackathonEvent);
         }
         [HttpPost]
         public async Task<IActionResult> DeleteHackathonEvent(string id)
@@ -166,6 +174,73 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("Index");
         }
 
+        // Equipment
+        public IActionResult Equipment()
+        {
+            var equipment = this.activeEvent.Equipment.Values.ToList();
+            return View(equipment);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateEquipment(IFormFile csvEquipment)
+        {
+            // Load CSV file into memory and then reader
+            MemoryStream memoryStream = new MemoryStream();
+            csvEquipment.OpenReadStream().CopyTo(memoryStream);
+            memoryStream.Position = 0;
+            StreamReader reader = new StreamReader(memoryStream, System.Text.Encoding.UTF8, true);
+
+            // Read CSV file from reader
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                // Convert csv lines into hacking equipment objects
+                var equipmentList = csv.GetRecords<HackingEquipment>().ToList();
+
+                // Add an id to each object
+                foreach(var piece in equipmentList){
+                    piece.Id = ObjectId.GenerateNewId();
+                }
+
+                // Create change set
+                Dictionary<string, HackingEquipment> equipment = equipmentList.ToDictionary(p=> p.Id.ToString(), p=> p);
+                var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.Equipment, equipment);
+
+                // Update in DB
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == this.activeEvent.Id,
+                    updateDefinition
+                );
+
+                // Update in memory
+                this.activeEvent.Equipment = equipment;
+            }
+            return RedirectToAction("Equipment");
+        }
+        [HttpPost]
+        public async Task<IActionResult> DownloadEquipmentCSV()
+        {
+            // Save to string
+            string csvText = "";
+            using (var writer = new StringWriter())
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.Context.RegisterClassMap<HackingEquipmentMap>();
+                csv.WriteRecords(activeEvent.Equipment.Values);
+                csvText = writer.ToString();
+            }
+
+            return File(new System.Text.UTF8Encoding().GetBytes(csvText), "text/csv", "hacking-equipment.csv");
+        }
+        public sealed class HackingEquipmentMap : ClassMap<HackingEquipment>
+        {
+            public HackingEquipmentMap()
+            {
+                Map(m => m.Name);
+                Map(m => m.Quantity);
+                Map(m => m.Unit);
+                Map(m => m.Category);
+                Map(m => m.UrlMoreInformation);
+            }
+        }
 
         // Applications
         public List<EventApplication> GetActiveEventApplications()

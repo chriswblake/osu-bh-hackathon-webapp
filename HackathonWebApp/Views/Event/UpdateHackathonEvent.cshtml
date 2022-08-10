@@ -9,10 +9,12 @@
 <div class="container text-white">
     <h1 class="text-white">Update Hackathon Event</h1>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-sm-12 col-md-8 col-lg-6 col-xl-5">
             <form asp-action="UpdateHackathonEvent">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="Id" class="form-control" />
+
+                <h2>Basics</h2>
                 <div class="form-group">
                     <label asp-for="Name" class="control-label"></label>
                     <input asp-for="Name" class="form-control" />
@@ -36,6 +38,25 @@
                         }, "Key", "Value"), "Select Active", new { @class="basic-info-selector" })
                     <span asp-validation-for="IsActive" class="text-danger"></span>
                 </div>
+
+                <h2>Registration Settings</h2>
+                <div class="form-group">
+                    @{ var majorOptionsText = String.Join("\n", hackathonEvent.RegistrationSettings.MajorOptions.Values).Trim(); }
+                    <label class="control-label" for="MajorOptions">Major Options</label>
+                    <textarea style="width:100%;" id="MajorOptions" name="MajorOptions">@majorOptionsText</textarea>
+                </div>
+                <div class="form-group">
+                    @{ var trainingsAcquiredOptionsText = String.Join("\n", hackathonEvent.RegistrationSettings.TrainingsAcquiredOptions.Values).Trim(); }
+                    <label class="control-label" for="TrainingsAcquiredOptions">Trainings Acquired Options</label>
+                    <textarea style="width:100%;" id="TrainingsAcquiredOptions" name="TrainingsAcquiredOptions">@trainingsAcquiredOptionsText</textarea>
+                </div>
+                <div class="form-group">
+                    @{ var tShirtSizeOptionsText = String.Join("\n", hackathonEvent.RegistrationSettings.TShirtSizeOptions.Values).Trim(); }
+                    <label class="control-label" for="TShirtSizeOptions">T-Shirt Size Options</label>
+                    <textarea style="width:100%;" id="TShirtSizeOptions" name="TShirtSizeOptions">@tShirtSizeOptionsText</textarea>
+                </div>
+
+                @* Save Options *@
                 <div class="form-group">
                     <input type="submit" value="Save" class="btn btn-primary" />
                 </div>
@@ -72,4 +93,46 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+    $( document ).ready(function() {
+        // Generate hidden input elements for text area inputs and keep updated.
+        textAreaToHiddenInputs($("#MajorOptions"));
+        $("#MajorOptions").change(textAreaToHiddenInputs);
+        textAreaToHiddenInputs($("#TrainingsAcquiredOptions"));
+        $("#TrainingsAcquiredOptions").change(textAreaToHiddenInputs);
+        textAreaToHiddenInputs($("#TShirtSizeOptions"));
+        $("#TShirtSizeOptions").change(textAreaToHiddenInputs);
+        
+    });
+
+    function textAreaToHiddenInputs(optionsTextArea) {
+        // If triggered by an event, use that instead.
+        if (optionsTextArea.target)
+            optionsTextArea = $(this);
+
+        // Get name of field in model to store values
+        var fieldName = optionsTextArea.attr('name');
+        
+        // Delete existing hidden inputs
+        var hiddenInputClass = fieldName + "-hidden-input";
+        $("."+hiddenInputClass).remove();
+
+        // Regenerate hidden inputs
+        var optionsText = optionsTextArea.val();
+        var optionsList = optionsText.split("\n")
+            .filter(a=>a) // remove blanks
+            .sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase());
+            });
+        $.each(optionsList.reverse(), function(index, value) {
+            var option = value.replace(/[^a-zA-Z0-9 ]/g, '').trim();
+            var key = option.toLowerCase().replace(/ /g, '_').trim();
+            var htmlInput = `<input type="hidden" class="${hiddenInputClass}" name="RegistrationSettings.${fieldName}['${key}']" value="${option}"/>`;
+            optionsTextArea.after(htmlInput);
+        });
+
+        // Update length of text area
+        optionsTextArea.attr('rows', Math.min(10, optionsList.length));
+    }
+</script>
 }

@@ -1,0 +1,130 @@
+﻿@model List<HackingEquipment>
+@{
+    ViewData["Title"] = "Prepare";
+	List<HackingEquipment> equipment = Model;
+
+	// Hide equipment with zero quantity
+    equipment = equipment.Where(p=> p.Quantity > 0).ToList();
+	// Put into groups
+    var groupedEquipment = equipment.GroupBy(p=> p.Category);
+}
+
+<!-- Title -->
+<section class="first-section text-center" style="padding: 5em;">
+	<h1 class="osu-orange">Getting Ready</h1>
+</section>
+
+<!-- Suggestions -->
+<section class="diagonal-section" style="background-color:white;">
+	<div class="mx-auto diagonal-section-content" style="padding: 15px;">
+		<center>
+			<h1>Suggestions</h1>
+			<div class="col-md-10 col-lg-9 col-xl-6" style="text-align:left;">
+				There are <u><b>no prerequisites</b></u> to attend the hackathon, but doing a bit of training can definitley increase your chances of having a fun time!
+				<br/>
+				<br/>
+				<div>
+					Here are some ideas:
+					<ul>
+						<li>Check out the hackathon equipment below. Maybe google/youtube some tutorials.</li>
+						<li>Get to know your team BEFORE the first day. Share skills/backgrounds/ideas.</li>
+						<li>Get certified to use the tools/equipment in ENDEAVOR.</li>
+						<li>Research issues in your field industry. Everything is produced using energy!</li>
+						<li>Research issues in the energy industry. (solar, wind, thermal, nuclear, oil, gas, etc.)</li>
+					</ul>
+				</div>
+				<div>
+					Also, just a few reminders:
+					<ul>
+						<li>The challenge is always energy-forward/sustainability/green oriented.</li>
+						<li>Your team can be ANY major, not just engineering/science.</li>
+						<li>The project can be pure software, hardware, marketing plans, business plans, or policy. There are multiple ways to earn points!</li>
+						<li>This is also a networking event to make friends, especially outside your discipline.</li>
+					</ul>
+				</div>
+			</div>
+		</center>
+	</div>
+</section>
+
+@* ENDEAVOR Certificates *@
+<section class="diagonal-section" style="color:white;">
+	<div class="diagonal-section-content" style="padding: 15px;">
+		<center>
+			<h1 class="osu-orange">ENDEAVOR Certificates (optional)</h1>
+			<div class="row col-lg-10 col-xl-8" style="text-align: left;">
+				<div class="col-sm-4 col-md-4">
+					<center>
+						<a href="https://canvas.okstate.edu/courses/143676/pages/endeavor-safety-orientation-and-quiz">
+							<img src="/img/osu-endeavor-safety-training-qr.png" style="width: 50%; max-width: 300px;"/><br/>
+							ENDEAVOR Safety Orientation Quiz Link
+						</a>
+						<br/>
+						<br/>
+						<img src="/img/osu-endeavor-exterior.jpg" style="width: 100%;"/><br/>
+					</center>
+				</div>
+				<div class="col-sm-8 col-md-8">
+					Process - Getting Certified
+					<ol>
+						<li>Students must have access to the "CEAT ENDEAVOR 2022-23" Canvas page.</li>
+						<li>
+							If access to Canvas does not show up, then students should enter the following link and join the page.
+							<a href="https://canvas.okstate.edu/enroll/38968P">https://canvas.okstate.edu/enroll/38968P</a>
+						</li>
+						<li>Be sure to select <span class="osu-orange">Enroll in Course</span> on the CEAT ENDEAVOR 2022-23 page.</li>
+						<li>Once a student has access to th ENDEAVOR Canvas site, they need to take the <a href="https://canvas.okstate.edu/courses/143676/pages/endeavor-safety-orientation-and-quiz">ENDEAVOR Safety Orientation Quiz.</a> (left QR Code)</li>
+						<li>Once the training is complete, the student needs to pick up an ENDEAVOR Safety Orientation card at the ENDEAVOR help desk on the first floor.</li>
+					</ol>
+					Available Trainings:
+					<ul>
+						<li>Basic Tools (screwdrivers, sockets, wrenches, etc.)</li>
+						<li>Soldering Lab</li>
+						<li>Laser Cutter - pending availabilty</li>
+						<li>3D Printing - unavailable during hackathon</li>
+					</ul>
+				</div>
+			</div>
+		</center>
+	</div>
+</section>
+
+@* Equipment & Toys *@
+<style>
+	.equipment-table td {
+        width: 100px;
+    }
+</style>
+<section class="diagonal-section" style="background-color:white;">
+	<div class="mx-auto diagonal-section-content">
+		<center><h1>Equipment & Toys</h1>
+		<div class="row col-md-10 col-lg-8 col-xl-6" style="text-align: left;">
+		@foreach (var group in groupedEquipment)
+		{
+			string category = group.Key;
+			<h2>@category</h2>
+			<table class="table table-sm table-bordered equipment-table text-white" style="background-color:var(--bh-dark-green-gray);">
+				<tr>
+					<th>Name</th>
+					<th>Quantity</th>
+					<th>URL</th>
+				</tr>
+			@foreach (HackingEquipment piece in group)
+			{
+				<tr>
+					<td>@piece.Name</td>
+					<td>@piece.Quantity @piece.Unit</td>
+					<td>
+					@if (piece.UrlMoreInformation != null)
+					{
+						<a href="@piece.UrlMoreInformation" target="_blank">More Information</a>
+					}
+					</td>
+				</tr>
+			}
+			</table>
+		}
+		</div>
+		</center>
+	</div>
+</section>
