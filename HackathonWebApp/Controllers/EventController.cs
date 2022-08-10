@@ -37,12 +37,6 @@ namespace HackathonWebApp.Controllers
             // Hackathon DBs
             this.userManager = userManager;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
-
-            // Set reference event for all teams
-            foreach(var team in this.activeEvent.Teams.Values)
-            {
-                team.ReferenceEvent = this.activeEvent;
-            }
         }
 
         // Properties
@@ -72,8 +66,24 @@ namespace HackathonWebApp.Controllers
                         results = this.eventCollection.Find(h => true);
                     }
 
+                    // Create active event
+                    var activeEvent = results.First();
+
+                    // Set reference event for all teams
+                    foreach(var team in activeEvent.Teams.Values)
+                    {
+                        team.ReferenceEvent = activeEvent;
+                    }
+
+                    // Add the users
+                    foreach(var team in activeEvent.Teams.Values){
+                        foreach(Guid userId in team.EventApplications.Keys){
+                            team.TeamMembers[userId] = userManager.FindByIdAsync(userId.ToString()).Result;
+                        }
+                    }
+
                     // Set active event for controller
-                    EventController._activeEvent = results.First();
+                    EventController._activeEvent = activeEvent;
                 }
 
                 return EventController._activeEvent;
