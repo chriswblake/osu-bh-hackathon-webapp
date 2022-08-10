@@ -36,51 +36,9 @@ namespace HackathonWebApp.Models
         // Fields that would need aggregated from other data
         [BsonIgnore]
         public Dictionary<Guid, ApplicationUser> TeamMembers { get; set; } = new Dictionary<Guid, ApplicationUser>();
-        [BsonIgnore]
-        public Dictionary<string, ScoringSubmission> ScoringSubmissions {get; set; } = new Dictionary<string, ScoringSubmission>();
 
-        // Calculated Results
-        public Dictionary<string, int> CountScoresByQuestionId { get {
-
-            // Collapse to just the questions
-            var allQuestions = this.ScoringSubmissions.Values.Select(p=> p.Scores).SelectMany(x => x).ToList();
-            
-            // Count by question ID
-            var counts = allQuestions.GroupBy(p=> p.Key).ToDictionary(p=> p.Key, p=> p.Count());
-
-            return counts;
-        }}
-        public Dictionary<string, double> AvgScoresByQuestionId { get {
-            var counts = new Dictionary<string, int>();
-            var sums = new Dictionary<string, int>();
-            var avgs = new Dictionary<string, double>();
-
-            foreach(var scoreSubmission in this.ScoringSubmissions.Values)
-            {
-                foreach(var kvp in scoreSubmission.Scores) {
-                    string questionId = kvp.Key;
-                    int score = kvp.Value;
-                    if (!sums.Keys.Contains(questionId))
-                    {
-                        counts[questionId] = 0;
-                        sums[questionId] = 0;
-                    }
-                    // Track count and sum
-                    counts[questionId] += 1;
-                    sums[questionId] += score;
-                }
-            }
-
-            // Calculate average
-            foreach (var kvp in sums)
-            {
-                avgs[kvp.Key] = sums[kvp.Key] / (double) counts [kvp.Key];
-            }
-
-            return avgs;
-        }}
-
-        // Calculated Properties
+        
+        #region Experience 
         [BsonIgnore]
         public double HackathonExperience { get {
             return this.EventApplications.Values.Sum(ea => ea.HackathonExperience);
@@ -159,5 +117,74 @@ namespace HackathonWebApp.Models
             else
                 return 0;
         }}
+        #endregion
+    
+        #region Scoring
+        [Required]
+        [BsonElement("scoring_submissions")]
+        public Dictionary<string, ScoringSubmission> ScoringSubmissions {get; set; } = new Dictionary<string, ScoringSubmission>();
+        [BsonIgnore]
+        public Dictionary<string, int> CountScoresByQuestionId { get {
+
+            // Collapse to just the questions
+            var allQuestions = this.ScoringSubmissions.Values.Select(p=> p.Scores).SelectMany(x => x).ToList();
+            
+            // Count by question ID
+            var counts = allQuestions.GroupBy(p=> p.Key).ToDictionary(p=> p.Key, p=> p.Count());
+
+            return counts;
+        }}
+        [BsonIgnore]
+        public Dictionary<string, double> AvgUnweightedScoresByQuestionId { get {
+            var counts = new Dictionary<string, int>();
+            var sums = new Dictionary<string, int>();
+            var avgs = new Dictionary<string, double>();
+
+            foreach(var scoreSubmission in this.ScoringSubmissions.Values)
+            {
+                foreach(var kvp in scoreSubmission.Scores) {
+                    string questionId = kvp.Key;
+                    int score = kvp.Value;
+                    if (!sums.Keys.Contains(questionId))
+                    {
+                        counts[questionId] = 0;
+                        sums[questionId] = 0;
+                    }
+                    // Track count and sum
+                    counts[questionId] += 1;
+                    sums[questionId] += score;
+                }
+            }
+
+            // Calculate average
+            foreach (var kvp in sums)
+            {
+                avgs[kvp.Key] = sums[kvp.Key] / (double) counts [kvp.Key];
+            }
+
+            return avgs;
+        }}
+        [BsonIgnore]
+        public Dictionary<string, double> AvgWeightedScoresByQuestionId { get {
+            // Return unweighted scores if no reference event
+            if (this.ReferenceEvent == null)
+            {
+                return this.AvgUnweightedScoresByQuestionId;
+            }
+
+            // Get unweighted averages
+            var unweightedScores = this.AvgUnweightedScoresByQuestionId;
+
+            // Multiply by weight of each question
+            var questions =  this.ReferenceEvent.ScoringQuestions;
+            Dictionary<string, double> weightedScores = unweightedScores.ToDictionary(kvp=> kvp.Key, kvp=> (kvp.Value/5.0)*questions[kvp.Key].PossiblePoints);
+
+            return weightedScores;
+        }}
+        [BsonIgnore]
+        public double CombinedScore {get {
+            return this.AvgWeightedScoresByQuestionId.Values.Sum();
+        }}
+        #endregion
     }
 }
