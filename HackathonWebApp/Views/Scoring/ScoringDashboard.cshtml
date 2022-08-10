@@ -1,4 +1,4 @@
-@model ScoringSubmission
+﻿@model ScoringSubmission
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "Scoring Dashboard";
@@ -309,7 +309,6 @@ else {
 						scales: {
 							y: {
 								min: 0,
-                                @* max: 5, *@
                                 title: {
 									display: true,
                                     color: bh_green,
@@ -318,7 +317,7 @@ else {
 								ticks: {
                                     color: bh_green,
                                     autoSkip: false,
-									@* stepSize: 1 *@
+									stepSize: 5
 								},
                                 grid: {
                                     display: false,
@@ -328,7 +327,6 @@ else {
 							},
                             y2: {
                                 min: 0,
-                                max: 50,
                                 title: {
 									display: true,
                                     color: "#AAA",
@@ -336,6 +334,8 @@ else {
 								},
                                 ticks: {
                                     color: "#AAA",
+                                    autoSkip: false,
+									stepSize: 5
                                 },
                                 grid: {
                                     display: false
@@ -350,8 +350,8 @@ else {
                                 ticks: {
                                     color: osu_orange,
                                     autoSkip: false,
-                                    maxRotation: 90
-                                    @* minRotation: 45 *@
+                                    maxRotation: 90,
+                                    minRotation: 10
                                 },
                                 grid: {
                                     display: false,
