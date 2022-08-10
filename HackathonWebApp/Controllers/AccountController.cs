@@ -218,6 +218,95 @@ namespace HackathonWebApp.Controllers
             return View();
         }
 
+        // Passsword Reset
+        public ViewResult ForgotPassword() {
+            return View();
+        }
+        [HttpPost]
+        public async Task<ActionResult> ForgotPassword(string email)
+        {
+            if (ModelState.IsValid)
+            {
+                // If user doesn't exist, fail silently to protect user.
+                var appUser = await this.userManager.FindByEmailAsync(email);
+                if (appUser == null || !(await this.userManager.IsEmailConfirmedAsync(appUser)))
+                {
+                    return View("ForgotPasswordConfirmation");
+                }
+
+                // Generate confirmation email body with token
+                string templatePath = Path.Combine(webHostEnvironment.WebRootPath, "email-templates", "ForgotPassword.html");
+                string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
+                var code = await this.userManager.GeneratePasswordResetTokenAsync(appUser);
+                var callbackUrl = Url.Action("ResetPassword", "Account",  new { UserId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                string userName = appUser.UserName;
+                string msgBody = string.Format(msgBodyTemplate, userName, callbackUrl);
+
+                // Send Email
+                MailMessage mail = new MailMessage();
+                mail.To.Add(appUser.Email);
+                mail.From = new MailAddress("hackokstate@gmail.com");
+                mail.Subject = "Forgot Password - HackOKState";
+                mail.Body = msgBody;
+                mail.IsBodyHtml = true;
+                await emailClient.SendMailAsync(mail);      
+                
+                // Show confirmation page
+                return View(nameof(ForgotPasswordConfirmation));
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(email);
+        }
+        public ViewResult ForgotPasswordConfirmation() {
+            return View();
+        }
+        public async Task<ViewResult> ResetPassword() {
+            string userId = Request.Query["UserId"];
+            string code = Request.Query["code"];
+            var viewModel = new ResetPasswordViewModel();
+
+            //Lookup user
+            ApplicationUser appUser = await this.userManager.FindByIdAsync(userId);
+            if (appUser != null)
+            {
+                viewModel = new ResetPasswordViewModel() {
+                    Email= appUser.Email,
+                    Code = code
+                };
+            }
+
+            return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPassword) {
+            string code = resetPassword.Code;
+            string email = resetPassword.Email;
+            string password = resetPassword.Password;
+            string passwordConfirmation = resetPassword.ConfirmPassword;
+
+            // Verify passwords match
+            if (password != passwordConfirmation)
+            {
+                ModelState.AddModelError("input-error", "Password does not match confirmation.");
+                return View();
+            }
+
+            // Reset the user's password
+            ApplicationUser appUser = await this.userManager.FindByEmailAsync(email);
+            var result = await this.userManager.ResetPasswordAsync(appUser, code, password);
+            if(!result.Succeeded)
+            {
+                Errors(result);
+                return View();
+            }
+
+            // If it made it here, success
+            return RedirectToAction("ResetPasswordConfirmation");
+        }
+        public ViewResult ResetPasswordConfirmation() {
+            return View();
+        }
 
         // Error Messages
         private void Errors(Task result)
