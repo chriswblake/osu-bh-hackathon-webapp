@@ -218,6 +218,49 @@ namespace HackathonWebApp.Controllers
             return View();
         }
 
+        // Passsword Reset
+        public ViewResult ForgotPassword() {
+            return View();
+        }
+        [HttpPost]
+        public async Task<ActionResult> ForgotPassword(string email)
+        {
+            if (ModelState.IsValid)
+            {
+                // If user doesn't exist, fail silently to protect user.
+                var appUser = await this.userManager.FindByEmailAsync(email);
+                if (appUser == null || !(await this.userManager.IsEmailConfirmedAsync(appUser)))
+                {
+                    return View("ForgotPasswordConfirmation");
+                }
+
+                // Generate confirmation email body with token
+                string templatePath = Path.Combine(webHostEnvironment.WebRootPath, "email-templates", "ForgotPassword.html");
+                string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
+                var code = await this.userManager.GeneratePasswordResetTokenAsync(appUser);
+                var callbackUrl = Url.Action("ResetPassword", "Account",  new { UserId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                string userName = appUser.UserName;
+                string msgBody = string.Format(msgBodyTemplate, userName, callbackUrl);
+
+                // Send Email
+                MailMessage mail = new MailMessage();
+                mail.To.Add(appUser.Email);
+                mail.From = new MailAddress("hackokstate@gmail.com");
+                mail.Subject = "Forgot Password - HackOKState";
+                mail.Body = msgBody;
+                mail.IsBodyHtml = true;
+                await emailClient.SendMailAsync(mail);      
+                
+                // Show confirmation page
+                return View(nameof(ForgotPasswordConfirmation));
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(email);
+        }
+        public ViewResult ForgotPasswordConfirmation() {
+            return View();
+        }
 
         // Error Messages
         private void Errors(Task result)
