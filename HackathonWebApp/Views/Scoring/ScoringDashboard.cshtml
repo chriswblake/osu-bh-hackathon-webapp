@@ -1,4 +1,4 @@
-﻿@model ScoringSubmission
+@model ScoringSubmission
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "Scoring Dashboard";
@@ -20,7 +20,7 @@
 		return delimetedString;
 	}
     string ToChartTeamsScoresCountArray(Dictionary<string, Team> teams) {
-        var combinedScores = teams.Values.Select(t=> t.CountScoresByQuestionId.Values.Sum());
+        var combinedScores = teams.Values.Select(t=> t.ScoringSubmissions.Count());
 		string delimetedString = "["+String.Join(",", combinedScores)+"]";
 		return delimetedString;
 	}
@@ -215,7 +215,7 @@ else {
                                 title: {
 									display: true,
                                     color: "#AAA",
-									text: 'Count Scores'
+									text: 'Users'
 								},
                                 ticks: {
                                     color: "#AAA",
@@ -332,7 +332,7 @@ else {
                                 title: {
 									display: true,
                                     color: "#AAA",
-									text: 'Count Scores'
+									text: 'Questions Answered'
 								},
                                 ticks: {
                                     color: "#AAA",
