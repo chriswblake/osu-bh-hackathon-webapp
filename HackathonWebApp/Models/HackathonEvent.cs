@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 using System;
@@ -30,6 +30,18 @@ namespace HackathonWebApp.Models
         [Required]
         [BsonElement("end_time")]
         public DateTime EndTime { get; set; }
+
+        [Required]
+        [BsonElement("registration_opens_time")]
+        public DateTime RegistrationOpensTime { get; set; }
+
+        [Required]
+        [BsonElement("early_registration_closes_time")]
+        public DateTime EarlyRegistrationClosesTime { get; set; }
+
+        [Required]
+        [BsonElement("registration_closes_time")]
+        public DateTime RegistrationClosesTime { get; set; }
 
         [Required]
         [BsonElement("sponsors")]

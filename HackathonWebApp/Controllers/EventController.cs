@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -143,6 +143,9 @@ namespace HackathonWebApp.Controllers
                     .Set(p => p.StartTime, hackathonEvent.StartTime)
                     .Set(p => p.EndTime, hackathonEvent.EndTime)
                     .Set(p => p.IsActive, hackathonEvent.IsActive)
+                    .Set(p => p.RegistrationOpensTime, hackathonEvent.RegistrationOpensTime)
+                    .Set(p => p.EarlyRegistrationClosesTime, hackathonEvent.EarlyRegistrationClosesTime)
+                    .Set(p => p.RegistrationClosesTime, hackathonEvent.RegistrationClosesTime)
                     .Set(p => p.RegistrationSettings.MajorOptions, hackathonEvent.RegistrationSettings.MajorOptions)
                     .Set(p => p.RegistrationSettings.TrainingsAcquiredOptions, hackathonEvent.RegistrationSettings.TrainingsAcquiredOptions)
                     .Set(p => p.RegistrationSettings.TShirtSizeOptions, hackathonEvent.RegistrationSettings.TShirtSizeOptions);
