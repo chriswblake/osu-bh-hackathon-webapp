@@ -325,7 +325,7 @@ namespace HackathonWebApp.Controllers
                 var teamId = this.activeEvent.EventAppTeams[userId];
                 team = this.activeEvent.Teams[teamId];
             }
-
+            ViewBag.ShowTeamsTime = activeEvent.ShowTeamsTime;
             ViewBag.RegistrationSettings = activeEvent.RegistrationSettings;
             return View(team);
         }
