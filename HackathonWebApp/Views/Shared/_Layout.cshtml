@@ -59,6 +59,7 @@
                                     <b>@User.Identity.Name</b>
                                     <hr/>
                                     <a class="dropdown-item" asp-controller="Account" asp-action="Index">Your Profile</a>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="YourTeam">Your Team</a>
                                     @if (User?.IsInRole("Admin") ?? false)
                                     {
                                         <a class="dropdown-item" asp-controller="Admin" asp-action="Index">Admin</a>
