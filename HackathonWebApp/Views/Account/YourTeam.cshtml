@@ -15,13 +15,13 @@
         background-color: var(--bh-dark-green);
         border: 1px solid var(--bh-green);
         border-radius: 15px;
-        padding: 10px 10px;
+        padding: 10px 15px;
         margin: 5px 3px;
         line-height: normal;
     }
 </style>
 
-<div class="container text-white" style="margin-bottom:50px;">
+<div class="container text-white">
     <h3>Your Team</h3>
 
     @* Team name *@
@@ -39,18 +39,19 @@
         </form>
     </div>
 
+    @* Team Members *@
     <div class="row col-md-10 col-lg-8">
         <h4 class="col-12">@team.Name - Members</h4>
         @foreach (var appUser in team.TeamMembers.Values)
         {
             var eventApplication = team.EventApplications[appUser.Id];
-            <div class="col-6 col-sm-6 col-md-4" style="display:inline-block; margin:0; padding:0; red; text-align:center;">
+            <div class="col-6 col-sm-6 col-md-4" style="display:inline-block; margin:0; padding:0; text-align:center;">
                 <div class="user-card">
-                    @appUser.FirstName @appUser.LastName <br/>
+                    @appUser.FirstName @appUser.LastName<br/>
                     <div style="font-size:small;">
-                    @rs.SchoolYearOptions[eventApplication.SchoolYear]<br/>
-                    @rs.MajorOptions[eventApplication.Major]<br/>
-                    <a href="mailto:@appUser.Email" style="font-size:x-small;"><i class="fa-solid fa-envelope"></i> @appUser.Email</a>
+                        @rs.SchoolYearOptions[eventApplication.SchoolYear]<br/>
+                        @rs.MajorOptions[eventApplication.Major]<br/>
+                        <a href="mailto:@appUser.Email" style="font-size:x-small;"><i class="fa-solid fa-envelope"></i> @appUser.Email</a>
                     </div>
                 </div>
             </div>
