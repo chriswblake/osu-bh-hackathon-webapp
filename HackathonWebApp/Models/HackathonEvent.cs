@@ -1,4 +1,4 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 using System;
@@ -61,6 +61,10 @@ namespace HackathonWebApp.Models
         #endregion
 
         #region Team Management
+        [Required]
+        [BsonElement("show_teams_time")]
+        public DateTime ShowTeamsTime { get; set; }
+
         [Required]
         [BsonElement("event_applications")]
         public Dictionary<string,EventApplication> EventApplications { get; set; } = new Dictionary<string, EventApplication>();

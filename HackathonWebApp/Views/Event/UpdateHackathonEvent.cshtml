@@ -1,4 +1,4 @@
-@model HackathonWebApp.Models.HackathonEvent
+﻿@model HackathonWebApp.Models.HackathonEvent
 
 @{
     ViewData["Title"] = "Edit Event";
@@ -69,6 +69,13 @@
                     @{ var tShirtSizeOptionsText = String.Join("\n", hackathonEvent.RegistrationSettings.TShirtSizeOptions.Values).Trim(); }
                     <label class="control-label" for="TShirtSizeOptions">T-Shirt Size Options</label>
                     <textarea style="width:100%;" id="TShirtSizeOptions" name="TShirtSizeOptions">@tShirtSizeOptionsText</textarea>
+                </div>
+
+                <h2>Team Settings</h2>
+                <div class="form-group">
+                    <label asp-for="ShowTeamsTime" class="control-label"></label>
+                    <input asp-for="ShowTeamsTime" class="form-control" type="date"/>
+                    <span asp-validation-for="ShowTeamsTime" class="text-danger"></span>
                 </div>
 
                 @* Save Options *@

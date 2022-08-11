@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -148,7 +148,8 @@ namespace HackathonWebApp.Controllers
                     .Set(p => p.RegistrationClosesTime, hackathonEvent.RegistrationClosesTime)
                     .Set(p => p.RegistrationSettings.MajorOptions, hackathonEvent.RegistrationSettings.MajorOptions)
                     .Set(p => p.RegistrationSettings.TrainingsAcquiredOptions, hackathonEvent.RegistrationSettings.TrainingsAcquiredOptions)
-                    .Set(p => p.RegistrationSettings.TShirtSizeOptions, hackathonEvent.RegistrationSettings.TShirtSizeOptions);
+                    .Set(p => p.RegistrationSettings.TShirtSizeOptions, hackathonEvent.RegistrationSettings.TShirtSizeOptions)
+                    .Set(p => p.ShowTeamsTime, hackathonEvent.ShowTeamsTime);
                 await eventCollection.FindOneAndUpdateAsync(
                     s => s.Id == ObjectId.Parse(id),
                     updateDefinition
