@@ -1,0 +1,244 @@
+﻿@model Team
+@{
+    ViewData["Title"] = "Your Team";
+    Team team = Model;
+    RegistrationSettings rs = ViewBag.RegistrationSettings;
+}
+
+<style>
+    h4 {
+        margin-top: 30px;
+    }
+    .user-card {
+        display: inline-block;
+        text-align: left;
+        background-color: var(--bh-dark-green);
+        border: 1px solid var(--bh-green);
+        border-radius: 15px;
+        padding: 10px 15px;
+        margin: 5px 3px;
+        line-height: normal;
+    }
+    .msg-box {
+        background-color:var(--bh-dark-green);
+        border: 1px solid var(--bh-green);
+        border-radius: 15px;;
+        margin-top: 50px;
+        padding: 20px;
+    }
+</style>
+
+<div class="container text-white">
+    <h3>Your Team</h3>
+
+    @if(team != null && team.Id.ToString() != "000000000000000000000000")
+    {
+        @* Team name *@
+        <div class="col-xs-12 col-sm-12 col-md-7 col-lg-5 col-xl-4">
+            <h4>Team Name</h4>
+            <form asp-action="UpdateTeamName" asp-controller='Account'>
+                <input type="hidden" asp-for="Id" class="form-control" />
+                <div class="form-group">
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Update Name" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+
+        @* Team Members *@
+        <div class="row col-md-10 col-lg-8">
+            <h4 class="col-12">@team.Name - Members</h4>
+            @foreach (var appUser in team.TeamMembers.Values)
+            {
+                var eventApplication = team.EventApplications[appUser.Id];
+                <div class="col-6 col-sm-6 col-md-4" style="display:inline-block; margin:0; padding:0; text-align:center;">
+                    <div class="user-card">
+                        @appUser.FirstName @appUser.LastName<br/>
+                        <div style="font-size:small;">
+                            @rs.SchoolYearOptions[eventApplication.SchoolYear]<br/>
+                            @rs.MajorOptions[eventApplication.Major]<br/>
+                            <a href="mailto:@appUser.Email" style="font-size:x-small;"><i class="fa-solid fa-envelope"></i> @appUser.Email</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @* Skills Chart *@
+        <div class="row col-md-10 col-lg-8">
+            <h4 class="col-12">Team Experience</h4>
+            <canvas id="bar-chart-team" class="experience-barchart"></canvas>
+        </div>
+    }else {
+        <div class="msg-box col-md-9 col-lg-6">
+            Hi! You have not yet been assigned to a team.<br/>
+            You will receive an email when teams have been announced.
+        </div>
+    }
+
+</div>
+
+@functions {
+    string ToChartSumExpDataArray(EventApplication eventApplication) {
+        var dataPoints = new double[] { 
+            eventApplication.HackathonExperience,
+            eventApplication.CodingExperience,
+            eventApplication.CommunicationExperience,
+            eventApplication.OrganizationExperience,
+            eventApplication.DocumentationExperience,
+            eventApplication.BusinessExperience,
+            eventApplication.CreativityExperience
+        };
+		string delimetedString = "["+String.Join(",", dataPoints)+"]";
+		return delimetedString;
+	}
+    string ToLabelsArray(List<EventApplication> eventApplication) {
+        var labels = eventApplication.Select(p => $"'{p.Id.ToString()}'");
+		string delimetedString = "["+String.Join(",", labels)+"]";
+		return delimetedString;
+	}
+    string ToLabelsArray(List<ApplicationUser> applicationUsers) {
+        var labels = applicationUsers.Select(p => $"'{p.FirstName}'");
+		string delimetedString = "["+String.Join(",", labels)+"]";
+		return delimetedString;
+	}
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0" asp-append-version="true"></script>
+    @* Reference: https://www.chartjs.org/docs/latest/samples/information.html *@
+    @* Reference: https://chartjs-plugin-datalabels.netlify.app/guide/#table-of-contents *@
+
+    @* Experience Charts *@
+    <script>
+        var stringToColour = function(str) {
+            var hash = 0;
+            for (var i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            var colour = '#';
+            for (var i = 0; i < 3; i++) {
+                var value = (hash >> (i * 8)) & 0xFF;
+                colour += ('00' + value.toString(16)).substr(-2);
+            }
+            return colour;
+        }
+
+        $(document).ready(function(){
+            Chart.register(ChartDataLabels);
+            
+            // Colors
+            const bh_dark_green = '#05322B';
+            const bh_green =  '#018374';
+            const osu_orange = '#FE5C00';
+
+            // Format all histograms the same
+            charts = {};
+            $(".experience-barchart").each(function() {
+                let chartId = $(this).attr('id');
+                const ctx = document.getElementById(chartId).getContext('2d');
+                const myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            'Hackathon',
+                            'Coding',
+                            'Communications',
+                            'Organization',
+                            'Documentation',
+                            'Business',
+                            'Creativity'
+                        ],
+                        datasets: []
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                min: 0,
+                                max: 5,
+                                title: {
+                                    display: true,
+                                    text: 'Experience',
+                                    color: bh_green
+                                },
+                                grid: {
+                                    display: false,
+                                    color: "#999",
+                                    borderColor: bh_green
+                                },
+                                ticks: {
+                                    color: bh_green,
+                                    autoSkip: false,
+                                    stepSize: 1
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Exp. Type',
+                                    color: bh_green
+                                },
+                                grid: {
+                                    display: true,
+                                    color: "#555",
+                                    borderColor: bh_green
+                                },
+                                ticks: {
+                                    color: bh_green,
+                                    autoSkip: false,
+                                    stepSize: 1
+                                },
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                top: 25
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+                charts[chartId] = myChart;
+            });
+
+            @{
+            var datasetStyle = @"
+                    {
+                        backgroundColor: osu_orange,
+                        borderColor: bh_green,
+                        datalabels: {
+                            color: bh_green,
+                            anchor: 'end',
+                            align: 'end'
+                        }
+                    }
+                ";
+            }
+
+            // Add data to chart for each event application
+            @{ int ea = 0; }
+            @foreach(EventApplication eventApplication in team.EventApplications.Values)
+            {
+                var dataCounts = ToChartSumExpDataArray(eventApplication);
+                var dataSetLabel = team.TeamMembers[eventApplication.UserId].FirstName;
+                @Html.Raw($"charts['bar-chart-team'].data.datasets[{ea}] = "+datasetStyle+";\n")
+                @Html.Raw($"charts['bar-chart-team'].data.datasets[{ea}].label = '{dataSetLabel}';\n")
+                @Html.Raw($"charts['bar-chart-team'].data.datasets[{ea}].data = {dataCounts};\n")
+                ea+=1;
+            }
+
+            // Update Display
+            @Html.Raw($"charts['bar-chart-team'].update();\n")
+            
+
+        });
+    </script>
+}

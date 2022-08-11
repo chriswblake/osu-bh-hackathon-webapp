@@ -414,7 +414,20 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("AssignTeams");
         }
-        
+        [HttpPost]
+        public async void UpdateTeam(Team team){
+            // Update team name
+            string teamId = team.Id.ToString();
+            var updateDefinition = Builders<HackathonEvent>.Update
+                .Set(p => p.Teams[teamId].Name, team.Name);
+            await eventCollection.FindOneAndUpdateAsync(
+                s => s.Id == this.activeEvent.Id,
+                updateDefinition
+            );
+
+            // Clear active event so it is refreshed
+            this.activeEvent.Teams[teamId].Name = team.Name;
+        }
        
         // Score Questions
         public ViewResult ScoreQuestions()

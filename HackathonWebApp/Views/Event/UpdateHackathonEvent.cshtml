@@ -127,7 +127,7 @@
         $.each(optionsList.reverse(), function(index, value) {
             var option = value.replace(/[^a-zA-Z0-9 ]/g, '').trim();
             var key = option.toLowerCase().replace(/ /g, '_').trim();
-            var htmlInput = `<input type="hidden" class="${hiddenInputClass}" name="RegistrationSettings.${fieldName}['${key}']" value="${option}"/>`;
+            var htmlInput = `<input type="hidden" class="${hiddenInputClass}" name="RegistrationSettings.${fieldName}[${key}]" value="${option}"/>`;
             optionsTextArea.after(htmlInput);
         });
 
