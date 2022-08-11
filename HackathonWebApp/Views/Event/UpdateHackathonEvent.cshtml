@@ -41,6 +41,21 @@
 
                 <h2>Registration Settings</h2>
                 <div class="form-group">
+                    <label asp-for="RegistrationOpensTime" class="control-label"></label>
+                    <input asp-for="RegistrationOpensTime" class="form-control" type="date"/>
+                    <span asp-validation-for="RegistrationOpensTime" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EarlyRegistrationClosesTime" class="control-label"></label>
+                    <input asp-for="EarlyRegistrationClosesTime" class="form-control" type="date"/>
+                    <span asp-validation-for="EarlyRegistrationClosesTime" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="RegistrationClosesTime" class="control-label"></label>
+                    <input asp-for="RegistrationClosesTime" class="form-control" type="date"/>
+                    <span asp-validation-for="RegistrationClosesTime" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     @{ var majorOptionsText = String.Join("\n", hackathonEvent.RegistrationSettings.MajorOptions.Values).Trim(); }
                     <label class="control-label" for="MajorOptions">Major Options</label>
                     <textarea style="width:100%;" id="MajorOptions" name="MajorOptions">@majorOptionsText</textarea>
@@ -54,6 +69,13 @@
                     @{ var tShirtSizeOptionsText = String.Join("\n", hackathonEvent.RegistrationSettings.TShirtSizeOptions.Values).Trim(); }
                     <label class="control-label" for="TShirtSizeOptions">T-Shirt Size Options</label>
                     <textarea style="width:100%;" id="TShirtSizeOptions" name="TShirtSizeOptions">@tShirtSizeOptionsText</textarea>
+                </div>
+
+                <h2>Team Settings</h2>
+                <div class="form-group">
+                    <label asp-for="ShowTeamsTime" class="control-label"></label>
+                    <input asp-for="ShowTeamsTime" class="form-control" type="date"/>
+                    <span asp-validation-for="ShowTeamsTime" class="text-danger"></span>
                 </div>
 
                 @* Save Options *@

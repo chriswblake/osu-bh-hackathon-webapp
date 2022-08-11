@@ -32,6 +32,18 @@ namespace HackathonWebApp.Models
         public DateTime EndTime { get; set; }
 
         [Required]
+        [BsonElement("registration_opens_time")]
+        public DateTime RegistrationOpensTime { get; set; }
+
+        [Required]
+        [BsonElement("early_registration_closes_time")]
+        public DateTime EarlyRegistrationClosesTime { get; set; }
+
+        [Required]
+        [BsonElement("registration_closes_time")]
+        public DateTime RegistrationClosesTime { get; set; }
+
+        [Required]
         [BsonElement("sponsors")]
         public Dictionary<string,Sponsor> Sponsors { get; set; } = new Dictionary<string, Sponsor>();
 
@@ -49,6 +61,10 @@ namespace HackathonWebApp.Models
         #endregion
 
         #region Team Management
+        [Required]
+        [BsonElement("show_teams_time")]
+        public DateTime ShowTeamsTime { get; set; }
+
         [Required]
         [BsonElement("event_applications")]
         public Dictionary<string,EventApplication> EventApplications { get; set; } = new Dictionary<string, EventApplication>();
