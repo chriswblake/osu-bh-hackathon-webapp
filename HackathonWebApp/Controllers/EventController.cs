@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -479,7 +479,7 @@ namespace HackathonWebApp.Controllers
                 // Pick new availability state
                 var confirmationState = EventApplication.ConfirmationStateOption.request_sent;
                 if (available)
-                    confirmationState = EventApplication.ConfirmationStateOption.assigned;
+                    confirmationState = EventApplication.ConfirmationStateOption.unassigned;
                 else 
                     confirmationState = EventApplication.ConfirmationStateOption.cancelled;
 
