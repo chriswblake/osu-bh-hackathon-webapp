@@ -9,13 +9,21 @@ namespace HackathonWebApp.Models
 {
     public class EventApplication
     {
+        // Tracking Info
         [BsonId]
         public ObjectId Id {get; set;}
-        
-        // Associated User
+
         [Required]
         [BsonElement("user_id")]
         public Guid UserId { get; set; }
+        
+        [Required]
+        [BsonElement("created_on")]
+        public DateTime CreatedOn {get; set; }
+
+
+
+        // Registration during application
         [BsonIgnore]
         public ApplicationUser AssociatedUser {get; set;}
 

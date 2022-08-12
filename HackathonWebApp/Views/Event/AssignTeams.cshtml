@@ -73,6 +73,7 @@
     <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small;">
         <tr>
             <th>UserId</th>
+            <th>Created On</th>
             <th>Major</th>
             <th>School Year</th>
             <th>Hackathon</th>
@@ -88,6 +89,7 @@
         {
             <tr>
                 <td style="font-size:x-small; white-space: nowrap;">@eventApplication.UserId</td>
+                <td style="font-size:x-small; white-space: nowrap;">@TimeZoneInfo.ConvertTimeFromUtc(eventApplication.CreatedOn, activeEvent.TimeZoneInfo)</td>
                 <td>@eventApplication.Major</td>
                 <td>@eventApplication.SchoolYear</td>
                 <td>@eventApplication.HackathonExperience</td>

@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -288,8 +288,9 @@ namespace HackathonWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Apply(EventApplication eventApplication)
         {
-            // Set unique id for this application
+            // Set unique id and time for this application
             eventApplication.Id = ObjectId.GenerateNewId();
+            eventApplication.CreatedOn = DateTime.Now;
             
             // Associated logged in user, or create the user then associate it
             if (User?.Identity?.IsAuthenticated ?? false)
