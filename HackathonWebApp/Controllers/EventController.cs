@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -355,12 +355,12 @@ namespace HackathonWebApp.Controllers
         public ViewResult ThankYou() {
             return View();
         }
-        public ViewResult ConfirmAvailability() {
+        public ViewResult AvailabilityStatus() {
             ViewBag.ActiveEvent = this.activeEvent;
             return View(this.activeEvent.EventApplications);
         }
         [HttpPost]
-        public async Task<IActionResult> ConfirmAvailability(Dictionary<string, EventApplication> eventApplications)
+        public async Task<IActionResult> AvailabilityStatus(Dictionary<string, EventApplication> eventApplications)
         {
             // Create change set
             var update = Builders<HackathonEvent>.Update;
@@ -393,7 +393,7 @@ namespace HackathonWebApp.Controllers
                 }
             }
 
-            return RedirectToAction(nameof(ConfirmAvailability));
+            return RedirectToAction(nameof(AvailabilityStatus));
         }
 
         // Team Placement
