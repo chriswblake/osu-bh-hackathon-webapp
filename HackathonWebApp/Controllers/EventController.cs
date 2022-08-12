@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -452,6 +452,7 @@ namespace HackathonWebApp.Controllers
 
             return RedirectToAction(nameof(AvailabilityStatus));
         }
+        [AllowAnonymous]
         public async Task<IActionResult> ConfirmAvailability(string userId, string code, bool available) {
             // Checks
             bool validToken = false;
