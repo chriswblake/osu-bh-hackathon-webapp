@@ -1,14 +1,14 @@
 ﻿@model Dictionary<string, EventApplication>
 @{
     Layout = "_AdminLayout";
-    ViewBag.Title = "Confirm Attendance";
+    ViewBag.Title = "Availability Status";
     HackathonEvent activeEvent = ViewBag.ActiveEvent;
     List<EventApplication> eventApplications = Model.Values.ToList();
 }
 
 @* List of applications *@
 <form method="post" asp-action="AvailabilityStatus" enctype="multipart/form-data" style="margin-bottom:75px;">
-    <h1 class="text-white">Applications (active event)</h1>
+    <h1 class="text-white">Availability Status</h1>
     <a asp-action="RequestAvailabilityConfirmationViaEmail" class="btn btn-secondary">Send email to unconfirmed</a>
     <button type="submit" class="btn btn-primary">Save</button>
     <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small; margin-top: 10px;">
