@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
 using System.Globalization;
+using System.Net.Mail;
+using Microsoft.AspNetCore.Hosting;
 
 namespace HackathonWebApp.Controllers
 {
@@ -25,18 +27,24 @@ namespace HackathonWebApp.Controllers
         public static HackathonEvent _activeEvent;
 
         // Fields
+        private IWebHostEnvironment webHostEnvironment;
         private readonly ILogger<EventController> _logger;
         private UserManager<ApplicationUser> userManager;
         private IMongoCollection<HackathonEvent> eventCollection;
+        private SmtpClient emailClient;
 
         // Constructor
-        public EventController(ILogger<EventController> logger, UserManager<ApplicationUser> userManager, IMongoDatabase database)
+        public EventController(IWebHostEnvironment webHostEnvironment, ILogger<EventController> logger, UserManager<ApplicationUser> userManager, IMongoDatabase database, SmtpClient emailClient)
         {
+            this.webHostEnvironment = webHostEnvironment;
             _logger = logger;
             
             // Hackathon DBs
             this.userManager = userManager;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
+
+            // Email Functions
+            this.emailClient = emailClient;
         }
 
         // Properties
@@ -80,6 +88,9 @@ namespace HackathonWebApp.Controllers
                         foreach(Guid userId in team.EventApplications.Keys){
                             team.TeamMembers[userId] = userManager.FindByIdAsync(userId.ToString()).Result;
                         }
+                    }
+                    foreach (var eventApplication in activeEvent.EventApplications.Values){
+                        eventApplication.AssociatedUser = userManager.FindByIdAsync(eventApplication.UserId.ToString()).Result;
                     }
 
                     // Set active event for controller
@@ -142,6 +153,7 @@ namespace HackathonWebApp.Controllers
                     .Set(p => p.Name, hackathonEvent.Name)
                     .Set(p => p.StartTime, hackathonEvent.StartTime)
                     .Set(p => p.EndTime, hackathonEvent.EndTime)
+                    .Set(p => p.TimeZoneId, hackathonEvent.TimeZoneId)
                     .Set(p => p.IsActive, hackathonEvent.IsActive)
                     .Set(p => p.RegistrationOpensTime, hackathonEvent.RegistrationOpensTime)
                     .Set(p => p.EarlyRegistrationClosesTime, hackathonEvent.EarlyRegistrationClosesTime)
@@ -287,8 +299,10 @@ namespace HackathonWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Apply(EventApplication eventApplication)
         {
-            // Set unique id for this application
+            // Set unique id and time for this application
             eventApplication.Id = ObjectId.GenerateNewId();
+            eventApplication.CreatedOn = DateTime.Now;
+            eventApplication.ConfirmationState = EventApplication.ConfirmationStateOption.unconfirmed;
             
             // Associated logged in user, or create the user then associate it
             if (User?.Identity?.IsAuthenticated ?? false)
@@ -349,12 +363,149 @@ namespace HackathonWebApp.Controllers
         public ViewResult ThankYou() {
             return View();
         }
+        public ViewResult AvailabilityStatus() {
+            ViewBag.ActiveEvent = this.activeEvent;
+            return View(this.activeEvent.EventApplications);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AvailabilityStatus(Dictionary<string, EventApplication> eventApplications)
+        {
+            // Create change set
+            var update = Builders<HackathonEvent>.Update;
+            var updates = new List<UpdateDefinition<HackathonEvent>>();
+            foreach(var kvp in eventApplications)
+            {
+                string key = kvp.Key;
+                EventApplication eventApplication = kvp.Value;
+                if (activeEvent.EventApplications.ContainsKey(key))
+                {
+                    var updateDefinition = update.Set(p => p.EventApplications[key].ConfirmationState, eventApplication.ConfirmationState);
+                    updates.Add(updateDefinition);
+                }
+            }
+
+            // Update in DB
+            await eventCollection.FindOneAndUpdateAsync(
+                s => s.Id == activeEvent.Id,
+                update.Combine(updates)
+            );
+
+            // Update in memory
+            foreach(var kvp in eventApplications)
+            {
+                string key = kvp.Key;
+                EventApplication eventApplication = kvp.Value;
+                if (activeEvent.EventApplications.ContainsKey(key))
+                {
+                    this.activeEvent.EventApplications[key].ConfirmationState = eventApplication.ConfirmationState;
+                }
+            }
+
+            return RedirectToAction(nameof(AvailabilityStatus));
+        }
+        public async Task<IActionResult> RequestAvailabilityConfirmationViaEmail() {
+
+            // Get list of unconfirmed applications
+            var unconfirmedApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed);
+
+            // Build emails to send and updats to make to database
+            var update = Builders<HackathonEvent>.Update;
+            var updates = new List<UpdateDefinition<HackathonEvent>>();
+            var emails = new List<MailMessage>();
+            foreach(var eventApplication in unconfirmedApplications)
+            {
+                var appUser = eventApplication.AssociatedUser;
+                
+                // Generate confirmation email body with token
+                string templatePath = Path.Combine(webHostEnvironment.WebRootPath, "email-templates", "ConfirmAvailability.html");
+                string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
+                string code = await userManager.GenerateUserTokenAsync(appUser, "Default", "Confirm Availability");
+                var callbackUrlAvailable = Url.Action("ConfirmAvailability", "Event", new { userId=appUser.Id, code=code, available=true }, protocol: HttpContext.Request.Scheme);
+                var callbackUrlUnavailable = Url.Action("ConfirmAvailability", "Event", new { userId=appUser.Id, code=code, available=false }, protocol: HttpContext.Request.Scheme);
+                var urlAccount = Url.Action("Index", "Account", new {}, protocol: HttpContext.Request.Scheme);
+                string msgBody = string.Format(msgBodyTemplate, appUser.FirstName, callbackUrlAvailable, callbackUrlUnavailable, urlAccount);
+
+                // Set up email to send
+                MailMessage mail = new MailMessage();
+                mail.To.Add(appUser.Email);
+                mail.From = new MailAddress("hackokstate@gmail.com");
+                mail.Subject = "Confirm Availability - HackOKState";
+                mail.Body = msgBody;
+                mail.IsBodyHtml = true;
+                emails.Add(mail);
+
+                // Set up command for datbase update
+                updates.Add(update.Set(p => p.EventApplications[eventApplication.UserId.ToString()].ConfirmationState, EventApplication.ConfirmationStateOption.request_sent));
+                // Save in local memory
+                eventApplication.ConfirmationState = EventApplication.ConfirmationStateOption.request_sent;
+            }
+
+            // Update in DB
+            await eventCollection.FindOneAndUpdateAsync(
+                s => s.Id == this.activeEvent.Id,
+                update.Combine(updates)
+            );
+
+            // Send emails
+            foreach(var mail in emails)
+                await emailClient.SendMailAsync(mail);
+
+            return RedirectToAction(nameof(AvailabilityStatus));
+        }
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmAvailability(string userId, string code, bool available) {
+            // Checks
+            bool validToken = false;
+            bool validUserId = false;
+            
+            // Get user
+            var appUser = await this.userManager.FindByIdAsync(userId);
+
+            // If user is found check token and application
+            if (appUser != null)
+                validToken = await userManager.VerifyUserTokenAsync(appUser, "Default", "Confirm Availability", code);
+                validUserId = this.activeEvent.EventApplications.ContainsKey(userId);
+
+            // End early if any issues
+            if (!validToken || !validUserId)
+            {
+                ModelState.AddModelError("invalid-token", "The token is either invalid or expired. Please login and visit your account page to confirm availability.");
+                return RedirectToAction("Index", "Account");
+            }
+
+            // Decide and save availability state
+            if (this.activeEvent.EventApplications[userId].ConfirmationState== EventApplication.ConfirmationStateOption.request_sent)
+            {
+                // Pick new availability state
+                var confirmationState = EventApplication.ConfirmationStateOption.request_sent;
+                if (available)
+                    confirmationState = EventApplication.ConfirmationStateOption.unassigned;
+                else 
+                    confirmationState = EventApplication.ConfirmationStateOption.cancelled;
+
+                // Update in DB
+                var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.EventApplications[userId].ConfirmationState, confirmationState);
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == this.activeEvent.Id,
+                    updateDefinition
+                );
+
+                // Update in Memory
+                this.activeEvent.EventApplications[userId].ConfirmationState = confirmationState;
+            }
+
+            // Forward to user profile, so they can still change it manually. (e.g. they pressed the wrong button)
+            return RedirectToAction("Index", "Account");
+
+        }
         
         // Team Placement
         public IActionResult AssignTeams()
         {
             // Get events and applications for current event
-            ViewBag.EventApplications = this.activeEvent.EventApplications.Values.ToList();
+            ViewBag.EventApplications = this.activeEvent.EventApplications.Values.Where(p=>
+                p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned ||
+                p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned ).ToList();
             ViewBag.Teams = this.activeEvent.Teams;
             ViewBag.EventAppTeams = this.activeEvent.EventAppTeams;
             ViewBag.ActiveEvent = this.activeEvent;
@@ -372,8 +523,14 @@ namespace HackathonWebApp.Controllers
             {
                 string userId = teamAssignment.Key;
                 string teamId = teamAssignment.Value;
-                var updateDefinition = update.Set(p => p.EventAppTeams[userId], teamId);
-                updates.Add(updateDefinition);
+                if (teamId != null && this.activeEvent.Teams.ContainsKey(teamId))
+                {
+                    updates.Add(update.Set(p => p.EventAppTeams[userId], teamId));
+                    updates.Add(update.Set(p => p.EventApplications[userId].ConfirmationState, EventApplication.ConfirmationStateOption.assigned));
+                }else {
+                    updates.Add(update.Unset(p => p.EventAppTeams[userId]));
+                    updates.Add(update.Set(p => p.EventApplications[userId].ConfirmationState, EventApplication.ConfirmationStateOption.unassigned));
+                }
             }
 
             // Update in DB
@@ -388,7 +545,6 @@ namespace HackathonWebApp.Controllers
 
             return RedirectToAction("AssignTeams");
         }
-
         public IActionResult CreateTeam() => View();
         [HttpPost]
         public async Task<IActionResult> CreateTeam(Team team)

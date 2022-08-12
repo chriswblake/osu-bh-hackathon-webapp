@@ -10,13 +10,41 @@ namespace HackathonWebApp.Models
     [BsonIgnoreExtraElements]
     public class EventApplication
     {
+        // Tracking Info
         [BsonId]
         public ObjectId Id {get; set;}
-        
-        // Associated User
+
         [Required]
         [BsonElement("user_id")]
         public Guid UserId { get; set; }
+        
+        [Required]
+        [BsonElement("created_on")]
+        public DateTime CreatedOn {get; set; }
+
+        [Required]
+        [BsonElement("confirmation_state")]
+        [BsonRepresentation(BsonType.String)]
+        public ConfirmationStateOption ConfirmationState {get; set; }
+        public enum ConfirmationStateOption
+        {
+            [Description("Unconfirmed")] // They have applied to the event.
+            unconfirmed,
+            [Description("Request Sent")] // We are about to assemble teams. Request confirmation that you are free.
+            request_sent,
+            [Description("Unassigned")] // Applicant has confirmed but has not been assigned a team yet.
+            unassigned,
+            [Description("Assigned")] // Applicant has been assigned a team.
+            assigned,
+            [Description("Cancelled")] // Applicant did not confirm in time or rejected confirmation.
+            cancelled,
+            [Description("No Email")] // Applicant never verified their email.
+            no_email
+        }
+
+
+
+        // Create account during application for event
         [BsonIgnore]
         public ApplicationUser AssociatedUser {get; set;}
 

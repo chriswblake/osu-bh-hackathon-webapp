@@ -8,6 +8,7 @@ using HackathonWebApp.Models;
 using System;
 using System.Net.Mail;
 using System.IO;
+using MongoDB.Driver;
 
 namespace HackathonWebApp.Controllers
 {
@@ -18,14 +19,16 @@ namespace HackathonWebApp.Controllers
         private UserManager<ApplicationUser> userManager;
         private SignInManager<ApplicationUser> signInManager;
         private SmtpClient emailClient;
+        private IMongoCollection<HackathonEvent> eventCollection;
 
         // Constructor
-        public AccountController(IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient)
+        public AccountController(IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient, IMongoDatabase database)
         {
             this.webHostEnvironment = webHostEnvironment;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.emailClient = emailClient;
+            this.eventCollection = database.GetCollection<HackathonEvent>("Events");
         }
 
         // Properties
@@ -42,6 +45,11 @@ namespace HackathonWebApp.Controllers
         {
             string userName = User.Identity.Name;
             ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+
+            // Add event application, if they have one
+            if (this.activeEvent.EventApplications.ContainsKey(appUser.Id.ToString()))
+                ViewBag.EventApplication = this.activeEvent.EventApplications[appUser.Id.ToString()];
+    
             return View(appUser);
         }
         public IActionResult Create()
@@ -218,6 +226,33 @@ namespace HackathonWebApp.Controllers
             return View("Delete");
         }
         
+        // Application Status
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ApplicationStatus(bool available) {
+            // Pick new availability state
+            var confirmationState = EventApplication.ConfirmationStateOption.request_sent;
+            if (available)
+                confirmationState = EventApplication.ConfirmationStateOption.unassigned;
+            else 
+                confirmationState = EventApplication.ConfirmationStateOption.cancelled;
+
+            // Get User info
+            var appUser = await userManager.FindByNameAsync(User.Identity.Name);
+            var userId = appUser.Id.ToString();
+
+            // Update in DB
+            var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.EventApplications[userId].ConfirmationState, confirmationState);
+            await eventCollection.FindOneAndUpdateAsync(
+                s => s.Id == this.activeEvent.Id,
+                updateDefinition
+            );
+
+            // Update in Memory
+            this.activeEvent.EventApplications[userId].ConfirmationState = confirmationState;
+
+            return RedirectToAction(nameof(Index));
+        } 
 
         // Passsword Reset
         public ViewResult ForgotPassword() {
