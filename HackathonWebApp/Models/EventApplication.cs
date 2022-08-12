@@ -23,18 +23,23 @@ namespace HackathonWebApp.Models
 
         [Required]
         [BsonElement("confirmation_state")]
-        public string ConfirmationState {get; set; }
-        [BsonIgnore]
-        public Dictionary<string,string> ConfirmationStateOptions {get {
-            return new Dictionary<string,string> {
-                {"unconfirmed","Unconfirmed"}, // They have applied to the event.
-                {"request_sent","Request Sent"}, // We are about to assemble teams. Request confirmation that you are free.
-                {"unassigned","Unassigned"}, // Applicant has confirmed but has not been assigned a team yet.
-                {"assigned","Assigned"}, // Applicant has been assigned a team.
-                {"cancelled","Cancelled"}, // Applicant did not confirm in time or rejected confirmation.
-                {"no_email","No Email"}, // Applicant never verified their email.
-            };
-        }}
+        [BsonRepresentation(BsonType.String)]
+        public ConfirmationStateOption ConfirmationState {get; set; }
+        public enum ConfirmationStateOption
+        {
+            [Description("Unconfirmed")] // They have applied to the event.
+            unconfirmed,
+            [Description("Request Sent")] // We are about to assemble teams. Request confirmation that you are free.
+            request_sent,
+            [Description("Unassigned")] // Applicant has confirmed but has not been assigned a team yet.
+            unassigned,
+            [Description("Assigned")] // Applicant has been assigned a team.
+            assigned,
+            [Description("Cancelled")] // Applicant did not confirm in time or rejected confirmation.
+            cancelled,
+            [Description("No Email")] // Applicant never verified their email.
+            no_email
+        }
 
 
 

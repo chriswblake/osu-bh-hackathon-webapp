@@ -33,7 +33,7 @@
                 <td> @appUser.EmailConfirmed</td>
                 <td>@appUser.Email</td>
                 <td>
-                    @Html.DropDownListFor(m => m[eventApplication.UserId.ToString()].ConfirmationState, new SelectList(eventApplication.ConfirmationStateOptions, "Key", "Value"), new { @name="event-"+eventApplication.Id })
+                    @Html.DropDownListFor(m => m[eventApplication.UserId.ToString()].ConfirmationState, new SelectList(typeof(EventApplication.ConfirmationStateOption).GetFields(), "Name", "Name"), new { @name="event-"+eventApplication.Id })
                 </td>
                 <td>@eventApplication.Major</td>
                 <td>@eventApplication.SchoolYear</td>

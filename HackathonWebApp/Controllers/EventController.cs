@@ -302,7 +302,7 @@ namespace HackathonWebApp.Controllers
             // Set unique id and time for this application
             eventApplication.Id = ObjectId.GenerateNewId();
             eventApplication.CreatedOn = DateTime.Now;
-            eventApplication.ConfirmationState = "unconfirmed";
+            eventApplication.ConfirmationState = EventApplication.ConfirmationStateOption.unconfirmed;
             
             // Associated logged in user, or create the user then associate it
             if (User?.Identity?.IsAuthenticated ?? false)
@@ -406,7 +406,7 @@ namespace HackathonWebApp.Controllers
         public async Task<IActionResult> RequestAvailabilityConfirmationViaEmail() {
 
             // Get list of unconfirmed applications
-            var unconfirmedApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == "unconfirmed");
+            var unconfirmedApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed);
 
             // Build emails to send and updats to make to database
             var update = Builders<HackathonEvent>.Update;
@@ -435,9 +435,9 @@ namespace HackathonWebApp.Controllers
                 emails.Add(mail);
 
                 // Set up command for datbase update
-                updates.Add(update.Set(p => p.EventApplications[eventApplication.UserId.ToString()].ConfirmationState, "request_sent"));
+                updates.Add(update.Set(p => p.EventApplications[eventApplication.UserId.ToString()].ConfirmationState, EventApplication.ConfirmationStateOption.request_sent));
                 // Save in local memory
-                eventApplication.ConfirmationState = "request_sent";
+                eventApplication.ConfirmationState = EventApplication.ConfirmationStateOption.request_sent;
             }
 
             // Update in DB
@@ -473,14 +473,14 @@ namespace HackathonWebApp.Controllers
             }
 
             // Decide and save availability state
-            if (this.activeEvent.EventApplications[userId].ConfirmationState=="request_sent")
+            if (this.activeEvent.EventApplications[userId].ConfirmationState== EventApplication.ConfirmationStateOption.request_sent)
             {
                 // Pick new availability state
-                var confirmationState = "";
+                var confirmationState = EventApplication.ConfirmationStateOption.request_sent;
                 if (available)
-                    confirmationState = "unassigned";
+                    confirmationState = EventApplication.ConfirmationStateOption.assigned;
                 else 
-                    confirmationState = "cancelled";
+                    confirmationState = EventApplication.ConfirmationStateOption.cancelled;
 
                 // Update in DB
                 var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.EventApplications[userId].ConfirmationState, confirmationState);
@@ -502,7 +502,9 @@ namespace HackathonWebApp.Controllers
         public IActionResult AssignTeams()
         {
             // Get events and applications for current event
-            ViewBag.EventApplications = this.activeEvent.EventApplications.Values.Where(p=> (p.ConfirmationState == "assigned") || (p.ConfirmationState == "unassigned")).ToList();
+            ViewBag.EventApplications = this.activeEvent.EventApplications.Values.Where(p=>
+                p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned ||
+                p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned ).ToList();
             ViewBag.Teams = this.activeEvent.Teams;
             ViewBag.EventAppTeams = this.activeEvent.EventAppTeams;
             ViewBag.ActiveEvent = this.activeEvent;
@@ -523,10 +525,10 @@ namespace HackathonWebApp.Controllers
                 if (teamId != null && this.activeEvent.Teams.ContainsKey(teamId))
                 {
                     updates.Add(update.Set(p => p.EventAppTeams[userId], teamId));
-                    updates.Add(update.Set(p => p.EventApplications[userId].ConfirmationState, "assigned"));
+                    updates.Add(update.Set(p => p.EventApplications[userId].ConfirmationState, EventApplication.ConfirmationStateOption.assigned));
                 }else {
                     updates.Add(update.Unset(p => p.EventAppTeams[userId]));
-                    updates.Add(update.Set(p => p.EventApplications[userId].ConfirmationState, "unassigned"));
+                    updates.Add(update.Set(p => p.EventApplications[userId].ConfirmationState, EventApplication.ConfirmationStateOption.unassigned));
                 }
             }
 
