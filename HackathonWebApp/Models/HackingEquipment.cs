@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace HackathonWebApp.Models
 {
+    [BsonIgnoreExtraElements]
     public class HackingEquipment
     {
         [BsonId]

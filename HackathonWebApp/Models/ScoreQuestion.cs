@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HackathonWebApp.Models
 {
+    [BsonIgnoreExtraElements]
     public class ScoreQuestion {
         // Tracking Fields
         [BsonId]
@@ -23,6 +24,7 @@ namespace HackathonWebApp.Models
         public Dictionary<string, AnswerOption> AnswerOptions {get; set; }
     }
 
+    [BsonIgnoreExtraElements]
     public class AnswerOption
     {
         public int Score { get; set; }

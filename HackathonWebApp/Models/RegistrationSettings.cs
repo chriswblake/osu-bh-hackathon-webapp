@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HackathonWebApp.Models
 {
+    [BsonIgnoreExtraElements]
     public class RegistrationSettings
     {
         /// <summary>

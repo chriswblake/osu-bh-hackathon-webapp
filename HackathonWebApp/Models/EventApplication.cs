@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace HackathonWebApp.Models
 {
+    [BsonIgnoreExtraElements]
     public class EventApplication
     {
         [BsonId]
