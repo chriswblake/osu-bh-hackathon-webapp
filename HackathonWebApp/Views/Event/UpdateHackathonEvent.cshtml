@@ -31,6 +31,11 @@
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="TimeZoneId" class="control-label"></label><br/>
+                    @Html.DropDownListFor(m => m.TimeZoneId, new SelectList(hackathonEvent.TimeZoneInfoOptions, "Id", "DisplayName"), "Select Active", new { @class="basic-info-selector" })
+                    <span asp-validation-for="TimeZoneId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <label asp-for="IsActive" class="control-label"></label><br/>
                     @Html.DropDownListFor(m => m.IsActive, new SelectList( new Dictionary<bool, string>() {
                             { false, "Inactive"},

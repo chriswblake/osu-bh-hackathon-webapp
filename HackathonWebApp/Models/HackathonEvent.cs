@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.ObjectModel;
 
 namespace HackathonWebApp.Models
 {
@@ -22,6 +23,22 @@ namespace HackathonWebApp.Models
         [Required]
         [BsonElement("name")]
         public string Name { get; set; }
+        
+        [Required]
+        [BsonElement("time_zone_id")]
+        public string TimeZoneId { get; set; } = "Central Standard Time"; // Default
+        [BsonIgnore]
+        public TimeZoneInfo TimeZoneInfo {get {
+            try {
+                return TimeZoneInfo.FindSystemTimeZoneById(this.TimeZoneId);
+            } catch {
+                // If the id stored in the DB fails (becaue a time zone id is changed), fail to UTC.
+                return TimeZoneInfo.Utc;
+            }
+        }}
+        public ReadOnlyCollection<TimeZoneInfo> TimeZoneInfoOptions { get {
+            return  TimeZoneInfo.GetSystemTimeZones();
+        }}
 
         [Required]
         [BsonElement("start_time")]
