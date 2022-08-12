@@ -33,7 +33,16 @@
                 <td> @appUser.EmailConfirmed</td>
                 <td>@appUser.Email</td>
                 <td>
-                    @Html.DropDownListFor(m => m[eventApplication.UserId.ToString()].ConfirmationState, new SelectList(typeof(EventApplication.ConfirmationStateOption).GetFields(), "Name", "Name"), new { @name="event-"+eventApplication.Id })
+                    @if (eventApplication.ConfirmationState == EventApplication.ConfirmationStateOption.assigned)
+                    {
+                        @Html.Raw("assigned")
+                    }else
+                    {
+                        var stateOptions = typeof(EventApplication.ConfirmationStateOption).GetFields().Where(k=>k.IsLiteral).ToList();
+                        stateOptions = stateOptions.Where(p=> p.Name != "assigned").ToList();
+                        @* stateOptions.Remove(EventApplication.ConfirmationStateOption.assigned); *@
+                        @Html.DropDownListFor(m => m[eventApplication.UserId.ToString()].ConfirmationState, new SelectList(stateOptions, "Name", "Name"), new { @name="event-"+eventApplication.Id })
+                    }
                 </td>
                 <td>@eventApplication.Major</td>
                 <td>@eventApplication.SchoolYear</td>
