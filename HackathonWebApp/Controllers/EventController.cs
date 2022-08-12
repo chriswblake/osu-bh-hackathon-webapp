@@ -81,6 +81,9 @@ namespace HackathonWebApp.Controllers
                             team.TeamMembers[userId] = userManager.FindByIdAsync(userId.ToString()).Result;
                         }
                     }
+                    foreach (var eventApplication in activeEvent.EventApplications.Values){
+                        eventApplication.AssociatedUser = userManager.FindByIdAsync(eventApplication.UserId.ToString()).Result;
+                    }
 
                     // Set active event for controller
                     EventController._activeEvent = activeEvent;
@@ -291,6 +294,7 @@ namespace HackathonWebApp.Controllers
             // Set unique id and time for this application
             eventApplication.Id = ObjectId.GenerateNewId();
             eventApplication.CreatedOn = DateTime.Now;
+            eventApplication.ConfirmationState = "unconfirmed";
             
             // Associated logged in user, or create the user then associate it
             if (User?.Identity?.IsAuthenticated ?? false)
@@ -351,12 +355,52 @@ namespace HackathonWebApp.Controllers
         public ViewResult ThankYou() {
             return View();
         }
-        
+        public ViewResult ConfirmAvailability() {
+            ViewBag.ActiveEvent = this.activeEvent;
+            return View(this.activeEvent.EventApplications);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ConfirmAvailability(Dictionary<string, EventApplication> eventApplications)
+        {
+            // Create change set
+            var update = Builders<HackathonEvent>.Update;
+            var updates = new List<UpdateDefinition<HackathonEvent>>();
+            foreach(var kvp in eventApplications)
+            {
+                string key = kvp.Key;
+                EventApplication eventApplication = kvp.Value;
+                if (activeEvent.EventApplications.ContainsKey(key))
+                {
+                    var updateDefinition = update.Set(p => p.EventApplications[key].ConfirmationState, eventApplication.ConfirmationState);
+                    updates.Add(updateDefinition);
+                }
+            }
+
+            // Update in DB
+            await eventCollection.FindOneAndUpdateAsync(
+                s => s.Id == activeEvent.Id,
+                update.Combine(updates)
+            );
+
+            // Update in memory
+            foreach(var kvp in eventApplications)
+            {
+                string key = kvp.Key;
+                EventApplication eventApplication = kvp.Value;
+                if (activeEvent.EventApplications.ContainsKey(key))
+                {
+                    this.activeEvent.EventApplications[key].ConfirmationState = eventApplication.ConfirmationState;
+                }
+            }
+
+            return RedirectToAction(nameof(ConfirmAvailability));
+        }
+
         // Team Placement
         public IActionResult AssignTeams()
         {
             // Get events and applications for current event
-            ViewBag.EventApplications = this.activeEvent.EventApplications.Values.ToList();
+            ViewBag.EventApplications = this.activeEvent.EventApplications.Values.Where(p=> (p.ConfirmationState == "assigned") || (p.ConfirmationState == "unassigned")).ToList();
             ViewBag.Teams = this.activeEvent.Teams;
             ViewBag.EventAppTeams = this.activeEvent.EventAppTeams;
             ViewBag.ActiveEvent = this.activeEvent;
@@ -374,8 +418,14 @@ namespace HackathonWebApp.Controllers
             {
                 string userId = teamAssignment.Key;
                 string teamId = teamAssignment.Value;
-                var updateDefinition = update.Set(p => p.EventAppTeams[userId], teamId);
-                updates.Add(updateDefinition);
+                if (teamId != null && this.activeEvent.Teams.ContainsKey(teamId))
+                {
+                    updates.Add(update.Set(p => p.EventAppTeams[userId], teamId));
+                    updates.Add(update.Set(p => p.EventApplications[userId].ConfirmationState, "assigned"));
+                }else {
+                    updates.Add(update.Unset(p => p.EventAppTeams[userId]));
+                    updates.Add(update.Set(p => p.EventApplications[userId].ConfirmationState, "unassigned"));
+                }
             }
 
             // Update in DB
@@ -390,7 +440,6 @@ namespace HackathonWebApp.Controllers
 
             return RedirectToAction("AssignTeams");
         }
-
         public IActionResult CreateTeam() => View();
         [HttpPost]
         public async Task<IActionResult> CreateTeam(Team team)

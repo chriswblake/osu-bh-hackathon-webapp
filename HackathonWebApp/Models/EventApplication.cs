@@ -21,9 +21,24 @@ namespace HackathonWebApp.Models
         [BsonElement("created_on")]
         public DateTime CreatedOn {get; set; }
 
+        [Required]
+        [BsonElement("confirmation_state")]
+        public string ConfirmationState {get; set; }
+        [BsonIgnore]
+        public Dictionary<string,string> ConfirmationStateOptions {get {
+            return new Dictionary<string,string> {
+                {"unconfirmed","Unconfirmed"}, // They have applied to the event.
+                {"request_sent","Request Sent"}, // We are about to assemble teams. Request confirmation that you are free.
+                {"unassigned","Unassigned"}, // Applicant has confirmed but has not been assigned a team yet.
+                {"assigned","Assigned"}, // Applicant has been assigned a team.
+                {"cancelled","Cancelled"}, // Applicant did not confirm in time or rejected confirmation.
+                {"no_email","No Email"}, // Applicant never verified their email.
+            };
+        }}
 
 
-        // Registration during application
+
+        // Create account during application for event
         [BsonIgnore]
         public ApplicationUser AssociatedUser {get; set;}
 
