@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -452,6 +452,52 @@ namespace HackathonWebApp.Controllers
 
             return RedirectToAction(nameof(AvailabilityStatus));
         }
+        public async Task<IActionResult> ConfirmAvailability(string userId, string code, bool available) {
+            // Checks
+            bool validToken = false;
+            bool validUserId = false;
+            
+            // Get user
+            var appUser = await this.userManager.FindByIdAsync(userId);
+
+            // If user is found check token and application
+            if (appUser != null)
+                validToken = await userManager.VerifyUserTokenAsync(appUser, "Default", "Confirm Availability", code);
+                validUserId = this.activeEvent.EventApplications.ContainsKey(userId);
+
+            // End early if any issues
+            if (!validToken || !validUserId)
+            {
+                ModelState.AddModelError("invalid-token", "The token is either invalid or expired. Please login and visit your account page to confirm availability.");
+                return RedirectToAction("Index", "Account");
+            }
+
+            // Decide and save availability state
+            if (this.activeEvent.EventApplications[userId].ConfirmationState=="request_sent")
+            {
+                // Pick new availability state
+                var confirmationState = "";
+                if (available)
+                    confirmationState = "unassigned";
+                else 
+                    confirmationState = "cancelled";
+
+                // Update in DB
+                var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.EventApplications[userId].ConfirmationState, confirmationState);
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == this.activeEvent.Id,
+                    updateDefinition
+                );
+
+                // Update in Memory
+                this.activeEvent.EventApplications[userId].ConfirmationState = confirmationState;
+            }
+
+            // Forward to user profile, so they can still change it manually. (e.g. they pressed the wrong button)
+            return RedirectToAction("Index", "Account");
+
+        }
+        
         // Team Placement
         public IActionResult AssignTeams()
         {
