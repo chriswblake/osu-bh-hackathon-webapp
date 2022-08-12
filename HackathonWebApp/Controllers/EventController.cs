@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
 using System.Globalization;
+using System.Net.Mail;
+using Microsoft.AspNetCore.Hosting;
 
 namespace HackathonWebApp.Controllers
 {
@@ -25,18 +27,24 @@ namespace HackathonWebApp.Controllers
         public static HackathonEvent _activeEvent;
 
         // Fields
+        private IWebHostEnvironment webHostEnvironment;
         private readonly ILogger<EventController> _logger;
         private UserManager<ApplicationUser> userManager;
         private IMongoCollection<HackathonEvent> eventCollection;
+        private SmtpClient emailClient;
 
         // Constructor
-        public EventController(ILogger<EventController> logger, UserManager<ApplicationUser> userManager, IMongoDatabase database)
+        public EventController(IWebHostEnvironment webHostEnvironment, ILogger<EventController> logger, UserManager<ApplicationUser> userManager, IMongoDatabase database, SmtpClient emailClient)
         {
+            this.webHostEnvironment = webHostEnvironment;
             _logger = logger;
             
             // Hackathon DBs
             this.userManager = userManager;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
+
+            // Email Functions
+            this.emailClient = emailClient;
         }
 
         // Properties
@@ -395,7 +403,55 @@ namespace HackathonWebApp.Controllers
 
             return RedirectToAction(nameof(AvailabilityStatus));
         }
+        public async Task<IActionResult> RequestAvailabilityConfirmationViaEmail() {
 
+            // Get list of unconfirmed applications
+            var unconfirmedApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == "unconfirmed");
+
+            // Build emails to send and updats to make to database
+            var update = Builders<HackathonEvent>.Update;
+            var updates = new List<UpdateDefinition<HackathonEvent>>();
+            var emails = new List<MailMessage>();
+            foreach(var eventApplication in unconfirmedApplications)
+            {
+                var appUser = eventApplication.AssociatedUser;
+                
+                // Generate confirmation email body with token
+                string templatePath = Path.Combine(webHostEnvironment.WebRootPath, "email-templates", "ConfirmAvailability.html");
+                string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
+                string code = await userManager.GenerateUserTokenAsync(appUser, "Default", "Confirm Availability");
+                var callbackUrlAvailable = Url.Action("ConfirmAvailability", "Event", new { userId=appUser.Id, code=code, available=true }, protocol: HttpContext.Request.Scheme);
+                var callbackUrlUnavailable = Url.Action("ConfirmAvailability", "Event", new { userId=appUser.Id, code=code, available=false }, protocol: HttpContext.Request.Scheme);
+                var urlAccount = Url.Action("Index", "Account", new {}, protocol: HttpContext.Request.Scheme);
+                string msgBody = string.Format(msgBodyTemplate, appUser.FirstName, callbackUrlAvailable, callbackUrlUnavailable, urlAccount);
+
+                // Set up email to send
+                MailMessage mail = new MailMessage();
+                mail.To.Add(appUser.Email);
+                mail.From = new MailAddress("hackokstate@gmail.com");
+                mail.Subject = "Confirm Availability - HackOKState";
+                mail.Body = msgBody;
+                mail.IsBodyHtml = true;
+                emails.Add(mail);
+
+                // Set up command for datbase update
+                updates.Add(update.Set(p => p.EventApplications[eventApplication.UserId.ToString()].ConfirmationState, "request_sent"));
+                // Save in local memory
+                eventApplication.ConfirmationState = "request_sent";
+            }
+
+            // Update in DB
+            await eventCollection.FindOneAndUpdateAsync(
+                s => s.Id == this.activeEvent.Id,
+                update.Combine(updates)
+            );
+
+            // Send emails
+            foreach(var mail in emails)
+                await emailClient.SendMailAsync(mail);
+
+            return RedirectToAction(nameof(AvailabilityStatus));
+        }
         // Team Placement
         public IActionResult AssignTeams()
         {
