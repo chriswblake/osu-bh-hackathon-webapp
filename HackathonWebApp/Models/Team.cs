@@ -186,6 +186,41 @@ namespace HackathonWebApp.Models
         public double CombinedScore {get {
             return this.AvgWeightedScoresByQuestionId.Values.Sum();
         }}
+
+
+        [BsonIgnore]
+        public List<WeightedScore> WeightedScores {
+            get {
+                List<WeightedScore> weightedScores = new List<WeightedScore>();
+
+                // Collect all scores from each submission and convert
+                foreach(var kvp in ScoringSubmissions)
+                {
+                    string userId = kvp.Key;
+                    ScoringSubmission scoringSubmision = kvp.Value;
+
+                    // Get user's role during scoring
+                    string scoringRoleId = this.ReferenceEvent.UserScoringRoles[userId];
+                    ScoringRole scoringRole = this.ReferenceEvent.ScoringRoles[scoringRoleId];
+
+                    // Create weighted score objects
+                    foreach(var kvp2 in scoringSubmision.Scores)
+                    {
+                        string questionId = kvp2.Key;
+                        int score = kvp2.Value;
+
+                        // Get question using question id
+                        ScoreQuestion question = this.ReferenceEvent.ScoringQuestions[questionId];
+
+                        var weightedScore = new WeightedScore(score, scoringRole, question);
+                        weightedScores.Add(weightedScore);
+                    }
+                }
+
+                return weightedScores;
+            }
+        }
+
         #endregion
     }
 }

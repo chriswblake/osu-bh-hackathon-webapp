@@ -95,6 +95,11 @@ namespace HackathonWebAppTests
             public static HackathonEvent SampleHackathonEvent_Scoring { get {
                 // Create a hackathon
                 var hackathonEvent = new HackathonEvent();
+                // Add users
+                var u1 = new ApplicationUser() {Id= Guid.NewGuid(), FirstName="MyJudge" };
+                var u2 = new ApplicationUser() {Id= Guid.NewGuid(), FirstName="MyMentor" };
+                var u3 = new ApplicationUser() {Id= Guid.NewGuid(), FirstName="Participant1" };
+                var u4 = new ApplicationUser() {Id= Guid.NewGuid(), FirstName="Participant2" };
                 // Add questions
                 var q1 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000001"), PossiblePoints = 5 };
                 var q2 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000002"), PossiblePoints = 10 };
@@ -106,13 +111,25 @@ namespace HackathonWebAppTests
                 hackathonEvent.ScoringQuestions.Add(q3.Id.ToString(), q3);
                 hackathonEvent.ScoringQuestions.Add(q4.Id.ToString(), q4);
                 hackathonEvent.ScoringQuestions.Add(q5.Id.ToString(), q5);
+                // Add Roles
+                var r1 = new ScoringRole() {Name = "Judge", ScoringWeight = 0.4, Id=ObjectId.GenerateNewId() };
+                var r2 = new ScoringRole() {Name = "Mentor", ScoringWeight = 0.1, Id=ObjectId.GenerateNewId() };
+                var r3 = new ScoringRole() {Name = "Participant", ScoringWeight = 0.5, Id=ObjectId.GenerateNewId() };
+                hackathonEvent.ScoringRoles[r1.Id.ToString()] = r1;
+                hackathonEvent.ScoringRoles[r2.Id.ToString()] = r2;
+                hackathonEvent.ScoringRoles[r3.Id.ToString()] = r3;
+                // Assign users to roles
+                hackathonEvent.UserScoringRoles[u1.Id.ToString()] = r1.Id.ToString();
+                hackathonEvent.UserScoringRoles[u2.Id.ToString()] = r2.Id.ToString();
+                hackathonEvent.UserScoringRoles[u3.Id.ToString()] = r3.Id.ToString();
+                hackathonEvent.UserScoringRoles[u4.Id.ToString()] = r3.Id.ToString();
                 // Add a team
                 var team = new Team() { Id=ObjectId.Parse("000000000000000000000111"), ReferenceEvent=hackathonEvent};
                 hackathonEvent.Teams.Add(team.Id.ToString(), team);
                 // Add score submissions to the team
                 var ss1 = new ScoringSubmission () { 
-                    TeamId=team.Id.ToString(),
-                    UserId = Guid.NewGuid().ToString(),
+                    TeamId = team.Id.ToString(),
+                    UserId = u1.Id.ToString(),
                     Scores = new System.Collections.Generic.Dictionary<string, int>() {
                         { q1.Id.ToString(), 2 },
                         { q2.Id.ToString(), 1 },
@@ -122,8 +139,8 @@ namespace HackathonWebAppTests
                 team.ScoringSubmissions.Add(ss1.UserId, ss1);
                 
                 var ss2 = new ScoringSubmission () { 
-                    TeamId=team.Id.ToString(),
-                    UserId = Guid.NewGuid().ToString(),
+                    TeamId = team.Id.ToString(),
+                    UserId = u2.Id.ToString(),
                     Scores = new System.Collections.Generic.Dictionary<string, int>() {
                         { q2.Id.ToString(), 5 },
                         { q3.Id.ToString(), 5 },
@@ -133,19 +150,19 @@ namespace HackathonWebAppTests
                 team.ScoringSubmissions.Add(ss2.UserId, ss2);
                 
                 var ss3 = new ScoringSubmission () { 
-                    TeamId=team.Id.ToString(),
-                    UserId = Guid.NewGuid().ToString(),
+                    TeamId = team.Id.ToString(),
+                    UserId = u3.Id.ToString(),
                     Scores = new System.Collections.Generic.Dictionary<string, int>() {
                         { q3.Id.ToString(), 1 },
                         { q4.Id.ToString(), 1 },
                         { q5.Id.ToString(), 1 }
                     }
                 };
-                team.ScoringSubmissions.Add(ss3.TeamId + ", " + ss3.UserId, ss3);
+                team.ScoringSubmissions.Add(ss3.UserId, ss3);
                 
                 var ss4 = new ScoringSubmission () { 
-                    TeamId=team.Id.ToString(),
-                    UserId = Guid.NewGuid().ToString(),
+                    TeamId = team.Id.ToString(),
+                    UserId = u4.Id.ToString(),
                     Scores = new System.Collections.Generic.Dictionary<string, int>() {
                         { q3.Id.ToString(), 5 },
                         { q4.Id.ToString(), 5 },
@@ -256,6 +273,35 @@ namespace HackathonWebAppTests
             // Assert   score/max_score*PossiblePoints
             Assert.Equal(40.67, Math.Round(score, 2));
         }
+        
+        
+        /// <summary>
+        /// Description: Verifies that multiple score submission across several questions can be properally counted.
+        /// </summary> 
+        [Fact]
+        public void WeightedScores() {
+            // Define
+            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
+            var team = hackathonEvent.Teams["000000000000000000000111"];
+
+            // Process
+            var weightedScores = team.WeightedScores;
+
+            // Assert
+            Assert.Equal((2/5.0)*5*0.4,  weightedScores[0].CalculatedScore);
+            Assert.Equal((1/5.0)*10*0.4, weightedScores[1].CalculatedScore);
+            Assert.Equal((3/5.0)*15*0.4, weightedScores[2].CalculatedScore);
+            Assert.Equal((5/5.0)*10*0.1, weightedScores[3].CalculatedScore);
+            Assert.Equal((5/5.0)*15*0.1, weightedScores[4].CalculatedScore);
+            Assert.Equal((5/5.0)*20*0.1, weightedScores[5].CalculatedScore);
+            Assert.Equal((1/5.0)*15*0.5, weightedScores[6].CalculatedScore);
+            Assert.Equal((1/5.0)*20*0.5, weightedScores[7].CalculatedScore);
+            Assert.Equal((1/5.0)*25*0.5, weightedScores[8].CalculatedScore);
+            Assert.Equal((5/5.0)*15*0.5, weightedScores[9].CalculatedScore);
+            Assert.Equal((5/5.0)*20*0.5, weightedScores[10].CalculatedScore);
+            Assert.Equal((2/5.0)*25*0.5, weightedScores[11].CalculatedScore);
+        }
+        
         #endregion
 
         # region Experience
