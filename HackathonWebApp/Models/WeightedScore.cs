@@ -29,7 +29,7 @@ namespace HackathonWebApp.Models
 
         // Override
         public override string ToString() {
-            return $"{CalculatedScore} = ({UnweightedScore}/5.0)*{Question.PossiblePoints}*{Role.ScoringWeight}";
+            return $"{CalculatedScore} = ({UnweightedScore}/5.0)*{Question.PossiblePoints}*{Role.ScoringWeight}, R:{Role.Name}, Q:{Question.Title}";
         }
 
 

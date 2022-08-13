@@ -24,5 +24,11 @@ namespace HackathonWebApp.Models
 
         [BsonElement("score_question_ids")]
         public List<string> ScoreQuestionsIds { get; set; }
+
+        // Methods
+        public override string ToString()
+        {
+            return $"{Name} ({ScoringWeight})";
+        }
     }
 }
