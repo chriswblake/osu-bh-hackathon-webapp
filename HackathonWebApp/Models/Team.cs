@@ -136,59 +136,6 @@ namespace HackathonWebApp.Models
             return counts;
         }}
         [BsonIgnore]
-        public Dictionary<string, double> AvgUnweightedScoresByQuestionId { get {
-            var counts = new Dictionary<string, int>();
-            var sums = new Dictionary<string, int>();
-            var avgs = new Dictionary<string, double>();
-
-            foreach(var scoreSubmission in this.ScoringSubmissions.Values)
-            {
-                foreach(var kvp in scoreSubmission.Scores) {
-                    string questionId = kvp.Key;
-                    int score = kvp.Value;
-                    if (!sums.Keys.Contains(questionId))
-                    {
-                        counts[questionId] = 0;
-                        sums[questionId] = 0;
-                    }
-                    // Track count and sum
-                    counts[questionId] += 1;
-                    sums[questionId] += score;
-                }
-            }
-
-            // Calculate average
-            foreach (var kvp in sums)
-            {
-                avgs[kvp.Key] = sums[kvp.Key] / (double) counts [kvp.Key];
-            }
-
-            return avgs;
-        }}
-        [BsonIgnore]
-        public Dictionary<string, double> AvgWeightedScoresByQuestionId { get {
-            // Return unweighted scores if no reference event
-            if (this.ReferenceEvent == null)
-            {
-                return this.AvgUnweightedScoresByQuestionId;
-            }
-
-            // Get unweighted averages
-            var unweightedScores = this.AvgUnweightedScoresByQuestionId;
-
-            // Multiply by weight of each question
-            var questions =  this.ReferenceEvent.ScoringQuestions;
-            Dictionary<string, double> weightedScores = unweightedScores.ToDictionary(kvp=> kvp.Key, kvp=> (kvp.Value/5.0)*questions[kvp.Key].PossiblePoints);
-
-            return weightedScores;
-        }}
-        [BsonIgnore]
-        public double CombinedScore {get {
-            return this.AvgWeightedScoresByQuestionId.Values.Sum();
-        }}
-
-
-        [BsonIgnore]
         public List<WeightedScore> WeightedScores {
             get {
                 List<WeightedScore> weightedScores = new List<WeightedScore>();
@@ -237,7 +184,7 @@ namespace HackathonWebApp.Models
             return avgWeightedScoresByQuestionIdGroupedByRole;
         }}
         [BsonIgnore]
-        public Dictionary<string, double> AvgWeightedScoresByQuestionId2 { get {
+        public Dictionary<string, double> AvgWeightedScoresByQuestionId { get {
             // Get the average scores for each role, then sum them together.
             var avgScoresByQuestion = AvgWeightedScoresByQuestionGroupedByRole.SelectMany(p => p.Value) // Flatten, ignoring roles
                                     .GroupBy(questionGroup => questionGroup.Key)
@@ -251,6 +198,10 @@ namespace HackathonWebApp.Models
             return avgScoresbyQuestionId;
         }
         }
+        [BsonIgnore]
+        public double CombinedScore {get {
+            return this.AvgWeightedScoresByQuestionId.Values.Sum();
+        }}
         #endregion
     }
 }

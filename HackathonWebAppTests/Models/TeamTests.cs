@@ -220,61 +220,7 @@ namespace HackathonWebAppTests
             Assert.Equal(2, countScores["000000000000000000000005"]);
         }
 
-        /// <summary>
-        /// Description: Verifies that multiple score submission across several questions can be properally averaged.
-        /// </summary> 
-        [Fact]
-        public void AvgUnweightedScoresByQuestionId() {
-            // Define
-            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
-            var team = hackathonEvent.Teams["000000000000000000000111"];
-
-            // Process
-            var avgScores = team.AvgUnweightedScoresByQuestionId;
-
-            // Assert
-            Assert.Equal(2,             avgScores["000000000000000000000001"]);
-            Assert.Equal((1+5)/2.0,     avgScores["000000000000000000000002"]);
-            Assert.Equal((3+5+1+5)/4.0, avgScores["000000000000000000000003"]);
-            Assert.Equal((5+1+5)/3.0,   avgScores["000000000000000000000004"]);
-            Assert.Equal((1+2)/2.0,     avgScores["000000000000000000000005"]);
-        }
-        
-        /// <summary>
-        /// Description: Verifies that multiple score submission across several questions can be properally averaged, incorporating the weight of the question.
-        /// </summary> 
-        [Fact]
-        public void AvgWeightedScoresByQuestionId() {
-            // Define
-            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
-            var team = hackathonEvent.Teams["000000000000000000000111"];
-
-            // Process
-            var avgScores = team.AvgWeightedScoresByQuestionId;
-
-            // Assert   score/max_score*PossiblePoints
-            Assert.Equal(2              /5.0 *5,  avgScores["000000000000000000000001"]);
-            Assert.Equal((1+5)/2.0      /5.0 *10, avgScores["000000000000000000000002"]);
-            Assert.Equal((3+5+1+5)/4.0  /5.0 *15, avgScores["000000000000000000000003"]);
-            Assert.Equal((5+1+5)/3.0    /5.0 *20, avgScores["000000000000000000000004"]);
-            Assert.Equal((1+2)/2.0      /5.0 *25, avgScores["000000000000000000000005"]);
-        }
-        /// <summary>
-        /// Description: Verifies that a rollup of all scoring for this team across all questions and their weights is valid.
-        /// </summary> 
-        [Fact]
-        public void CombinedScore() {
-            // Define
-            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
-            var team = hackathonEvent.Teams["000000000000000000000111"];
-
-            // Process
-            var score = team.CombinedScore;
-
-            // Assert   score/max_score*PossiblePoints
-            Assert.Equal(40.67, Math.Round(score, 2));
-        }
-        
+       
         
         /// <summary>
         /// Description: Verifies that multiple score submission across several questions can be properally counted.
@@ -303,6 +249,11 @@ namespace HackathonWebAppTests
             Assert.Equal((2/5.0)*25*0.5, weightedScores[11].CalculatedScore);
         }
         
+        /// <summary>
+        /// Description: Verifies that scores can be averaged and grouped properly.
+        /// - Scores are grouped by Role.
+        /// - Within a role, scores are averaged by the question.
+        /// </summary> 
         [Fact]
         public void AvgWeightedScoresByQuestionGroupedByRole() {
             // Define
@@ -358,14 +309,24 @@ namespace HackathonWebAppTests
             Assert.Equal(3.75, participantScoresByQuestion[q5]);
         }
         
+        /// <summary>
+        /// Description: Verifies that scores can be averaged and grouped properly.
+        /// - Scores are grouped by Role.
+        /// - Within a role, scores are averaged by the question.
+        /// - Average scores for each question are summed together across roles.
+        /// Example: Judge has 0.4 weight. Participant has 0.5 weight. Question1 is worth 10pts.
+        /// Judge's score of 3/5 on Q1 => 6pts.
+        /// Participant's score of 4/5 on Q1 => 8pts
+        // Judge's 6pts * 0.4 + Participant's 8pts*0.5 => 2.4 + 4pts => 6.4pts combined score
+        /// </summary> 
         [Fact]
-        public void AvgWeightedScoresByQuestionId2() {
+        public void AvgWeightedScoresByQuestionId() {
             // Define
             var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
             var team = hackathonEvent.Teams["000000000000000000000111"];
 
             // Process
-            var avgScores = team.AvgWeightedScoresByQuestionId2;
+            var avgScores = team.AvgWeightedScoresByQuestionId;
 
             // Assert
             Assert.Equal(0.8,  avgScores["000000000000000000000001"]);
@@ -374,6 +335,23 @@ namespace HackathonWebAppTests
             Assert.Equal(8.0,  avgScores["000000000000000000000004"]);
             Assert.Equal(3.75, avgScores["000000000000000000000005"]);
         }
+        
+        /// <summary>
+        /// Description: Verifies that a rollup of all scoring for this team across all questions and their weights is valid.
+        /// </summary> 
+        [Fact]
+        public void CombinedScore() {
+            // Define
+            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
+            var team = hackathonEvent.Teams["000000000000000000000111"];
+
+            // Process
+            var score = team.CombinedScore;
+
+            // Assert   score/max_score*PossiblePoints
+            Assert.Equal(23.95, Math.Round(score, 2));
+        }
+        
         #endregion
 
         # region Experience
