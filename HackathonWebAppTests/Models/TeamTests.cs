@@ -357,6 +357,23 @@ namespace HackathonWebAppTests
             Assert.Equal(6, participantScoresByQuestion[q4]);
             Assert.Equal(3.75, participantScoresByQuestion[q5]);
         }
+        
+        [Fact]
+        public void AvgWeightedScoresByQuestionId2() {
+            // Define
+            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
+            var team = hackathonEvent.Teams["000000000000000000000111"];
+
+            // Process
+            var avgScores = team.AvgWeightedScoresByQuestionId2;
+
+            // Assert
+            Assert.Equal(0.8,  avgScores["000000000000000000000001"]);
+            Assert.Equal(1.8,  avgScores["000000000000000000000002"]);
+            Assert.Equal(9.6,  avgScores["000000000000000000000003"]);
+            Assert.Equal(8.0,  avgScores["000000000000000000000004"]);
+            Assert.Equal(3.75, avgScores["000000000000000000000005"]);
+        }
         #endregion
 
         # region Experience

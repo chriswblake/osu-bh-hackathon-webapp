@@ -236,6 +236,21 @@ namespace HackathonWebApp.Models
             );
             return avgWeightedScoresByQuestionIdGroupedByRole;
         }}
+        [BsonIgnore]
+        public Dictionary<string, double> AvgWeightedScoresByQuestionId2 { get {
+            // Get the average scores for each role, then sum them together.
+            var avgScoresByQuestion = AvgWeightedScoresByQuestionGroupedByRole.SelectMany(p => p.Value) // Flatten, ignoring roles
+                                    .GroupBy(questionGroup => questionGroup.Key)
+                                    .ToDictionary(
+                                        questionGroup=> questionGroup.Key, // Store results by question
+                                        questionGroup=> questionGroup.Sum(p=> p.Value) // Sum scores for that question
+                                    );
+
+            // Restructure to use question id
+            var avgScoresbyQuestionId = avgScoresByQuestion.ToDictionary(kvp=> kvp.Key.Id.ToString(), kvp=> kvp.Value);
+            return avgScoresbyQuestionId;
+        }
+        }
         #endregion
     }
 }
