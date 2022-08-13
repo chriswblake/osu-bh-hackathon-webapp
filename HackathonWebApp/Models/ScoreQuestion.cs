@@ -22,6 +22,12 @@ namespace HackathonWebApp.Models
         public string Group {get; set; }
         [Required]
         public Dictionary<string, AnswerOption> AnswerOptions {get; set; }
+
+        // Methods
+        public override string ToString()
+        {
+            return $"{Title} ({PossiblePoints})";
+        }
     }
 
     [BsonIgnoreExtraElements]

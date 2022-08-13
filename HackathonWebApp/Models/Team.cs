@@ -136,52 +136,68 @@ namespace HackathonWebApp.Models
             return counts;
         }}
         [BsonIgnore]
-        public Dictionary<string, double> AvgUnweightedScoresByQuestionId { get {
-            var counts = new Dictionary<string, int>();
-            var sums = new Dictionary<string, int>();
-            var avgs = new Dictionary<string, double>();
+        public List<WeightedScore> WeightedScores {
+            get {
+                List<WeightedScore> weightedScores = new List<WeightedScore>();
 
-            foreach(var scoreSubmission in this.ScoringSubmissions.Values)
-            {
-                foreach(var kvp in scoreSubmission.Scores) {
-                    string questionId = kvp.Key;
-                    int score = kvp.Value;
-                    if (!sums.Keys.Contains(questionId))
+                // Collect all scores from each submission and convert
+                foreach(var kvp in ScoringSubmissions)
+                {
+                    string userId = kvp.Key;
+                    ScoringSubmission scoringSubmision = kvp.Value;
+
+                    // Get user's role during scoring
+                    string scoringRoleId = this.ReferenceEvent.UserScoringRoles[userId];
+                    ScoringRole scoringRole = this.ReferenceEvent.ScoringRoles[scoringRoleId];
+
+                    // Create weighted score objects
+                    foreach(var kvp2 in scoringSubmision.Scores)
                     {
-                        counts[questionId] = 0;
-                        sums[questionId] = 0;
+                        string questionId = kvp2.Key;
+                        int score = kvp2.Value;
+
+                        // Get question using question id
+                        ScoreQuestion question = this.ReferenceEvent.ScoringQuestions[questionId];
+
+                        var weightedScore = new WeightedScore(score, scoringRole, question);
+                        weightedScores.Add(weightedScore);
                     }
-                    // Track count and sum
-                    counts[questionId] += 1;
-                    sums[questionId] += score;
                 }
-            }
 
-            // Calculate average
-            foreach (var kvp in sums)
-            {
-                avgs[kvp.Key] = sums[kvp.Key] / (double) counts [kvp.Key];
+                return weightedScores;
             }
+        }
+        [BsonIgnore]
+        public Dictionary<ScoringRole, Dictionary<ScoreQuestion, double>> AvgWeightedScoresByQuestionGroupedByRole { get {
+            // Group the scores by role
+            var groupedScoresByRole = this.WeightedScores.GroupBy(p=> p.Role);
 
-            return avgs;
+            // Within each role, group by question, then find the average score for each question.
+            var avgWeightedScoresByQuestionIdGroupedByRole = groupedScoresByRole.ToDictionary(
+                roleGroup=> roleGroup.Key, // Store results using role as key
+                roleGroup=> roleGroup // Provide all scores related to this role to next step
+                    .GroupBy(kvQ => kvQ.Question).ToDictionary(
+                        questionGroup => questionGroup.Key, // Store results using question as key
+                        questionGroup => questionGroup.Average(s=> s.CalculatedScore) // Calculate average score for this question
+                    )
+            );
+            return avgWeightedScoresByQuestionIdGroupedByRole;
         }}
         [BsonIgnore]
         public Dictionary<string, double> AvgWeightedScoresByQuestionId { get {
-            // Return unweighted scores if no reference event
-            if (this.ReferenceEvent == null)
-            {
-                return this.AvgUnweightedScoresByQuestionId;
-            }
+            // Get the average scores for each role, then sum them together.
+            var avgScoresByQuestion = AvgWeightedScoresByQuestionGroupedByRole.SelectMany(p => p.Value) // Flatten, ignoring roles
+                                    .GroupBy(questionGroup => questionGroup.Key)
+                                    .ToDictionary(
+                                        questionGroup=> questionGroup.Key, // Store results by question
+                                        questionGroup=> questionGroup.Sum(p=> p.Value) // Sum scores for that question
+                                    );
 
-            // Get unweighted averages
-            var unweightedScores = this.AvgUnweightedScoresByQuestionId;
-
-            // Multiply by weight of each question
-            var questions =  this.ReferenceEvent.ScoringQuestions;
-            Dictionary<string, double> weightedScores = unweightedScores.ToDictionary(kvp=> kvp.Key, kvp=> (kvp.Value/5.0)*questions[kvp.Key].PossiblePoints);
-
-            return weightedScores;
-        }}
+            // Restructure to use question id
+            var avgScoresbyQuestionId = avgScoresByQuestion.ToDictionary(kvp=> kvp.Key.Id.ToString(), kvp=> kvp.Value);
+            return avgScoresbyQuestionId;
+        }
+        }
         [BsonIgnore]
         public double CombinedScore {get {
             return this.AvgWeightedScoresByQuestionId.Values.Sum();
