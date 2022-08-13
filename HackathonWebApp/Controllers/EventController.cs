@@ -474,7 +474,11 @@ namespace HackathonWebApp.Controllers
             }
 
             // Decide and save availability state
-            if (this.activeEvent.EventApplications[userId].ConfirmationState== EventApplication.ConfirmationStateOption.request_sent)
+            if (
+                this.activeEvent.EventApplications[userId].ConfirmationState == EventApplication.ConfirmationStateOption.request_sent ||
+                this.activeEvent.EventApplications[userId].ConfirmationState == EventApplication.ConfirmationStateOption.unassigned ||
+                this.activeEvent.EventApplications[userId].ConfirmationState == EventApplication.ConfirmationStateOption.cancelled
+            )
             {
                 // Pick new availability state
                 var confirmationState = EventApplication.ConfirmationStateOption.request_sent;
@@ -494,9 +498,8 @@ namespace HackathonWebApp.Controllers
                 this.activeEvent.EventApplications[userId].ConfirmationState = confirmationState;
             }
 
-            // Forward to user profile, so they can still change it manually. (e.g. they pressed the wrong button)
-            return RedirectToAction("Index", "Account");
-
+            // Show confirmation page
+            return View("AvailabilityConfirmation", available);
         }
         
         // Team Placement
