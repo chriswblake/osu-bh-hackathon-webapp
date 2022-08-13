@@ -100,7 +100,7 @@
                     @appUser.FirstName @appUser.LastName<br/>
                     @eventApplication.UserId
                 </td>
-                <td style="font-size:x-small; white-space: nowrap;">@TimeZoneInfo.ConvertTimeFromUtc(eventApplication.CreatedOn, activeEvent.TimeZoneInfo)</td>
+                <td style="font-size:x-small; white-space: nowrap;">@TimeZoneInfo.ConvertTime(eventApplication.CreatedOn, activeEvent.TimeZoneInfo)</td>
                 <td>@eventApplication.Major</td>
                 <td>@eventApplication.SchoolYear</td>
                 <td>@eventApplication.HackathonExperience</td>
