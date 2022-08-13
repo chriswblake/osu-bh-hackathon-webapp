@@ -20,6 +20,7 @@ namespace HackathonWebApp.Models
         
         [Required]
         [BsonElement("created_on")]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime CreatedOn {get; set; }
 
         [Required]
