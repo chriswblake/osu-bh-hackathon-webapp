@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Xunit;
 using MongoDB.Bson;
 using HackathonWebApp.Models;
@@ -101,11 +102,11 @@ namespace HackathonWebAppTests
                 var u3 = new ApplicationUser() {Id= Guid.NewGuid(), FirstName="Participant1" };
                 var u4 = new ApplicationUser() {Id= Guid.NewGuid(), FirstName="Participant2" };
                 // Add questions
-                var q1 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000001"), PossiblePoints = 5 };
-                var q2 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000002"), PossiblePoints = 10 };
-                var q3 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000003"), PossiblePoints = 15 };
-                var q4 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000004"), PossiblePoints = 20 };
-                var q5 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000005"), PossiblePoints = 25 };
+                var q1 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000001"), PossiblePoints =  5 , Title="q1"};
+                var q2 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000002"), PossiblePoints = 10 , Title="q2"};
+                var q3 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000003"), PossiblePoints = 15 , Title="q3"};
+                var q4 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000004"), PossiblePoints = 20 , Title="q4"};
+                var q5 = new ScoreQuestion() { Id = ObjectId.Parse("000000000000000000000005"), PossiblePoints = 25 , Title="q5"};
                 hackathonEvent.ScoringQuestions.Add(q1.Id.ToString(), q1);
                 hackathonEvent.ScoringQuestions.Add(q2.Id.ToString(), q2);
                 hackathonEvent.ScoringQuestions.Add(q3.Id.ToString(), q3);
@@ -302,6 +303,60 @@ namespace HackathonWebAppTests
             Assert.Equal((2/5.0)*25*0.5, weightedScores[11].CalculatedScore);
         }
         
+        [Fact]
+        public void AvgWeightedScoresByQuestionGroupedByRole() {
+            // Define
+            var hackathonEvent = SampleData.SampleHackathonEvent_Scoring;
+            var team = hackathonEvent.Teams["000000000000000000000111"];
+            // Get roles
+            var roleJudge = hackathonEvent.ScoringRoles.Values.Where(r=> r.Name == "Judge").First();
+            var roleMentor = hackathonEvent.ScoringRoles.Values.Where(r=> r.Name == "Mentor").First();
+            var roleParticipant = hackathonEvent.ScoringRoles.Values.Where(r=> r.Name == "Participant").First();
+            // Get questions
+            var q1 = hackathonEvent.ScoringQuestions.Values.Where(q=> q.Title == "q1").First();
+            var q2 = hackathonEvent.ScoringQuestions.Values.Where(q=> q.Title == "q2").First();
+            var q3 = hackathonEvent.ScoringQuestions.Values.Where(q=> q.Title == "q3").First();
+            var q4 = hackathonEvent.ScoringQuestions.Values.Where(q=> q.Title == "q4").First();
+            var q5 = hackathonEvent.ScoringQuestions.Values.Where(q=> q.Title == "q5").First();
+
+            // Process
+            var avgScoresByRole = team.AvgWeightedScoresByQuestionGroupedByRole;
+            var judgeScoresByQuestion = avgScoresByRole[roleJudge];
+            var mentorScoresByQuestion = avgScoresByRole[roleMentor];
+            var participantScoresByQuestion = avgScoresByRole[roleParticipant];
+
+            // Assert - Structure
+            Assert.Equal(3, avgScoresByRole.Count());
+
+            Assert.Equal(3, judgeScoresByQuestion.Count());
+            Assert.Equal(3, mentorScoresByQuestion.Count());
+            Assert.Equal(3, participantScoresByQuestion.Count());
+
+            Assert.True(judgeScoresByQuestion.ContainsKey(q1));
+            Assert.True(judgeScoresByQuestion.ContainsKey(q2));
+            Assert.True(judgeScoresByQuestion.ContainsKey(q3));
+
+            Assert.True(mentorScoresByQuestion.ContainsKey(q2));
+            Assert.True(mentorScoresByQuestion.ContainsKey(q3));
+            Assert.True(mentorScoresByQuestion.ContainsKey(q4));
+
+            Assert.True(participantScoresByQuestion.ContainsKey(q3));
+            Assert.True(participantScoresByQuestion.ContainsKey(q4));
+            Assert.True(participantScoresByQuestion.ContainsKey(q5));
+
+            // Assert - Calculations
+            Assert.Equal(0.8, judgeScoresByQuestion[q1]);
+            Assert.Equal(0.8, judgeScoresByQuestion[q2]);
+            Assert.Equal(3.6, judgeScoresByQuestion[q3]);
+
+            Assert.Equal(1.0, mentorScoresByQuestion[q2]);
+            Assert.Equal(1.5, mentorScoresByQuestion[q3]);
+            Assert.Equal(2.0, mentorScoresByQuestion[q4]);
+
+            Assert.Equal(4.5, participantScoresByQuestion[q3]);
+            Assert.Equal(6, participantScoresByQuestion[q4]);
+            Assert.Equal(3.75, participantScoresByQuestion[q5]);
+        }
         #endregion
 
         # region Experience

@@ -220,7 +220,22 @@ namespace HackathonWebApp.Models
                 return weightedScores;
             }
         }
+        [BsonIgnore]
+        public Dictionary<ScoringRole, Dictionary<ScoreQuestion, double>> AvgWeightedScoresByQuestionGroupedByRole { get {
+            // Group the scores by role
+            var groupedScoresByRole = this.WeightedScores.GroupBy(p=> p.Role);
 
+            // Within each role, group by question, then find the average score for each question.
+            var avgWeightedScoresByQuestionIdGroupedByRole = groupedScoresByRole.ToDictionary(
+                roleGroup=> roleGroup.Key, // Store results using role as key
+                roleGroup=> roleGroup // Provide all scores related to this role to next step
+                    .GroupBy(kvQ => kvQ.Question).ToDictionary(
+                        questionGroup => questionGroup.Key, // Store results using question as key
+                        questionGroup => questionGroup.Average(s=> s.CalculatedScore) // Calculate average score for this question
+                    )
+            );
+            return avgWeightedScoresByQuestionIdGroupedByRole;
+        }}
         #endregion
     }
 }
