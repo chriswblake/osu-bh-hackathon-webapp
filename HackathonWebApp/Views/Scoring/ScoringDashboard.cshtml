@@ -15,7 +15,7 @@
 		return delimetedString;
 	}
     string ToChartTeamsScoresArray(Dictionary<string, Team> teams) {
-        var combinedScores = teams.Values.Select(t=> t.CombinedScore);
+        var combinedScores = teams.Values.Select(t=> Math.Round(t.CombinedScore,2));
 		string delimetedString = "["+String.Join(",", combinedScores)+"]";
 		return delimetedString;
 	}
@@ -34,7 +34,7 @@
 		return delimetedString;
 	}
     string ToChartAvgsDataArray(Team team) {
-        var dataPoints = team.AvgWeightedScoresByQuestionId.Values;
+        var dataPoints = team.AvgWeightedScoresByQuestionId.Values.Select(v => Math.Round(v,2));
 		string delimetedString = "["+String.Join(",", dataPoints)+"]";
 		return delimetedString;
 	}
