@@ -47,7 +47,6 @@ namespace HackathonWebApp.Controllers
             this.emailClient = emailClient;
 
             // Fill in any null users
-            this.activeEvent.EventApplications.Last().Value.AssociatedUser = null;
             var appsWithoutUser = this.activeEvent.EventApplications.Values.Where(p=> p.AssociatedUser == null);
             foreach(var eventApp in appsWithoutUser)
             {
