@@ -168,9 +168,9 @@ namespace HackathonWebApp.Models
             }
         }
         [BsonIgnore]
-        public Dictionary<ScoringRole, Dictionary<ScoreQuestion, double>> AvgWeightedScoresByQuestionGroupedByRole { get {
+        public Dictionary<string, Dictionary<ScoreQuestion, double>> AvgWeightedScoresByQuestionGroupedByRole { get {
             // Group the scores by role
-            var groupedScoresByRole = this.WeightedScores.GroupBy(p=> p.Role);
+            var groupedScoresByRole = this.WeightedScores.GroupBy(p=> p.Role.ScoringGroup);
 
             // Within each role, group by question, then find the average score for each question.
             var avgWeightedScoresByQuestionIdGroupedByRole = groupedScoresByRole.ToDictionary(
