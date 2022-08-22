@@ -128,7 +128,7 @@ namespace HackathonWebApp.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> SetActiveTeam(string activeTeamId)
+        public IActionResult SetActiveTeam(string activeTeamId)
         {
             if (activeTeamId != "null") {
                 // Find the actual team using the id

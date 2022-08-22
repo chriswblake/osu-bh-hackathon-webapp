@@ -368,7 +368,7 @@ namespace HackathonWebApp.Controllers
         public async Task<IActionResult> UpdateTeamName(Team newTeamInfo){
             // Find user information
             string userName = User.Identity.Name;
-            ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+            ApplicationUser appUser = await userManager.FindByNameAsync(userName);
             var userId = appUser.Id.ToString();
 
             // Stop early if team doesn't exist

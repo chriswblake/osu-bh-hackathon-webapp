@@ -227,7 +227,7 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("Sponsors");
         }
-        public async Task<IActionResult> UpdateSponsor(string id)
+        public IActionResult UpdateSponsor(string id)
         {
             Sponsor sponsor = this.activeEvent.Sponsors[id];
             return View(sponsor);
@@ -327,7 +327,7 @@ namespace HackathonWebApp.Controllers
             }
             return View(organizer);
         }
-        public async Task<IActionResult> UpdateOrganizer(string id)
+        public IActionResult UpdateOrganizer(string id)
         {
             Organizer organizer = this.activeEvent.Organizers[id];
             return View(organizer);

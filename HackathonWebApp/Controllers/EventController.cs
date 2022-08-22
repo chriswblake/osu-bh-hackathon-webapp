@@ -250,7 +250,7 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("Equipment");
         }
         [HttpPost]
-        public async Task<IActionResult> DownloadEquipmentCSV()
+        public IActionResult DownloadEquipmentCSV()
         {
             // Save to string
             string csvText = "";
