@@ -1,0 +1,40 @@
+﻿@model bool
+@{
+    ViewBag.Title = "Thank You";
+    bool available = Model;
+}
+
+<div class="container text-white">
+    <center>
+        <br/>
+        @if (available)
+        {
+            <div>
+                <h1>Availability Confirmed</h1>
+                Now it's time for the hard part (for us)... team placement!<br/>
+            </div>
+            <br/>
+            <div>
+                <h3>What's next?</h3>
+                You will receive an email soon with either your team or that you are are on the waitlist!<br/>
+                If you are curious how we try to build balanced teams, check out the <a asp-controller="Account" asp-action="Index" target="_blank">Selection</a> page.
+
+            </div>
+        }else {
+            <div>
+                <h1>Un-Availability Confirmed</h1>
+                <span style="font-size:x-large;">☹</span><br/>
+                Ah... Sorry to hear that! Will definitely miss you!<br/>
+                Thanks for letting us know though. Kudos to you for being friendly!
+            </div>
+            <div>
+            </div>
+        }
+        <br/>
+        🤓👩‍💻👨‍💻🧐
+        <br/>
+        Btw, you can also change availability on your <a asp-controller="Account" asp-action="Index" target="_blank">account page.</a>
+        <div>You know... incase you made a mistake. ;)</div>
+        <br/>
+    </center>
+</div>

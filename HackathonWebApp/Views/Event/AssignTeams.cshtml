@@ -3,7 +3,7 @@
     Layout = "_AdminLayout";
     ViewBag.Title = "Team Placement";
     HackathonEvent activeEvent = ViewBag.ActiveEvent;
-    List<EventApplication> eventApplications = activeEvent.EventApplications.Values.ToList();
+    List<EventApplication> eventApplications = ViewBag.EventApplications;
     Dictionary<string, Team> teams = activeEvent.Teams;
     Dictionary<string, string> eventAppTeams = activeEvent.EventAppTeams;
 }
@@ -66,28 +66,41 @@
 <br/>
 
 @* List of applications *@
+<style>
+    th.rotate {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        white-space: nowrap;
+    }
+</style>
 <form method="post" asp-action="AssignTeams" enctype="multipart/form-data" style="margin-bottom:75px;">
-    <h1 class="text-white">Applications (active event)</h1>
+    <h1 class="text-white">Applications (@eventApplications.Count)</h1>
     <a asp-action="CreateTeam" class="btn btn-secondary">Create Team</a>
     <button type="submit" class="btn btn-primary">Save</button>
     <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small;">
         <tr>
-            <th>UserId</th>
+            <th>User</th>
+            <th>Applied On</th>
             <th>Major</th>
             <th>School Year</th>
-            <th>Hackathon</th>
-            <th>Coding</th>
-            <th>Communication</th>
-            <th>Organization</th>
-            <th>Documentation</th>
-            <th>Business</th>
-            <th>Creativity</th>
+            <th class="rotate">Hackathon</th>
+            <th class="rotate">Coding</th>
+            <th class="rotate">Communication</th>
+            <th class="rotate">Organization</th>
+            <th class="rotate">Documentation</th>
+            <th class="rotate">Business</th>
+            <th class="rotate">Creativity</th>
             <th>Team</th>
         </tr>
         @foreach (EventApplication eventApplication in eventApplications.OrderBy(p=> (eventAppTeams.ContainsKey(p.UserId.ToString()) ? eventAppTeams[p.UserId.ToString()] : "zzzzz")                ))
         {
+            var appUser = eventApplication.AssociatedUser;
             <tr>
-                <td style="font-size:x-small; white-space: nowrap;">@eventApplication.UserId</td>
+                <td style="font-size:x-small; white-space: nowrap;">
+                    @appUser.FirstName @appUser.LastName<br/>
+                    @eventApplication.UserId
+                </td>
+                <td style="font-size:x-small; white-space: nowrap;">@TimeZoneInfo.ConvertTime(eventApplication.CreatedOn, activeEvent.TimeZoneInfo)</td>
                 <td>@eventApplication.Major</td>
                 <td>@eventApplication.SchoolYear</td>
                 <td>@eventApplication.HackathonExperience</td>
@@ -99,7 +112,8 @@
                 <td>@eventApplication.CreativityExperience</td>
                 <td>
                     <select name="TeamAssignments[@eventApplication.UserId]">
-                        <option style="display:none;" disabled selected>-- Please select a team -- </option>"
+                        @* <option style="display:none;" disabled selected>-- Please select a team -- </option> *@
+                        <option>-- No Team -- </option>
                         @foreach (Team team in teams.Values.OrderBy(p=> p.Name))
                         {   
                             var isSelectedAttr = "";

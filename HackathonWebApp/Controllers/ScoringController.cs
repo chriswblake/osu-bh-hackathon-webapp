@@ -128,7 +128,7 @@ namespace HackathonWebApp.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> SetActiveTeam(string activeTeamId)
+        public IActionResult SetActiveTeam(string activeTeamId)
         {
             if (activeTeamId != "null") {
                 // Find the actual team using the id
@@ -175,8 +175,8 @@ namespace HackathonWebApp.Controllers
                     updateDefinition
                 );
 
-                // Clear Active Event, so it is triggered to be refreshed on next request.
-                this.activeEvent = null;
+                // Update in memory
+                this.activeEvent.ScoringQuestions[key] = scoreQuestion;
 
                 // Go back to list
                 return RedirectToAction("ScoreQuestions");
@@ -217,8 +217,8 @@ namespace HackathonWebApp.Controllers
                     updateDefinition
                 );
 
-                // Clear Active Event, so it is triggered to be refreshed on next request.
-                this.activeEvent = null;
+                // Update in memory
+                this.activeEvent.ScoringQuestions.Remove(id);
             }
             catch (Exception e)
             {
@@ -266,8 +266,8 @@ namespace HackathonWebApp.Controllers
                     updateDefinition
                 );
 
-                // Clear Active Event, so it is triggered to be refreshed on next request.
-                this.activeEvent = null;
+                // Update in memory
+                this.activeEvent.ScoringRoles[key] = scoringRole;
 
                 // Go back to list
                 return RedirectToAction("ScoringRoles");
@@ -310,8 +310,8 @@ namespace HackathonWebApp.Controllers
                     updateDefinition
                 );
 
-                // Clear Active Event, so it is triggered to be refreshed on next request.
-                this.activeEvent = null;
+                // Update in memory
+                this.activeEvent.ScoringRoles.Remove(id);
             }
             catch (Exception e)
             {
@@ -345,8 +345,8 @@ namespace HackathonWebApp.Controllers
                     updateDefinition
                 );
 
-                // Clear Active Event, so it is triggered to be refreshed on next request.
-                this.activeEvent = null;
+                // Update in memory
+                this.activeEvent.UserScoringRoles = userScoringRoles;
             }
             catch (Exception e)
             {

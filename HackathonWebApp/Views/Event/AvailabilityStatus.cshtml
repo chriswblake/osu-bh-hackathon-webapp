@@ -1,0 +1,53 @@
+﻿@model Dictionary<string, EventApplication>
+@{
+    Layout = "_AdminLayout";
+    ViewBag.Title = "Availability Status";
+    HackathonEvent activeEvent = ViewBag.ActiveEvent;
+    List<EventApplication> eventApplications = Model.Values.ToList();
+}
+
+@* List of applications *@
+<form method="post" asp-action="AvailabilityStatus" enctype="multipart/form-data" style="margin-bottom:75px;">
+    <h1 class="text-white">Availability Status</h1>
+    <a asp-action="RequestAvailabilityConfirmationViaEmail" class="btn btn-secondary">Send email to unconfirmed</a>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small; margin-top: 10px;">
+        <tr>
+            <th>User</th>
+            <th>Applied On</th>
+            <th>Email Confirmed</th>
+            <th>Email</th>
+            <th>Attendance Confirmation State</th>
+            <th>Major</th>
+            <th>School Year</th>
+        </tr>
+        @foreach (EventApplication eventApplication in eventApplications.OrderBy(p=> p.CreatedOn))
+        {
+            var appUser = eventApplication.AssociatedUser;
+            if (appUser == null) { appUser = new ApplicationUser() { FirstName="Error", LastName="Error", Email="Error" }; }
+            <tr>
+                <td style="font-size:x-small; white-space: nowrap;">
+                    @appUser.FirstName @appUser.LastName<br/>
+                    @eventApplication.UserId
+                </td>
+                <td style="font-size:x-small; white-space: nowrap;">@TimeZoneInfo.ConvertTime(eventApplication.CreatedOn, activeEvent.TimeZoneInfo)</td>
+                <td> @appUser.EmailConfirmed</td>
+                <td>@appUser.Email</td>
+                <td>
+                    @if (eventApplication.ConfirmationState == EventApplication.ConfirmationStateOption.assigned)
+                    {
+                        @Html.Raw("assigned")
+                    }else
+                    {
+                        var stateOptions = typeof(EventApplication.ConfirmationStateOption).GetFields().Where(k=>k.IsLiteral).ToList();
+                        stateOptions = stateOptions.Where(p=> p.Name != "assigned").ToList();
+                        @* stateOptions.Remove(EventApplication.ConfirmationStateOption.assigned); *@
+                        @Html.DropDownListFor(m => m[eventApplication.UserId.ToString()].ConfirmationState, new SelectList(stateOptions, "Name", "Name"), new { @name="event-"+eventApplication.Id })
+                    }
+                </td>
+                <td>@eventApplication.Major</td>
+                <td>@eventApplication.SchoolYear</td>
+            </tr>
+        }
+    </table>
+</form>

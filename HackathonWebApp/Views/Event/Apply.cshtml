@@ -8,6 +8,13 @@
 }
 
 <style>
+    .subinfo {
+        font-size: 0.7em;
+        color: var(--bh-light-gray);
+        line-height: 1.0;
+        padding-inline-start: 20px;
+        margin-top: 3px;
+    }
     .qa-section-box {
         background-color: var(--bh-dark-green-gray);
         border: 1px solid var(--bh-green);
@@ -70,6 +77,12 @@
                         Password
                         <input asp-for="AssociatedUser.Password" type="password" class="form-control" placeholder="Choose a password"/>
                         <span asp-validation-for="AssociatedUser.Password" class="text-danger"></span>
+                        <ul class="subinfo">
+                            <li>Min least 6 characters.</li>
+                            <li>Min one non alphanumeric character.</li>
+                            <li>Min one digit ('0'-'9').</li>
+                            <li>Min one uppercase ('A'-'Z').</li>
+                        </ul>
                     </div>
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 </div>
@@ -125,7 +138,7 @@
 
                 <h3>Trainings</h3>
                 <div class="qa-section-box">
-                    Do you have any of the below training certificates?<br/>
+                    Do you have any of the below training certificates for ENDEAVOR?<br/>
                     (hold 'ctrl' to select multiple)<br/>
                     @Html.ListBoxFor(m => m.TrainingsAcquired, new SelectList(registrationSettings.TrainingsAcquiredOptions, "Key", "Value"), new { @class="trainings-selector" })<br/>
                     <span asp-validation-for="TrainingsAcquired" class="text-danger"></span>
@@ -151,11 +164,6 @@
             </form>
         </div>
     </div>
-
-    <div>
-        <a asp-action="Index">Back to List</a>
-    </div>
-
 </div>
 
 @section Scripts {

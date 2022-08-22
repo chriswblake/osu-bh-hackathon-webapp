@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.ObjectModel;
 
 namespace HackathonWebApp.Models
 {
@@ -22,6 +23,22 @@ namespace HackathonWebApp.Models
         [Required]
         [BsonElement("name")]
         public string Name { get; set; }
+        
+        [Required]
+        [BsonElement("time_zone_id")]
+        public string TimeZoneId { get; set; } = "Central Standard Time"; // Default
+        [BsonIgnore]
+        public TimeZoneInfo TimeZoneInfo {get {
+            try {
+                return TimeZoneInfo.FindSystemTimeZoneById(this.TimeZoneId);
+            } catch {
+                // If the id stored in the DB fails (becaue a time zone id is changed), fail to UTC.
+                return TimeZoneInfo.Utc;
+            }
+        }}
+        public ReadOnlyCollection<TimeZoneInfo> TimeZoneInfoOptions { get {
+            return  TimeZoneInfo.GetSystemTimeZones();
+        }}
 
         [Required]
         [BsonElement("start_time")]
@@ -30,6 +47,18 @@ namespace HackathonWebApp.Models
         [Required]
         [BsonElement("end_time")]
         public DateTime EndTime { get; set; }
+
+        [Required]
+        [BsonElement("registration_opens_time")]
+        public DateTime RegistrationOpensTime { get; set; }
+
+        [Required]
+        [BsonElement("early_registration_closes_time")]
+        public DateTime EarlyRegistrationClosesTime { get; set; }
+
+        [Required]
+        [BsonElement("registration_closes_time")]
+        public DateTime RegistrationClosesTime { get; set; }
 
         [Required]
         [BsonElement("sponsors")]
@@ -49,6 +78,10 @@ namespace HackathonWebApp.Models
         #endregion
 
         #region Team Management
+        [Required]
+        [BsonElement("show_teams_time")]
+        public DateTime ShowTeamsTime { get; set; }
+
         [Required]
         [BsonElement("event_applications")]
         public Dictionary<string,EventApplication> EventApplications { get; set; } = new Dictionary<string, EventApplication>();

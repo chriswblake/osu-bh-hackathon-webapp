@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HackathonWebApp.Models
 {
+    [BsonIgnoreExtraElements]
     public class RegistrationSettings
     {
         /// <summary>
@@ -127,7 +128,7 @@ namespace HackathonWebApp.Models
             return new Dictionary<int, string>()
             {
                 { 0, "Instructions! I don't need those...🙈"},
-                { 1, "Instuctions...they're more like guidelines.🧻"},
+                { 1, "Instructions...they're more like guidelines.🧻"},
                 { 2, "I usually follow the instuctions.📄"},
                 { 3, "I ♥ documentation. (stack overflow 😅)"},
                 { 4, "I like to fix mistakes and comment on docs.✏"},

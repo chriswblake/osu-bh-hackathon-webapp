@@ -59,6 +59,7 @@
                                     <b>@User.Identity.Name</b>
                                     <hr/>
                                     <a class="dropdown-item" asp-controller="Account" asp-action="Index">Your Profile</a>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="YourTeam">Your Team</a>
                                     @if (User?.IsInRole("Admin") ?? false)
                                     {
                                         <a class="dropdown-item" asp-controller="Admin" asp-action="Index">Admin</a>
@@ -93,8 +94,8 @@
         <div style="color: white;">
 			Copyright &copy; Oklahoma State University @year<br/>
 			Copyright &copy; Baker Hughes @year<br/>
-			<a href="https://github.com/chriswblake/osu-bh-hackathon-webapp"><i class="fab fa-github"></i></a>
-			<a href="https://www.linkedin.com/company/bakerhughes"><i class="fab fa-linkedin"></i></a>
+			<a href="https://github.com/chriswblake/osu-bh-hackathon-webapp" target="_blank"><i class="fab fa-github"></i></a>
+			<a href="https://www.linkedin.com/company/bakerhughes" target="_blank"><i class="fab fa-linkedin"></i></a>
 		</div>
     </footer>
 

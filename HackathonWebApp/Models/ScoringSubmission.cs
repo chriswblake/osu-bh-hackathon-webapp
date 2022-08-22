@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace HackathonWebApp.Models
 {
+    [BsonIgnoreExtraElements]
     public class ScoringSubmission
     {
         [BsonId]

@@ -8,6 +8,7 @@ using HackathonWebApp.Models;
 using System;
 using System.Net.Mail;
 using System.IO;
+using MongoDB.Driver;
 
 namespace HackathonWebApp.Controllers
 {
@@ -18,35 +19,43 @@ namespace HackathonWebApp.Controllers
         private UserManager<ApplicationUser> userManager;
         private SignInManager<ApplicationUser> signInManager;
         private SmtpClient emailClient;
+        private IMongoCollection<HackathonEvent> eventCollection;
 
         // Constructor
-        public AccountController(IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient)
+        public AccountController(IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient, IMongoDatabase database)
         {
             this.webHostEnvironment = webHostEnvironment;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.emailClient = emailClient;
+            this.eventCollection = database.GetCollection<HackathonEvent>("Events");
         }
 
-        // Views
+        // Properties
+        private HackathonEvent activeEvent {
+            get {
+                var eventController = (EventController) this.HttpContext.RequestServices.GetService(typeof(EventController));
+                return eventController.activeEvent;
+            }
+        }
+
+        // Account
         [Authorize]
         public ViewResult Index()
         {
             string userName = User.Identity.Name;
             ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+
+            // Add event application, if they have one
+            if (this.activeEvent.EventApplications.ContainsKey(appUser.Id.ToString()))
+                ViewBag.EventApplication = this.activeEvent.EventApplications[appUser.Id.ToString()];
+    
             return View(appUser);
         }
-        public IActionResult Login()
+        public IActionResult Create()
         {
             return View();
         }
-        public ViewResult Create() => View();
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
-
-        // Methods
         [HttpPost]
         public async Task<IActionResult> Create(ApplicationUser appUser)
         {
@@ -94,35 +103,31 @@ namespace HackathonWebApp.Controllers
             }
             return View(appUser);
         }
-
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> Delete()
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
-            ApplicationUser appUser = await userManager.FindByNameAsync(User.Identity.Name);
+            // Get the user
+            var appUser = await userManager.FindByIdAsync(userId);
 
-            // Delete the user
-            if (appUser != null)
+            // Check if already confirmed
+            bool emailAlreadyConfirmed = await userManager.IsEmailConfirmedAsync(appUser);
+            if (emailAlreadyConfirmed)
             {
-                IdentityResult result = await userManager.DeleteAsync(appUser);
-                if (result.Succeeded)
-                {
-                    // Sign out and display confirmation
-                    await signInManager.SignOutAsync();
-                    return RedirectToAction("DeleteConfirmation", "Account");
-                }
-                else
-                    Errors(result);
+                ViewBag.EmailConfirmed = "already";
+                return View();
             }
+
+            // Try to confirm the email
+            var result = await userManager.ConfirmEmailAsync(appUser, code);
+            if (result.Succeeded)
+                ViewBag.EmailConfirmed = "yes";
             else
-                ModelState.AddModelError("", "No role found");
-
-            return RedirectToAction("Index");
+                ViewBag.EmailConfirmed = "no";
+            return View();
         }
-        public ViewResult DeleteConfirmation(){
-            return View("Delete");
+        public IActionResult Login()
+        {
+            return View();
         }
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -160,7 +165,12 @@ namespace HackathonWebApp.Controllers
                 return View();
             }
         }
-        
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
         [HttpPost]
         public async Task<IActionResult> Update(ApplicationUser appUserChanges)
         {
@@ -188,35 +198,61 @@ namespace HackathonWebApp.Controllers
             }
             return View("Index", appUser);
         }
-
         [Authorize]
-        public async Task<IActionResult> Logout()
+        [HttpPost]
+        public async Task<IActionResult> Delete()
         {
-            await signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
+            ApplicationUser appUser = await userManager.FindByNameAsync(User.Identity.Name);
 
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
-        {
-            // Get the user
-            var appUser = await userManager.FindByIdAsync(userId);
-
-            // Check if already confirmed
-            bool emailAlreadyConfirmed = await userManager.IsEmailConfirmedAsync(appUser);
-            if (emailAlreadyConfirmed)
+            // Delete the user
+            if (appUser != null)
             {
-                ViewBag.EmailConfirmed = "already";
-                return View();
+                IdentityResult result = await userManager.DeleteAsync(appUser);
+                if (result.Succeeded)
+                {
+                    // Sign out and display confirmation
+                    await signInManager.SignOutAsync();
+                    return RedirectToAction("DeleteConfirmation", "Account");
+                }
+                else
+                    Errors(result);
             }
-
-            // Try to confirm the email
-            var result = await userManager.ConfirmEmailAsync(appUser, code);
-            if (result.Succeeded)
-                ViewBag.EmailConfirmed = "yes";
             else
-                ViewBag.EmailConfirmed = "no";
-            return View();
+                ModelState.AddModelError("", "No role found");
+
+            return RedirectToAction("Index");
         }
+        public ViewResult DeleteConfirmation(){
+            return View("Delete");
+        }
+        
+        // Application Status
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ApplicationStatus(bool available) {
+            // Pick new availability state
+            var confirmationState = EventApplication.ConfirmationStateOption.request_sent;
+            if (available)
+                confirmationState = EventApplication.ConfirmationStateOption.unassigned;
+            else 
+                confirmationState = EventApplication.ConfirmationStateOption.cancelled;
+
+            // Get User info
+            var appUser = await userManager.FindByNameAsync(User.Identity.Name);
+            var userId = appUser.Id.ToString();
+
+            // Update in DB
+            var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.EventApplications[userId].ConfirmationState, confirmationState);
+            await eventCollection.FindOneAndUpdateAsync(
+                s => s.Id == this.activeEvent.Id,
+                updateDefinition
+            );
+
+            // Update in Memory
+            this.activeEvent.EventApplications[userId].ConfirmationState = confirmationState;
+
+            return RedirectToAction(nameof(Index));
+        } 
 
         // Passsword Reset
         public ViewResult ForgotPassword() {
@@ -308,7 +344,55 @@ namespace HackathonWebApp.Controllers
             return View();
         }
 
+
+        // Team
+        public ViewResult YourTeam() {
+            var team = new Team();
+
+            // Find user information
+            string userName = User.Identity.Name;
+            ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+            var userId = appUser.Id.ToString();
+
+            // Lookup up team with user's id
+            if (this.activeEvent.EventAppTeams.ContainsKey(userId))
+            {
+                var teamId = this.activeEvent.EventAppTeams[userId];
+                team = this.activeEvent.Teams[teamId];
+            }
+            ViewBag.ShowTeamsTime = activeEvent.ShowTeamsTime;
+            ViewBag.RegistrationSettings = activeEvent.RegistrationSettings;
+            return View(team);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateTeamName(Team newTeamInfo){
+            // Find user information
+            string userName = User.Identity.Name;
+            ApplicationUser appUser = await userManager.FindByNameAsync(userName);
+            var userId = appUser.Id.ToString();
+
+            // Stop early if team doesn't exist
+            if (!this.activeEvent.EventAppTeams.ContainsKey(userId))
+                return RedirectToAction(nameof(YourTeam));
+            
+            // Find team
+            var teamId = this.activeEvent.EventAppTeams[userId];
+            var team = this.activeEvent.Teams[teamId];
+
+            // Update team name using event controller
+            team.Name = newTeamInfo.Name;
+            var eventController = (EventController) this.HttpContext.RequestServices.GetService(typeof(EventController));
+            eventController.UpdateTeam(team);
+
+            return RedirectToAction(nameof(YourTeam));
+        }
+
+
         // Error Messages
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
         private void Errors(Task result)
         {
             var e = result.Exception;

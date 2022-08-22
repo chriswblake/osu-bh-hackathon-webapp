@@ -1,23 +1,23 @@
 ﻿@{
     ViewData["Title"] = "Home";
+	HackathonEvent activeEvent = ViewBag.ActiveEvent;
 }
-
-@*<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>*@
 
 <div class="text-center">
 	<!-- Intro -->
 	<section class="first-section" style="color:white; padding-bottom:5em;">
 		<img class="col-10 col-sm-8 col-md-7 col-lg-6 col-xl-5 logo-shake" src="~/img/hackokstate.png"/>
 		<br>
-		<h2 class="osu-orange">23<sup>rd</sup>-25<sup>th</sup> Sep. 2022</h2>
+		<h2 class="osu-orange">@activeEvent.StartTime.ToString("dd")-@activeEvent.EndTime.ToString("dd MMM. yyyy")</h2>
 		<h2>OSU Endeavor<br/> 215 N Hester St, Stillwater, OK 74078</h2>
 		<br/>
-		@*<a href="https://forms.gle/vormCEpW4UJZxAjr6" target="_blank" class="btn btn-primary js-scroll-trigger" style="z-index: 1; position: relative;">Register</a>*@
-		<div class="btn btn-secondary js-scroll-trigger" style="z-index: 1; position: relative;">Registration Opens<br/>Sep. 1st</div><br/>
-
+		@if (DateTime.Now.Date >= activeEvent.RegistrationOpensTime.Date) {
+            <a class="btn btn-primary" asp-controller="Event" asp-action="Apply">Register Now!</a>
+			<div>*Early registration and entry for raffle closes on @activeEvent.EarlyRegistrationClosesTime.ToString("MMM. d")</div>
+			<div>*Normal registration closes on @activeEvent.RegistrationClosesTime.ToString("MMM. d")</div>
+		}else {
+			<div class="btn btn-secondary js-scroll-trigger" style="z-index: 1; position: relative;">Registration Opens<br/>@activeEvent.RegistrationOpensTime.ToString("MMM. d")</div><br/>
+		}
 		<br/>
 		<h3 class="white">Hosted By:<br/>Oklahoma State University<br/>and Baker Hughes</h3>
 		<a class="btn btn-secondary" asp-area="" asp-controller="Home" asp-action="SponsorBenefits">Learn about Sponsor Benefits</a>
@@ -26,20 +26,35 @@
 	<!-- About -->
 	<section class="diagonal-section" style="background-color:white;">
 		<div class="mx-auto diagonal-section-content">
-			<h1>About</h1>
-			<div class="container">
-				The OSU/BH Hackathon is a 24-hour energy-forward / sustainability/ green hackathon organised by Oklahoma State University and Baker Hughes.
-				The hackathon will see students come together to build an innovative hack to help with energy transition.
-				<br/><br/>
-							
-				Hackers will be a combination of students across any majors, but we expect most with majors related to computer science, environmental engineering, electrical engineering, and mechanical engineering.
-				<br/><br/>
-							
-				The hacks can be pure software, electrical, mechanical... or maybe even a combindation!
-							
-				<br/><br/>
-				Naturally, there will be free food, some freebies,and the chance to gain prizes and meet our incredible sponsors, don’t hesitate to apply.
+			<center>
+			<div class="container row">
+				<div class="col-md-6" style="padding-top: 60px;">
+					<iframe src="https://www.youtube.com/embed/vKMB9KbZshQ" style="width:100%; min-height:250px;"
+						title="YouTube video player" frameborder="0"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen>
+					</iframe>
+					Last Year (Sept. 2021)
+				</div>
+				<div class="col-md-6 text-left">
+					<h1>About</h1>
+					<p>
+					The OSU/BH Hackathon is a 24-hour energy-forward / sustainability / green hackathon organised by Oklahoma State University and Baker Hughes.
+					The hackathon will see students come together across disciplines to build an innovative hack to help with energy transition.
+					</p>
+					<p>		
+					<u>We believe hackers for energy transition can and should be from all majors. All jobs and people use energy.</u>
+					For example: it can be direct like consuming power, indirect like reducing emissions or defining policy, or very indirect like changing manufacturing of dance pants and paint using different chemicals. 
+					</p>
+					<p>
+					Each year we hope to target and expand this fun to more majors. Computer Science, Engineering, Music, Medical, Fine Arts... It's all awesome! 😎🤓
+					</p>
+					<p>
+					And... finally... naturally... there will be free food, swag, raffles, and prizes for the winning tems. 🎉
+					</p>
+				</div>
 			</div>
+			</center>
 		</div>
 	</section>
 
@@ -64,11 +79,11 @@
 				<table class="table table-hover">
 					<!-- <tr><td colspan="3">Thurs 16th</td></tr> -->
 					<tr><th>Date</th><th>Time</th><th>Activity</th><th>Description</th></tr>
-					<tr><td>Th (09/01)</td><td>-</td><td>Early Registration Opens</td><td>Early birds get the worm! (priority placement)</td></tr>
+					<tr><td>Th (09/01)</td><td>-</td><td>Early Registration Opens</td><td>Early birds get the worm! (a raffle entry)</td></tr>
 					<tr><td>Mo (09/12)</td><td>-</td><td>Early Registration Closes</td><td>Only 50 spots available!</td></tr>
 					<tr><td>Fr (09/16)</td><td>-</td><td>Registration Closes</td><td>Don't wait to the last minute! 😮</td></tr>
-					<tr><td>Mo (09/19)</td><td>-</td><td>Confirmations sent</td><td>Remind us you are awesome and will participate.</td></tr>
-					<tr><td>Th (09/22)</td><td>12:00</td><td>Teams Announced</td><td>Time to get to know each other!</td></tr>
+					<tr><td>Mo (09/19)</td><td>-</td><td>Confirmations sent</td><td>Remind us you are awesome and can participate.</td></tr>
+					<tr><td>We (09/21)</td><td>12:00</td><td>Teams Announced</td><td>Time to get to know each other!</td></tr>
 					<tr><td>Fr (09/23)</td><td>18:00</td><td>Kickoff</td><td>Reveal the challenge at ENDEAVOR 160</td></tr>
 				</table>
 			</div>
@@ -79,11 +94,11 @@
 				<table class="table table-hover">
 					<tr><th>Time</th><th>Activity</th><th>Description</th></tr>
 					<tr><td>08:30</td><td>Check-in</td><td>Show up, mingle, take a selfie...<br/> ...before we get too serious. #HackOKState</td></tr>
-					@*<tr><td>09:00</td><td>Raffle</td><td>It's not a bribe to get you out of bed, we promise. ;)</td></tr>*@
-					<tr><td>09:00</td><td>Opening Remarks</td><td>Maki/Randy greet everyone and wish them good luck!</td></tr>
+					<tr><td>09:00</td><td>Raffle</td><td>It's not a bribe to get you out of bed, we promise. ;)</td></tr>
+					<tr><td>09:05</td><td>Opening Remarks</td><td>Intro of mentors and wish everyone good luck!</td></tr>
 					<tr><td>09:15</td><td>Start work!</td><td>Let's see what happens... if we...</td></tr>
 					<tr><td>13:00</td><td>Lunch</td><td>You are welcome to multi-task ;)</td></tr>
-					@*<tr><td>14:00</td><td>Raffle</td><td>Sponsors like to give us free stuff, not sure why...</td></tr>*@
+					<tr><td>18:00</td><td>Raffle</td><td>Sponsors like to give us free stuff, not sure why...</td></tr>
 					<tr><td>23:00</td><td>Stop work!</td><td>Submit Work. Put those digital toys down!</td></tr>
 				</table>
 			</div>
@@ -94,7 +109,8 @@
 				<table class="table table-hover">
 					<tr><th>Time</th><th>Activity</th><th>Description</th></tr>
 					<tr><td>08:30</td><td>Arrival</td><td>Show up, mingle, grab a donut...</td></tr>
-					<tr><td>09:00</td><td>Start work!</td><td>Finish up the presentations.</td></tr>
+					<tr><td>09:00</td><td>Raffle</td><td>Wait, what? Another raffle? 🤩</td></tr>
+					<tr><td>09:05</td><td>Start work!</td><td>Finish up the presentations.</td></tr>
 					<tr><td>11:00</td><td>Submit Presentations, Lunch</td><td>Enjoy the calm before the storm. ;)</td></tr>
 					<tr><td>11:30</td><td>Presentations, Teams 1-5</td><td>Interpretive dance 💃🕺 gets extra points, right?</td></tr>
 					<tr><td>12:30</td><td>Break</td><td>Hopefully no death-by-powerpoint quite yet...</td></tr>
@@ -110,27 +126,27 @@
 			
 	<!-- Images -->
 	<section class="diagonal-section" style="background-color: white;">
-		<div class="container diagonal-section-content">
-			<div class="row">
-				<div class="col-xl-6">
-					<div class="img-box">
-						<img src="img/osu-endeavor-exterior.jpg" style="height: 20em;">
-						<div style="background: #DDD;">
-							Explore OSU Endeavor facility, labs, equipment, and its other many capabilities!
-						</div>
+		<center>
+		<div class="container diagonal-section-content row col-12 col-md-10 col-lg-8 col-xl-6">
+			<div class="col-12 col-sm-6">
+				<div class="img-box">
+					<img src="img/osu-endeavor-exterior.jpg">
+					<div style="background: #DDD;">
+						Explore the OSU Endeavor labs and equipment!
 					</div>
 				</div>
+			</div>
 
-				<div class="col-xl-6">
-					<div class="img-box">
-						<img src="img/osu-discovery-exterior.jpg" style="height: 20em;">
-						<div style="background: #DDD">
-							Interact with mentors, engineers and researchers from Baker Hughes and our Sponsors.
-						</div>
+			<div class="col-12 col-sm-6">
+				<div class="img-box">
+					<img src="img/osu-discovery-exterior.jpg">
+					<div style="background: #DDD">
+						Interact with mentors, engineers and researchers from Baker Hughes and our Sponsors.
 					</div>
 				</div>
 			</div>
 		</div>
+		</center>
 	</section>
 
 </div>
