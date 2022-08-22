@@ -1,0 +1,73 @@
+@{
+    ViewData["Title"] = "Prizes";
+}
+
+<style>
+	.faq-bubble {
+		margin-bottom: 1em;
+	}
+	.card {
+		border-radius: 50px;
+		font-size: small;
+		padding: 2.5em;
+		text-wrapping: wrap;
+	}
+	.card i {
+		color: var(--bh-green);
+		font-size: large;
+		margin-bottom: 0.5em;
+	}
+	.card h4 {
+		text-transform: uppercase;
+	}
+	.card hr {
+		margin: 1em;
+	}
+
+</style>
+
+<div class="text-center">
+	<section class="first-section" style="padding: 5em;">
+		<h1 class="osu-orange">Prizes / Swag / Raffles</h1>
+	</section>
+
+	@* Winners *@
+	<section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:1em;">
+		<h2 class="osu-orange">Winners</h2>
+	</section>
+	<section class="diagonal-section" style="padding:1em 0 1em 0; background-color:white;">
+	<div class="mx-auto diagonal-section-content">
+	<div class="container">
+	<div class="row">
+		<!-- Prizes -->
+		<div class="col-md-6 faq-bubble">
+			<div class="card h-100">
+				<i class="fa-solid fa-medal"></i>
+				<h4>1st Place</h4>
+				<hr>
+				<div style="font-size:large">
+					<div><a href="https://www.amazon.com/NVIDIA-Jetson-Nano-Developer-945-13541-0000-000/dp/B08J157LHH" target="_blank">Jetson Nano</a></div>
+					<div><a href="https://www.amazon.com/Makeronics-Developer-Kit-Jetson-Nano/dp/B07ZKFDMCT/" target="_blank">Jetson Nano - Developer Kit</a></div>
+					<div>JBL Bluetooth Speaker</div>
+					<div>3D Printed Trophy</div>
+					<div>Certificate</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6 faq-bubble">
+			<div class="card h-100">
+				<i class="fa-solid fa-medal"></i>
+				<h4>2nd Place</h4>
+				<hr>
+				<div style="font-size:large">
+					<div><a href="https://www.amazon.com/SunFounder-Mega2560-Starter-Kit-Compatible/dp/B087BFP3JN" target="_blank">Arduino + Kit</a></div>
+					<div>3D Printed Trophy</div>
+					<div>Certificate</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	</div>
+	</section>
+</div>

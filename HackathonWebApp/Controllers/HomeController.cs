@@ -44,6 +44,10 @@ namespace HackathonWebApp.Controllers
         {
             return View();
         }
+        public IActionResult Prizes()
+        {
+            return View();
+        }
 
         public IActionResult GettingReady()
         {
