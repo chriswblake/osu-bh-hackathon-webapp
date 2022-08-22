@@ -45,6 +45,14 @@ namespace HackathonWebApp.Controllers
 
             // Email Functions
             this.emailClient = emailClient;
+
+            // Fill in any null users
+            this.activeEvent.EventApplications.Last().Value.AssociatedUser = null;
+            var appsWithoutUser = this.activeEvent.EventApplications.Values.Where(p=> p.AssociatedUser == null);
+            foreach(var eventApp in appsWithoutUser)
+            {
+                eventApp.AssociatedUser = userManager.FindByIdAsync(eventApp.UserId.ToString()).Result;
+            }
         }
 
         // Properties
@@ -242,7 +250,7 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("Equipment");
         }
         [HttpPost]
-        public async Task<IActionResult> DownloadEquipmentCSV()
+        public IActionResult DownloadEquipmentCSV()
         {
             // Save to string
             string csvText = "";

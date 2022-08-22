@@ -4,6 +4,16 @@
 
 @model ApplicationUser
 
+<style>
+    .subinfo {
+        font-size: 0.7em;
+        color: var(--bh-light-gray);
+        line-height: 1.0;
+        padding-inline-start: 20px;
+        margin-top: 3px;
+    }
+</style>
+
 <div class="container text-white">
     <h1 class="text-white">Create Account</h1>
     <div asp-validation-summary="All" class="text-danger"></div>
@@ -34,9 +44,23 @@
                 <div class="form-group">
                     Password
                     <input asp-for="Password" type="password" class="form-control" placeholder="Choose a password"/>
+                    <ul class="subinfo">
+                        <li>Min least 6 characters.</li>
+                        <li>Min one non alphanumeric character.</li>
+                        <li>Min one digit ('0'-'9').</li>
+                        <li>Min one uppercase ('A'-'Z').</li>
+                    </ul>
                 </div>
                 <button type="submit" class="btn btn-primary">Create</button>
             </form>
+        </div>
+        <div class="col-md-6">
+            <h3>Please Note</h3>
+            <p>Creating an account does <b><u>not</u></b> automatically register you for the upcoming event.
+            It just makes registering for future events easier.
+            </p>
+                            
+            If you would like to apply for the event at the same time as creating your account, please use the <a asp-area="" asp-controller="Event" asp-action="Apply">Event Registration</a> page.
         </div>
     </div>
 </div>

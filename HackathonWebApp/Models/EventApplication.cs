@@ -37,6 +37,8 @@ namespace HackathonWebApp.Models
             unassigned,
             [Description("Assigned")] // Applicant has been assigned a team.
             assigned,
+            [Description("Waitlist")] // Applicant hasn't been manually defferred.
+            waitlist,
             [Description("Cancelled")] // Applicant did not confirm in time or rejected confirmation.
             cancelled,
             [Description("No Email")] // Applicant never verified their email.

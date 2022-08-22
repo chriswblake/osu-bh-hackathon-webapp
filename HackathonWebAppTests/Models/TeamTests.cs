@@ -113,9 +113,9 @@ namespace HackathonWebAppTests
                 hackathonEvent.ScoringQuestions.Add(q4.Id.ToString(), q4);
                 hackathonEvent.ScoringQuestions.Add(q5.Id.ToString(), q5);
                 // Add Roles
-                var r1 = new ScoringRole() {Name = "Judge", ScoringWeight = 0.4, Id=ObjectId.GenerateNewId() };
-                var r2 = new ScoringRole() {Name = "Mentor", ScoringWeight = 0.1, Id=ObjectId.GenerateNewId() };
-                var r3 = new ScoringRole() {Name = "Participant", ScoringWeight = 0.5, Id=ObjectId.GenerateNewId() };
+                var r1 = new ScoringRole() {Name = "Judge", ScoringGroup="Judge", ScoringWeight = 0.4, Id=ObjectId.GenerateNewId() };
+                var r2 = new ScoringRole() {Name = "Mentor", ScoringGroup="Mentor", ScoringWeight = 0.1, Id=ObjectId.GenerateNewId() };
+                var r3 = new ScoringRole() {Name = "Participant", ScoringGroup="Participant", ScoringWeight = 0.5, Id=ObjectId.GenerateNewId() };
                 hackathonEvent.ScoringRoles[r1.Id.ToString()] = r1;
                 hackathonEvent.ScoringRoles[r2.Id.ToString()] = r2;
                 hackathonEvent.ScoringRoles[r3.Id.ToString()] = r3;
@@ -272,9 +272,9 @@ namespace HackathonWebAppTests
 
             // Process
             var avgScoresByRole = team.AvgWeightedScoresByQuestionGroupedByRole;
-            var judgeScoresByQuestion = avgScoresByRole[roleJudge];
-            var mentorScoresByQuestion = avgScoresByRole[roleMentor];
-            var participantScoresByQuestion = avgScoresByRole[roleParticipant];
+            var judgeScoresByQuestion = avgScoresByRole[roleJudge.ScoringGroup];
+            var mentorScoresByQuestion = avgScoresByRole[roleMentor.ScoringGroup];
+            var participantScoresByQuestion = avgScoresByRole[roleParticipant.ScoringGroup];
 
             // Assert - Structure
             Assert.Equal(3, avgScoresByRole.Count());

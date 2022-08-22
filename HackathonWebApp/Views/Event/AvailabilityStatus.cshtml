@@ -24,6 +24,7 @@
         @foreach (EventApplication eventApplication in eventApplications.OrderBy(p=> p.CreatedOn))
         {
             var appUser = eventApplication.AssociatedUser;
+            if (appUser == null) { appUser = new ApplicationUser() { FirstName="Error", LastName="Error", Email="Error" }; }
             <tr>
                 <td style="font-size:x-small; white-space: nowrap;">
                     @appUser.FirstName @appUser.LastName<br/>
