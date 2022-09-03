@@ -78,7 +78,7 @@ namespace HackathonWebApp.Controllers
                     // Send email
                     await this.ConfirmAccount(appUser.Email);
                     // Go back to login page
-                    return RedirectToAction("Login");
+                    return RedirectToAction(nameof(ConfirmAccountEmailSent));
                 }
                 else
                 {
