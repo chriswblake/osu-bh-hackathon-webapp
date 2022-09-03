@@ -39,7 +39,7 @@ namespace HackathonWebApp.Controllers
             }
         }
 
-        // Account
+        // Account - Create and confirm account
         [Authorize]
         public ViewResult Index()
         {
@@ -75,23 +75,8 @@ namespace HackathonWebApp.Controllers
                 // Send confirmation email to user
                 if (result.Succeeded)
                 {
-                    // Generate confirmation email body with token
-                    string templatePath = Path.Combine(webHostEnvironment.WebRootPath, "email-templates", "ConfirmEmailAddress.html");
-                    string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
-                    string code = await userManager.GenerateEmailConfirmationTokenAsync(appUser);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    string userName = appUser.UserName;
-                    string msgBody = string.Format(msgBodyTemplate, userName, callbackUrl);
-
-                    // Send Email
-                    MailMessage mail = new MailMessage();
-                    mail.To.Add(appUser.Email);
-                    mail.From = new MailAddress("hackokstate@gmail.com");
-                    mail.Subject = "Confirm Account - HackOKState";
-                    mail.Body = msgBody;
-                    mail.IsBodyHtml = true;
-                    await emailClient.SendMailAsync(mail);
-
+                    // Send email
+                    await this.ConfirmAccount(appUser.Email);
                     // Go back to login page
                     return RedirectToAction("Login");
                 }
@@ -102,6 +87,44 @@ namespace HackathonWebApp.Controllers
                 }
             }
             return View(appUser);
+        }
+        public IActionResult ConfirmAccount()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ConfirmAccount(string email)
+        {
+            // Lookup user
+            ApplicationUser appUser = await userManager.FindByEmailAsync(email);
+
+            // Skip sending email if user doesn't exist, but fail silently.
+            if (appUser != null)
+            {
+                // Generate confirmation email body with token
+                string templatePath = Path.Combine(webHostEnvironment.WebRootPath, "email-templates", "ConfirmEmailAddress.html");
+                string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
+                string code = await userManager.GenerateEmailConfirmationTokenAsync(appUser);
+                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                string userName = appUser.UserName;
+                string msgBody = string.Format(msgBodyTemplate, userName, callbackUrl);
+
+                // Send Email
+                MailMessage mail = new MailMessage();
+                mail.To.Add(appUser.Email);
+                mail.From = new MailAddress("hackokstate@gmail.com");
+                mail.Subject = "Confirm Account - HackOKState";
+                mail.Body = msgBody;
+                mail.IsBodyHtml = true;
+                await emailClient.SendMailAsync(mail);
+            }
+
+            // Forward user to page that they should check their email
+            return RedirectToAction(nameof(ConfirmAccountEmailSent));
+        }
+        public IActionResult ConfirmAccountEmailSent()
+        {
+            return View();
         }
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
@@ -124,6 +147,8 @@ namespace HackathonWebApp.Controllers
                 ViewBag.EmailConfirmed = "no";
             return View();
         }
+        
+        // Account - General Usage
         public IActionResult Login()
         {
             return View();
