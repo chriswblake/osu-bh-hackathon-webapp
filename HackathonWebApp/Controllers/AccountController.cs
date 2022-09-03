@@ -208,8 +208,8 @@ namespace HackathonWebApp.Controllers
                 // Update basic info
                 appUser.FirstName = appUserChanges.FirstName;
                 appUser.LastName = appUserChanges.LastName;
-                appUser.UserName = appUserChanges.UserName;
-                appUser.Email = appUserChanges.Email;
+                // appUser.UserName = appUserChanges.UserName;
+                // appUser.Email = appUserChanges.Email;
                 
                 // Save to DB
                 await userManager.UpdateAsync(appUser);
