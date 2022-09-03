@@ -368,6 +368,8 @@ namespace HackathonWebApp.Controllers
         }
         [AllowAnonymous]
         public ViewResult ThankYou() {
+            // If they are logged in, then they have already confirmed their account. So, don't show that part of the message.
+            ViewBag.ShowMessageVerifyAccount = !(User?.Identity?.IsAuthenticated ?? false);
             return View();
         }
         public ViewResult AvailabilityStatus() {

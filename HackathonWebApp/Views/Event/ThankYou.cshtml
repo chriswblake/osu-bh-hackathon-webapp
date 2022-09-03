@@ -1,21 +1,23 @@
 ﻿@model List<HackathonEvent>
 @{
     ViewBag.Title = "Thank You";
+    bool showMessageVerifyAccount = ViewBag.ShowMessageVerifyAccount;
 }
 
-<div class="container text-white">
-    <center>
-        <br/>
-        <h1>Application Received</h1>
-        <br/>
+<div class="container text-white col-sm-6" style="text-align:center;">
+    <h1>Application Received</h1>
+    <div class="col-12" style="background-color:var(--bh-dark-green-gray); border:1px solid var(--bh-green); border-radius:10px; padding:15px; text-align:center;">
         <h3>Thank You</h3>
         🤓👩‍💻👨‍💻🧐<br/>
         Nice application! Awesome stats!<br/>
         We look forward to hacking with you soon!<br/>
-        <br/>
-
-        🚧🚧🚧<br/>
-        If you are a new user, please remember to <span style="color:var(--osu-orange)">verify your email!</span><br/>
-        <span style="color:var(--osu-orange)">Otherwise, we cannot consider your application!</span> 🤷‍♀️😥<br/>
-    </center>
+        @if (showMessageVerifyAccount)
+        {
+        <div>
+            🚧🚧🚧<br/>
+            Please remember to reply, within 24hrs, to the <span style="color:var(--osu-orange)">account verification email!</span><br/>
+            <span style="color:var(--osu-orange)">Otherwise, we cannot consider your application!</span> 🤷‍♀️😥<br/>
+        </div>
+        }
+    </div>
 </div>
