@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -50,7 +50,15 @@ namespace HackathonWebApp.Controllers
             var appsWithoutUser = this.activeEvent.EventApplications.Values.Where(p=> p.AssociatedUser == null);
             foreach(var eventApp in appsWithoutUser)
             {
+                // Try to find the user
                 eventApp.AssociatedUser = userManager.FindByIdAsync(eventApp.UserId.ToString()).Result;
+
+                // If user does not exist, give it a blank user
+                if (eventApp.AssociatedUser == null)
+                    eventApp.AssociatedUser = new ApplicationUser() {
+                        UserName = "Unknown",
+                        FirstName = "Unknown",
+                        LastName = "Unknown"};
             }
         }
 
