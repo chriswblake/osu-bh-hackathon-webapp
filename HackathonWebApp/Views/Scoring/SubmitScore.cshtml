@@ -49,14 +49,15 @@
     {
     <div class="col-xs-12 col-sm-10 col-md-7 col-lg-6 col-xl-4" style="text-align:left;">
         @* Active Team *@
-        <div class="submission-info">
-            <div>You are submitting a score for "@activeTeam.Name".</div>
+        <div class="submission-info" style="text-align:center;">
+            <h2>@activeTeam.Name</h2>
             <div>
                 @foreach (ApplicationUser appUser in activeTeam.TeamMembers.Values)
                 {
-                    <div>- @appUser.FirstName @appUser.LastName</div>
+                    <div>@appUser.FirstName @appUser.LastName</div>
                 }
             </div>
+            <br/>
             <a href="/Scoring/SubmitScore" class="btn btn-secondary btn-lg btn-block">Refresh</a>
         </div>
 
