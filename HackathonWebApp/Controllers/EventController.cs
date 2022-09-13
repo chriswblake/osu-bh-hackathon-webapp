@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -510,7 +510,11 @@ namespace HackathonWebApp.Controllers
             // Show confirmation page
             return View("AvailabilityConfirmation", available);
         }
-        
+        public ViewResult ApplicationsSummary() {
+            ViewBag.ActiveEvent = this.activeEvent;
+            return View(this.activeEvent.EventApplications);
+        }
+
         // Team Placement
         public IActionResult AssignTeams()
         {

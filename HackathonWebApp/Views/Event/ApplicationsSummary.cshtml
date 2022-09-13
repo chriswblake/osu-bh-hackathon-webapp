@@ -1,0 +1,92 @@
+﻿@model Dictionary<string, EventApplication>
+@{
+    Layout = "_AdminLayout";
+    ViewBag.Title = "Availability Status";
+    HackathonEvent activeEvent = ViewBag.ActiveEvent;
+    List<EventApplication> eventApplications = Model.Values.ToList().Where(p=>
+        p.ConfirmationState != EventApplication.ConfirmationStateOption.cancelled
+        && p.ConfirmationState != EventApplication.ConfirmationStateOption.waitlist
+        && p.ConfirmationState != EventApplication.ConfirmationStateOption.no_email
+        ).ToList();
+
+    int countApplications = eventApplications.Count();
+    var shirtSizes = eventApplications.Select(a => a.TShirtSize).GroupBy(p=> p).Select(g=> new {TShirtSize=g.Key, Count=g.Count(), Percent= (float) g.Count()/countApplications});
+}
+
+<style>
+	.faq-bubble {
+		margin-bottom: 1em;
+	}
+	.card {
+		border-radius: 30px;
+		font-size: Large;
+		padding: 1.5em;
+		text-wrapping: wrap;
+        text-align: center;
+	}
+	.card i {
+		color: var(--bh-green);
+		font-size: large;
+		margin-bottom: 0.5em;
+	}
+	.card h4 {
+		text-transform: uppercase;
+	}
+	.card hr {
+		margin: 1em;
+	}
+
+</style>
+
+<h1 class="text-white">Applications Summary</h1>
+<div class="row">
+    <div class="col-md-6 col-lg-4 faq-bubble">
+    <div class="card h-100">
+        <h4>Total Applications</h4>
+        <hr>
+        @countApplications
+    </div>
+    </div>
+
+    <div class="col-md-6 col-lg-4 faq-bubble">
+    <div class="card">
+        <h3>Shirt Sizes</h3>
+        <hr>
+        <table>
+        @foreach (var shirtInfo in shirtSizes.OrderBy(p=>p.TShirtSize))
+        {
+            <tr>
+                <td style="text-align:right;">@shirtInfo.TShirtSize:</td>
+                <td style="text-align:left; padding-left:15px;">@shirtInfo.Count (@Math.Round(shirtInfo.Percent*100,0)%)</td>
+            </tr>
+        }
+        </table>
+    </div>
+    </div>
+</div>
+
+<h1 class="text-white">Shirt Sizes</h1>
+    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small; margin-top: 10px;">
+        <tr>
+            <th>User</th>
+            <th>Applied On</th>
+            <th>Email Confirmed</th>
+            <th>T-Shirt Size</th>
+            <th>Dietary Restrictions</th>
+        </tr>
+        @foreach (EventApplication eventApplication in eventApplications.OrderBy(p=> p.AssociatedUser.LastName))
+        {
+            var appUser = eventApplication.AssociatedUser;
+            if (appUser == null) { appUser = new ApplicationUser() { FirstName="Error", LastName="Error", Email="Error" }; }
+            <tr>
+                <td style="font-size:x-small; white-space: nowrap;">
+                    @appUser.FirstName @appUser.LastName<br/>
+                    @eventApplication.UserId
+                </td>
+                <td style="font-size:x-small; white-space: nowrap;">@TimeZoneInfo.ConvertTime(eventApplication.CreatedOn, activeEvent.TimeZoneInfo)</td>
+                <td>@appUser.Email</td>
+                <td>@eventApplication.TShirtSize</td>
+                <td>@eventApplication.DietaryRestrictions</td>
+            </tr>
+        }
+    </table>
