@@ -4,6 +4,7 @@
     ViewBag.Title = "Submit Vote";
     List<ScoreQuestion> scoreQuestions = ViewBag.RoleScoringQuestions;
     Team activeTeam = ViewBag.ActiveTeam;
+    ScoringSubmission scoringSubmission = ViewBag.ScoringSubmission;
 }
 <style>
     .submission-info {
@@ -58,6 +59,15 @@
                 }
             </div>
             <br/>
+            @if (scoringSubmission != null)
+            {
+                <div class="question-card">
+                <h3>Score saved!</h3>
+                <div>🧙‍♀️🤓😎🧐🥰🧙‍♂️</div>
+                <div>Press 'refresh' when the organizer says the next team is ready.</div>
+                <div>You can resubmit your score until then.</div>
+                </div>
+            }
             <a href="/Scoring/SubmitScore" class="btn btn-secondary btn-lg btn-block">Refresh</a>
         </div>
 
@@ -74,15 +84,19 @@
                             <div class="answer-option">
                                 <input type="radio" name="scores[@scoreQuestion.Id]" value="@answerOption.Score">
                                 @answerOption.Score - @answerOption.Description
-
                             </div>
-
-                            
                         }
                     </div>
                 </div>
             }
-            <input type="submit" value="Submit" class="btn btn-primary btn-lg btn-block" />
+            @if (scoringSubmission == null)
+            {
+                <input type="submit" value="Submit Score" class="btn btn-primary btn-lg btn-block" />
+            }
+            else
+            {
+                <input type="submit" value="Re-submit Score" class="btn btn-primary btn-lg btn-block" />
+            }
         </form>
     </div>
     }else if (scoreQuestions == null || scoreQuestions.Count == 0)
