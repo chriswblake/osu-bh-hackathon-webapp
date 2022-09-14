@@ -34,9 +34,13 @@
         font-family: Arial, Helvetica, sans-serif;
     }
     .pdf-page {
+        position: relative;
         display: inline-block;
         width: 8.5in;
-        height: 11in;
+        max-width: 8.5in;
+        height: 11.5in;
+        max-height: 11.5in;
+
         padding-top: 0.59in;
         padding-left: 0.69in;
         padding-right: 0.69in;
@@ -47,6 +51,16 @@
         border-radius: 3px;
 
         margin-bottom: 15px;
+    }
+    .print-date {
+        position: absolute;
+        bottom: 0.25in;
+        left: 0.375in; 
+    }
+    .page-number {
+        position: absolute;
+        bottom: 0.25in;
+        right: 0.375in;
     }
     
 	.name-tag {
@@ -121,6 +135,7 @@
     <div>Browser: Chrome</div>
     <div>Layout: Portrait</div>
     <div>Paper Size: Letter</div>
+    <div>Label Paper ID: XXXXX</div>
     <div>Margin: None</div>
 </div>
 
@@ -133,11 +148,15 @@
         .ToList();
 }
 
+@{int pageNum = 0;}
 @foreach (var group in eventApplicationsByPage)
 {
     string colClass = "left";
+    pageNum+=1;
 
     <div class="pdf-page">
+        <div class="print-date">@DateTime.Now.ToLocalTime()</div>
+        <div class="page-number">@pageNum</div>
         @foreach (var eventApplication in group)
         {
             var appUser = eventApplication.AssociatedUser;
@@ -154,13 +173,14 @@
             // Switch column class
             @if (colClass == "left") { colClass = "right"; } else { colClass="left"; }
         }
+
     </div>
 }
 
 </body>
 
 <script>
-    window.print();
+    @* window.print(); *@
 </script>
 
 </html>
