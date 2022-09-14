@@ -612,7 +612,13 @@ namespace HackathonWebApp.Controllers
             // Clear active event so it is refreshed
             this.activeEvent.Teams[teamId].Name = team.Name;
         }
-       
+        
+        // Team Info
+        public IActionResult NameTags() {
+            List<EventApplication> assignedEventApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).ToList();
+            return View(assignedEventApplications);
+        }
+
         // Score Questions
         public ViewResult ScoreQuestions()
         {
