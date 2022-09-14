@@ -84,6 +84,15 @@ namespace HackathonWebApp.Controllers
                 // Provide error information
                 this.Errors(e);
             }
+
+            // Append previous score, if there is one.
+            try {
+                ViewBag.ScoringSubmission = this.activeEvent.Teams[this.activeTeam.Id.ToString()].ScoringSubmissions[appUser.Id.ToString()];
+            }
+            catch {
+                ViewBag.ScoreSubmission = null;
+            }
+
             return View();
         }
         [Authorize]

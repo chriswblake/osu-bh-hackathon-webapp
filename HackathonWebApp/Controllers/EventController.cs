@@ -50,7 +50,15 @@ namespace HackathonWebApp.Controllers
             var appsWithoutUser = this.activeEvent.EventApplications.Values.Where(p=> p.AssociatedUser == null);
             foreach(var eventApp in appsWithoutUser)
             {
+                // Try to find the user
                 eventApp.AssociatedUser = userManager.FindByIdAsync(eventApp.UserId.ToString()).Result;
+
+                // If user does not exist, give it a blank user
+                if (eventApp.AssociatedUser == null)
+                    eventApp.AssociatedUser = new ApplicationUser() {
+                        UserName = "Unknown",
+                        FirstName = "Unknown",
+                        LastName = "Unknown"};
             }
         }
 
@@ -510,7 +518,11 @@ namespace HackathonWebApp.Controllers
             // Show confirmation page
             return View("AvailabilityConfirmation", available);
         }
-        
+        public ViewResult ApplicationsSummary() {
+            ViewBag.ActiveEvent = this.activeEvent;
+            return View(this.activeEvent.EventApplications);
+        }
+
         // Team Placement
         public IActionResult AssignTeams()
         {
