@@ -75,6 +75,7 @@
 </style>
 <form method="post" asp-action="AssignTeams" enctype="multipart/form-data" style="margin-bottom:75px;">
     <h1 class="text-white">Applications (@eventApplications.Count)</h1>
+    <a asp-action="AutoAssignTeams" class="btn btn-secondary">Auto-Assign Teams</a>
     <a asp-action="CreateTeam" class="btn btn-secondary">Create Team</a>
     <button type="submit" class="btn btn-primary">Save</button>
     <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small;">

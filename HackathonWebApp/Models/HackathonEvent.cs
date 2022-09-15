@@ -259,25 +259,106 @@ namespace HackathonWebApp.Models
         /// <para>eventApplications: List<EventApplications>: A list of event applications, representing the experience of various application users.</para>
         /// <para>numTeams: Int: The number of teams to assign the applications to.</para>
         /// </summary>
-        public static Dictionary<string, Team> AssignTeams(List<EventApplication> eventApplications, int numTeams) {
-            var assignedTeams = new Dictionary<string, Team>();
+        public void AssignTeams(int numTeams) {
+            // Clear existing teams
+            this.EventAppTeams = new Dictionary<string, string>();
+            this.Teams = new Dictionary<string, Team>();
 
+            // Create empty teams
+            for (int t=1; t<=numTeams; t++)
+            {
+                Team team = new Team() {
+                    Id = ObjectId.GenerateNewId(),
+                    Name = "Team " + t.ToString(),
+                    ReferenceEvent = this
+                };
+                this.Teams[team.Id.ToString()] = team;
+            }
 
-            // Example: Adding a team to the dictionary
-            // The team is stored in the dictionary using the team ID, so it can be quickly retrieved in other operations.
-            var myTeam = new Team() {Id = ObjectId.GenerateNewId() };
-            assignedTeams.Add(myTeam.Id.ToString(), myTeam);
+            // Get only unassigned applications
+            var unassignedEventApplications = this.EventApplications.Values.Where(
+                p=>    p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned
+                    || p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned
+            );
 
-            // Example" Adding an EventApplication to a team.
-            // The appliction is stored in the dictionary using their ID, so it can be quickly retrieved in other operations.
-            var userEventApplication = eventApplications.First();
-            //myTeam.EventApplications.Add(userEventApplication.UserId.ToString(), userEventApplication);
+            // Count experience and max for normalization
+            double hackathonExpTotal      = unassignedEventApplications.Sum(p=> p.HackathonExperience);
+            double codingExpTotal         = unassignedEventApplications.Sum(p=> p.CodingExperience);
+            double communicationExpTotal  = unassignedEventApplications.Sum(p=> p.CommunicationExperience);
+            double organizationExpTotal   = unassignedEventApplications.Sum(p=> p.OrganizationExperience);
+            double documentationExpTotal  = unassignedEventApplications.Sum(p=> p.DocumentationExperience);
+            double businessExpTotal       = unassignedEventApplications.Sum(p=> p.BusinessExperience);
+            double creativityExpTotal     = unassignedEventApplications.Sum(p=> p.CreativityExperience);
+            double maxExperience = new List<double>() {
+                hackathonExpTotal,
+                codingExpTotal,
+                communicationExpTotal,
+                organizationExpTotal,
+                documentationExpTotal,
+                businessExpTotal,
+                creativityExpTotal
+            }.Max();
 
+            // Calculate weights
+            double hackathonWeight      = 1 - hackathonExpTotal / maxExperience;
+            double codingWeight         = 1 - codingExpTotal / maxExperience;
+            double communicationWeight  = 1 - communicationExpTotal / maxExperience;
+            double organizationWeight   = 1 - organizationExpTotal / maxExperience;
+            double documentationWeight  = 1 - documentationExpTotal / maxExperience;
+            double businessWeight       = 1 - businessExpTotal / maxExperience;
+            double creativityWeight     = 1 - creativityExpTotal / maxExperience;
 
-            // Write some optimization code here to move event applications on to various teams.
+            // Create sorted clone of applications
+            List<EventApplication> sortedApplications = unassignedEventApplications.ToDictionary(
+                p=> p,
+                p=> (
+                      p.HackathonExperience         * hackathonWeight
+                    + p.CodingExperience            * codingWeight
+                    + p.CommunicationExperience     * communicationWeight
+                    + p.OrganizationExperience      * organizationWeight
+                    + p.DocumentationExperience     * documentationWeight
+                    + p.BusinessExperience          * businessWeight
+                    + p.CreativityExperience        * creativityWeight
+                )
+            ).OrderBy(kvp => kvp.Value).Select(kvp=> kvp.Key).ToList();
 
+            // Build teams
+            Random rand = new Random();
+            while (sortedApplications.Count() > 0)
+            {   
+                // Pick selection method for this round
+                string selectMethod = new string[] {"start", "middle", "end"}[rand.Next(3)];
+                
+                // Add an application to each team
+                foreach (Team currTeam in this.Teams.Values)
+                {
+                    // Stop if no applications left
+                    if (sortedApplications.Count == 0)
+                        break;
 
-            return assignedTeams;
+                    // Pick pop location
+                    var popPos = 0;
+                    switch (selectMethod)
+                    {
+                        case "start":
+                            // Use the default: 0
+                            break;
+                        case "middle":
+                            popPos = sortedApplications.Count()/2;
+                            break;
+                        case "end":
+                            popPos = sortedApplications.Count()-1;
+                            break;
+                    }
+
+                    // Get an event application
+                    var eventApp = sortedApplications[popPos];
+
+                    // Assign user to a team, and remove from list
+                    this.EventAppTeams[eventApp.UserId.ToString()] = currTeam.Id.ToString();
+                    sortedApplications.RemoveAt(popPos);
+                }
+            }
         }
 
     }
