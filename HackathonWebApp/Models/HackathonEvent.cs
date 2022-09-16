@@ -96,7 +96,36 @@ namespace HackathonWebApp.Models
         [BsonElement("teams")]
         public Dictionary<string, Team> Teams {get; set;} = new Dictionary<string, Team>();
 
+        #endregion
 
+        #region Summary of Applications
+            [BsonIgnore]
+            public Dictionary<string, int> CountEventApplicationMajors {
+                get{
+                    var unassignedEventApplications = this.EventApplications.Values.Where(
+                        p=>    p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned
+                            || p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned
+                            || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
+                    );
+                    Dictionary<string, int> countMajors = unassignedEventApplications.GroupBy(p => p.Major).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Count());
+                    return countMajors;
+                }
+            }
+            [BsonIgnore]
+            public Dictionary<string, int> CountEventApplicationSchoolYears {
+                get{
+                    var unassignedEventApplications = this.EventApplications.Values.Where(
+                        p=>    p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned
+                            || p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned
+                            || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
+                    );
+                    Dictionary<string, int> countSchoolYears = unassignedEventApplications.GroupBy(p => p.SchoolYear).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Count());
+                    return countSchoolYears;
+                }
+            }
+        #endregion
+
+        #region Summary of Teams
         [BsonIgnore]
         public double HackathonExperience { get {
             return this.Teams.Values.Sum(t => t.HackathonExperience);
@@ -125,7 +154,6 @@ namespace HackathonWebApp.Models
         public double CreativityExperience { get {
             return this.Teams.Values.Sum(t => t.CreativityExperience);
         }}
-
 
         [BsonIgnore]
         public double AvgTeamHackathonExperience { get {
@@ -177,37 +205,6 @@ namespace HackathonWebApp.Models
                 return 0;
         }}
         
-        [BsonIgnore]
-        public double AvgOfStdDevAllExperience { get {
-            if (this.Teams.Count() > 1)
-                return new List<double> {
-                    StdDevTeamHackathonExperience,
-                    StdDevTeamCodingExperience,
-                    StdDevTeamCommunicationExperience,
-                    StdDevTeamOrganizationExperience,
-                    StdDevTeamDocumentationExperience,
-                    StdDevTeamBusinessExperience,
-                    StdDevTeamCreativityExperience
-                }.Average();
-            else
-                return double.PositiveInfinity;
-        }}
-        [BsonIgnore]
-        public double StdDevOfStdDevAllExperience { get {
-            if (this.Teams.Count() > 1)
-                return StandardDeviation( new List<double> {
-                    StdDevTeamHackathonExperience,
-                    StdDevTeamCodingExperience,
-                    StdDevTeamCommunicationExperience,
-                    StdDevTeamOrganizationExperience,
-                    StdDevTeamDocumentationExperience,
-                    StdDevTeamBusinessExperience,
-                    StdDevTeamCreativityExperience
-                });
-            else
-                return double.PositiveInfinity;
-        }}
-
         [BsonIgnore]
         public double StdDevTeamHackathonExperience { get {
             if (this.Teams.Count() > 1)
@@ -262,6 +259,69 @@ namespace HackathonWebApp.Models
             double avg = values.Average();
             return Math.Sqrt(values.Average(v=>Math.Pow(v-avg,2)));
         }
+        
+        [BsonIgnore]
+        public double AvgOfStdDevAllExperience { get {
+            if (this.Teams.Count() > 1)
+                return new List<double> {
+                    StdDevTeamHackathonExperience,
+                    StdDevTeamCodingExperience,
+                    StdDevTeamCommunicationExperience,
+                    StdDevTeamOrganizationExperience,
+                    StdDevTeamDocumentationExperience,
+                    StdDevTeamBusinessExperience,
+                    StdDevTeamCreativityExperience
+                }.Average();
+            else
+                return double.PositiveInfinity;
+        }}
+        [BsonIgnore]
+        public double StdDevOfStdDevAllExperience { get {
+            if (this.Teams.Count() > 1)
+                return StandardDeviation( new List<double> {
+                    StdDevTeamHackathonExperience,
+                    StdDevTeamCodingExperience,
+                    StdDevTeamCommunicationExperience,
+                    StdDevTeamOrganizationExperience,
+                    StdDevTeamDocumentationExperience,
+                    StdDevTeamBusinessExperience,
+                    StdDevTeamCreativityExperience
+                });
+            else
+                return double.PositiveInfinity;
+        }}
+        [BsonIgnore]
+        public double MaxOfStdDevAllExperience { get {
+            if (this.Teams.Count() > 1)
+                return new List<double> {
+                    StdDevTeamHackathonExperience,
+                    StdDevTeamCodingExperience,
+                    StdDevTeamCommunicationExperience,
+                    StdDevTeamOrganizationExperience,
+                    StdDevTeamDocumentationExperience,
+                    StdDevTeamBusinessExperience,
+                    StdDevTeamCreativityExperience
+                }.Max();
+            else
+                return double.PositiveInfinity;
+        }}
+
+        [BsonIgnore]
+        public Dictionary<string, int> CountTeamMajors {
+            get{
+                var assignedEventApplications = this.Teams.Values.SelectMany(p=> p.EventApplications);
+                Dictionary<string, int> countTeamMajors = assignedEventApplications.GroupBy(p => p.Value.Major).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Count());
+                return countTeamMajors;
+            }
+        }
+        [BsonIgnore]
+        public Dictionary<string, int> CountTeamSchoolYears {
+            get{
+                var assignedEventApplications = this.Teams.Values.SelectMany(p=> p.EventApplications);
+                Dictionary<string, int> countTeamMajors = assignedEventApplications.GroupBy(p => p.Value.SchoolYear).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Count());
+                return countTeamMajors;
+            }
+        }
         #endregion
 
         #region Scoring Management
@@ -290,13 +350,22 @@ namespace HackathonWebApp.Models
         /// <para>numTeams: Int: The number of teams to assign the applications to.</para>
         /// </summary>
         public void AssignTeams(int numTeams, int maxPerTeam) {
-            # region Get available applications
+            # region Assign value to available applications
             // Get only unassigned applications
             var unassignedEventApplications = this.EventApplications.Values.Where(
                 p=>    p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned
                     || p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned
-                    // || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
+                    || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
             );
+            int unassignedEventApplicationsCount = unassignedEventApplications.Count();
+
+            // Get weight for school years
+            Dictionary<string, int> schoolYearCounts = unassignedEventApplications.GroupBy(p => p.SchoolYear).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Count());
+            Dictionary<string, double> schoolYearWeight = schoolYearCounts.ToDictionary(p=> p.Key, p=> 1 - Convert.ToDouble(p.Value) / unassignedEventApplicationsCount);
+
+            // Get weight for majors
+            Dictionary<string, int> majorCounts = unassignedEventApplications.GroupBy(p => p.Major).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Count());
+            Dictionary<string, double> majorWeight = majorCounts.ToDictionary(p=> p.Key, p=> 1 - Convert.ToDouble(p.Value) / unassignedEventApplicationsCount);
 
             // Count experience and max for normalization
             double hackathonExpTotal      = unassignedEventApplications.Sum(p=> p.HackathonExperience);
@@ -316,7 +385,7 @@ namespace HackathonWebApp.Models
                 creativityExpTotal
             }.Max();
 
-            // Calculate weights
+            // Calculate experience weights
             double hackathonWeight      = 1 - hackathonExpTotal / maxExperience;
             double codingWeight         = 1 - codingExpTotal / maxExperience;
             double communicationWeight  = 1 - communicationExpTotal / maxExperience;
@@ -325,11 +394,13 @@ namespace HackathonWebApp.Models
             double businessWeight       = 1 - businessExpTotal / maxExperience;
             double creativityWeight     = 1 - creativityExpTotal / maxExperience;
 
-            // Create sorted clone of applications
+            // Sort applications by weighted scores
             List<EventApplication> sortedApplications = unassignedEventApplications.ToDictionary(
                 p=> p,
                 p=> (
-                      p.HackathonExperience         * hackathonWeight
+                      5                             * majorWeight[p.Major]
+                    + 5                             * schoolYearWeight[p.SchoolYear]
+                    + p.HackathonExperience         * hackathonWeight
                     + p.CodingExperience            * codingWeight
                     + p.CommunicationExperience     * communicationWeight
                     + p.OrganizationExperience      * organizationWeight
@@ -338,7 +409,6 @@ namespace HackathonWebApp.Models
                     + p.CreativityExperience        * creativityWeight
                 )
             ).OrderBy(kvp => kvp.Value).Select(kvp=> kvp.Key).ToList();
-
             #endregion
 
             // Run the auto placement several times and pick the one with the lowest standard deviation
@@ -416,7 +486,9 @@ namespace HackathonWebApp.Models
             }
 
             // Select attempt with best average and standard deviation
-            var bestTeamPlacement = teamPlacementAttempts.OrderBy(p=> p.StdDevOfStdDevAllExperience).First();
+            var bestTeamPlacement = teamPlacementAttempts.OrderBy(p=> p.AvgOfStdDevAllExperience).First();
+            // var bestTeamPlacement = teamPlacementAttempts.OrderBy(p=> p.StdDevOfStdDevAllExperience).First();
+            // var bestTeamPlacement = teamPlacementAttempts.OrderBy(p=> p.MaxOfStdDevAllExperience).First();
 
             // Copy teams and assignements to this hackathon event
             this.EventAppTeams = bestTeamPlacement.EventAppTeams;
