@@ -1,4 +1,4 @@
-@model List<EventApplication>
+﻿@model List<EventApplication>
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "Team Placement";
@@ -46,6 +46,38 @@
 <div class="col-12 text-white">
     <h4>Sum Experience Per Team</h4>
     <canvas id="bar-chart-team-combined" class="experience-barchart-combined"></canvas>
+    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small;">
+        <tr>
+            <td></td>
+            <td>Hackathon</td>
+            <td>Coding</td>
+            <td>Communication</td>
+            <td>Organization</td>
+            <td>Documentation</td>
+            <td>Business</td>
+            <td>Creativity</td>
+        </tr>
+        <tr>
+            <th>Avg</th>
+            <td>@Math.Round(activeEvent.AvgTeamHackathonExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamCodingExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamCommunicationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamOrganizationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamDocumentationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamBusinessExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamCreativityExperience, 3)</td>
+        </tr>
+        <tr>
+            <th>StdDev</th>
+            <td>@Math.Round(activeEvent.StdDevTeamHackathonExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamCodingExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamCommunicationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamOrganizationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamDocumentationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamBusinessExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamCreativityExperience, 3)</td>
+        </tr>
+    </table>
     <div>Avg Of StdDev: @Math.Round(activeEvent.AvgOfStdDevAllExperience, 3)</div>
     <div>StdDev Of StdDev: @Math.Round(activeEvent.StdDevOfStdDevAllExperience, 3)</div>
 </div>
