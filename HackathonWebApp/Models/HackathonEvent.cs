@@ -105,7 +105,6 @@ namespace HackathonWebApp.Models
                     var unassignedEventApplications = this.EventApplications.Values.Where(
                         p=>    p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned
                             || p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned
-                            || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
                     );
                     Dictionary<string, int> countMajors = unassignedEventApplications.GroupBy(p => p.Major).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Count());
                     return countMajors;
@@ -117,7 +116,6 @@ namespace HackathonWebApp.Models
                     var unassignedEventApplications = this.EventApplications.Values.Where(
                         p=>    p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned
                             || p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned
-                            || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
                     );
                     Dictionary<string, int> countSchoolYears = unassignedEventApplications.GroupBy(p => p.SchoolYear).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Count());
                     return countSchoolYears;
@@ -355,7 +353,7 @@ namespace HackathonWebApp.Models
             var unassignedEventApplications = this.EventApplications.Values.Where(
                 p=>    p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned
                     || p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned
-                    || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
+                    // || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
             );
             int unassignedEventApplicationsCount = unassignedEventApplications.Count();
 
