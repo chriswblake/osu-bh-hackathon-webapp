@@ -177,7 +177,37 @@ namespace HackathonWebApp.Models
                 return 0;
         }}
         
-        
+        [BsonIgnore]
+        public double AvgOfStdDevAllExperience { get {
+            if (this.Teams.Count() > 1)
+                return new List<double> {
+                    StdDevTeamHackathonExperience,
+                    StdDevTeamCodingExperience,
+                    StdDevTeamCommunicationExperience,
+                    StdDevTeamOrganizationExperience,
+                    StdDevTeamDocumentationExperience,
+                    StdDevTeamBusinessExperience,
+                    StdDevTeamCreativityExperience
+                }.Average();
+            else
+                return double.PositiveInfinity;
+        }}
+        [BsonIgnore]
+        public double StdDevOfStdDevAllExperience { get {
+            if (this.Teams.Count() > 1)
+                return StandardDeviation( new List<double> {
+                    StdDevTeamHackathonExperience,
+                    StdDevTeamCodingExperience,
+                    StdDevTeamCommunicationExperience,
+                    StdDevTeamOrganizationExperience,
+                    StdDevTeamDocumentationExperience,
+                    StdDevTeamBusinessExperience,
+                    StdDevTeamCreativityExperience
+                });
+            else
+                return double.PositiveInfinity;
+        }}
+
         [BsonIgnore]
         public double StdDevTeamHackathonExperience { get {
             if (this.Teams.Count() > 1)
@@ -260,25 +290,12 @@ namespace HackathonWebApp.Models
         /// <para>numTeams: Int: The number of teams to assign the applications to.</para>
         /// </summary>
         public void AssignTeams(int numTeams) {
-            // Clear existing teams
-            this.EventAppTeams = new Dictionary<string, string>();
-            this.Teams = new Dictionary<string, Team>();
-
-            // Create empty teams
-            for (int t=1; t<=numTeams; t++)
-            {
-                Team team = new Team() {
-                    Id = ObjectId.GenerateNewId(),
-                    Name = "Team " + t.ToString(),
-                    ReferenceEvent = this
-                };
-                this.Teams[team.Id.ToString()] = team;
-            }
-
+            # region Get available applications
             // Get only unassigned applications
             var unassignedEventApplications = this.EventApplications.Values.Where(
                 p=>    p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned
                     || p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned
+                    || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
             );
 
             // Count experience and max for normalization
@@ -322,43 +339,76 @@ namespace HackathonWebApp.Models
                 )
             ).OrderBy(kvp => kvp.Value).Select(kvp=> kvp.Key).ToList();
 
-            // Build teams
-            Random rand = new Random();
-            while (sortedApplications.Count() > 0)
-            {   
-                // Pick selection method for this round
-                string selectMethod = new string[] {"start", "middle", "end"}[rand.Next(3)];
-                
-                // Add an application to each team
-                foreach (Team currTeam in this.Teams.Values)
+            #endregion
+
+            // Run the auto placement several times and pick the one with the lowest standard deviation
+            List<HackathonEvent> teamPlacementAttempts = new List<HackathonEvent>();
+            for (int attempts=0; attempts<1000; attempts++)
+            {
+                // Create temporary hackathon event with copy of the event applications
+                HackathonEvent currHackathonEvent = new HackathonEvent();
+                currHackathonEvent.EventApplications = this.EventApplications;
+                var currSortedApplications = sortedApplications.ToList();
+
+                // Create empty teams and associate to the temporary hackathon event
+                for (int t=1; t<=numTeams; t++)
                 {
-                    // Stop if no applications left
-                    if (sortedApplications.Count == 0)
-                        break;
-
-                    // Pick pop location
-                    var popPos = 0;
-                    switch (selectMethod)
-                    {
-                        case "start":
-                            // Use the default: 0
-                            break;
-                        case "middle":
-                            popPos = sortedApplications.Count()/2;
-                            break;
-                        case "end":
-                            popPos = sortedApplications.Count()-1;
-                            break;
-                    }
-
-                    // Get an event application
-                    var eventApp = sortedApplications[popPos];
-
-                    // Assign user to a team, and remove from list
-                    this.EventAppTeams[eventApp.UserId.ToString()] = currTeam.Id.ToString();
-                    sortedApplications.RemoveAt(popPos);
+                    Team team = new Team() {
+                        Id = ObjectId.GenerateNewId(),
+                        Name = "Team " + t.ToString(),
+                        ReferenceEvent = currHackathonEvent
+                    };
+                    currHackathonEvent.Teams[team.Id.ToString()] = team;
                 }
+
+                // Assign applications to teams
+                Random rand = new Random();
+                while (currSortedApplications.Count() > 0)
+                {   
+                    // Pick selection method for this round
+                    string selectMethod = new string[] {"start", "middle", "end"}[rand.Next(3)];
+                    
+                    // Add an application to each team
+                    foreach (Team currTeam in currHackathonEvent.Teams.Values)
+                    {
+                        // Stop if no applications left
+                        if (currSortedApplications.Count == 0)
+                            break;
+
+                        // Pick pop location
+                        var popPos = 0;
+                        switch (selectMethod)
+                        {
+                            case "start":
+                                // Use the default: 0
+                                break;
+                            case "middle":
+                                popPos = currSortedApplications.Count()/2;
+                                break;
+                            case "end":
+                                popPos = currSortedApplications.Count()-1;
+                                break;
+                        }
+
+                        // Get an event application
+                        var eventApp = currSortedApplications[popPos];
+
+                        // Assign user to a team, and remove from list
+                        currHackathonEvent.EventAppTeams[eventApp.UserId.ToString()] = currTeam.Id.ToString();
+                        currSortedApplications.RemoveAt(popPos);
+                    }
+                }
+            
+                // Store Team Placement attempt
+                teamPlacementAttempts.Add(currHackathonEvent);
             }
+
+            // Select attempt with best average and standard deviation
+            var bestTeamPlacement = teamPlacementAttempts.OrderBy(p=> p.AvgOfStdDevAllExperience).First();
+
+            // Save results to this hackathon event
+            this.EventAppTeams = bestTeamPlacement.EventAppTeams;
+            this.Teams = bestTeamPlacement.Teams;
         }
 
     }

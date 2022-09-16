@@ -1,4 +1,4 @@
-﻿@model List<EventApplication>
+@model List<EventApplication>
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "Team Placement";
@@ -46,6 +46,8 @@
 <div class="col-12 text-white">
     <h4>Sum Experience Per Team</h4>
     <canvas id="bar-chart-team-combined" class="experience-barchart-combined"></canvas>
+    <div>Avg Of StdDev: @Math.Round(activeEvent.AvgOfStdDevAllExperience, 3)</div>
+    <div>StdDev Of StdDev: @Math.Round(activeEvent.StdDevOfStdDevAllExperience, 3)</div>
 </div>
 
 @* Individual Team Charts *@
