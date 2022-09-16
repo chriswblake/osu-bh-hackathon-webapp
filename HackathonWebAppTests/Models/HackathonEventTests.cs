@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 using MongoDB.Bson;
 using HackathonWebApp.Models;
@@ -443,22 +444,22 @@ namespace HackathonWebAppTests
         {
             // Define
             var hackathonEvent = new HackathonEvent() {Name = "HackOkState" };
-            var eventApplications = SampleData.SampleEventApplications_Distributed;
+            hackathonEvent.EventApplications = SampleData.SampleEventApplications_Distributed.ToDictionary(p=> p.UserId.ToString(), p=> p);
             var numTeams = 10;
+            var maxPerTeam = 5;
 
             // Process
-            var assignedTeams = HackathonEvent.AssignTeams(eventApplications, numTeams);
-            hackathonEvent.Teams = assignedTeams;
+            hackathonEvent.AssignTeams(numTeams, maxPerTeam);
 
-            // Assert
-            Assert.True(hackathonEvent.StdDevTeamHackathonExperience < 5);
-            Assert.True(hackathonEvent.StdDevTeamCodingExperience < 5);
-            Assert.True(hackathonEvent.StdDevTeamCommunicationExperience < 5);
-            Assert.True(hackathonEvent.StdDevTeamOrganizationExperience < 5);
-            Assert.True(hackathonEvent.StdDevTeamDocumentationExperience < 5);
-            Assert.True(hackathonEvent.StdDevTeamBusinessExperience < 5);
-            Assert.True(hackathonEvent.StdDevTeamCreativityExperience < 5);
-
+            // Assert - That it's less than half a person's experience different
+            Assert.True(hackathonEvent.AvgOfStdDevAllExperience < 2.5);
+            Assert.True(hackathonEvent.StdDevTeamHackathonExperience < 2.5);
+            Assert.True(hackathonEvent.StdDevTeamCodingExperience < 2.5);
+            Assert.True(hackathonEvent.StdDevTeamCommunicationExperience < 2.5);
+            Assert.True(hackathonEvent.StdDevTeamOrganizationExperience < 2.5);
+            Assert.True(hackathonEvent.StdDevTeamDocumentationExperience < 2.5);
+            Assert.True(hackathonEvent.StdDevTeamBusinessExperience < 2.5);
+            Assert.True(hackathonEvent.StdDevTeamCreativityExperience < 2.5);
         }
 
     }

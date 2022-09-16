@@ -46,6 +46,95 @@
 <div class="col-12 text-white">
     <h4>Sum Experience Per Team</h4>
     <canvas id="bar-chart-team-combined" class="experience-barchart-combined"></canvas>
+
+    @* Average and Standard Deviation *@
+    <table class="table table-sm table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small;">
+        <tr>
+            <td></td>
+            <td>Hackathon</td>
+            <td>Coding</td>
+            <td>Communication</td>
+            <td>Organization</td>
+            <td>Documentation</td>
+            <td>Business</td>
+            <td>Creativity</td>
+        </tr>
+        <tr>
+            <th>Avg</th>
+            <td>@Math.Round(activeEvent.AvgTeamHackathonExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamCodingExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamCommunicationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamOrganizationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamDocumentationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamBusinessExperience, 3)</td>
+            <td>@Math.Round(activeEvent.AvgTeamCreativityExperience, 3)</td>
+        </tr>
+        <tr>
+            <th>StdDev</th>
+            <td>@Math.Round(activeEvent.StdDevTeamHackathonExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamCodingExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamCommunicationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamOrganizationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamDocumentationExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamBusinessExperience, 3)</td>
+            <td>@Math.Round(activeEvent.StdDevTeamCreativityExperience, 3)</td>
+        </tr>
+    </table>
+    <div>Avg Of StdDev: @Math.Round(activeEvent.AvgOfStdDevAllExperience, 3)</div>
+    <div>StdDev Of StdDev: @Math.Round(activeEvent.StdDevOfStdDevAllExperience, 3)</div>
+    <div>Max Of StdDev: @Math.Round(activeEvent.MaxOfStdDevAllExperience, 3)</div>
+
+    <br/>
+
+    @* Majors *@
+    <div class="row">
+    <table class="table table-sm table-bordered text-white col-6 mr-5" style="background-color:var(--bh-dark-green-gray); font-size:small;">
+    <tr>
+        <th>Major</th>
+        <th>Assigned</th>
+        <th>Total</th>
+    </tr>
+    @{ var countTeamMajors = activeEvent.CountTeamMajors; }
+    @foreach (var majorsTotalCount in activeEvent.CountEventApplicationMajors.OrderBy(p=> p.Value))
+    {
+        var major = majorsTotalCount.Key;
+        var assignedCount = countTeamMajors.GetValueOrDefault(major);
+        var totalCount = majorsTotalCount.Value; 
+        <tr>
+            <td>@major</td>
+            <td>@assignedCount</td>
+            <td>@totalCount</td>
+        </tr>
+
+        
+    }
+    </table>
+
+    @* School Year *@
+    <table class="table table-sm table-bordered text-white col-4" style="background-color:var(--bh-dark-green-gray); font-size:small;">
+    <tr>
+        <th>School Year</th>
+        <th>Assigned</th>
+        <th>Total</th>
+    </tr>
+    @{ var countTeamSchoolYears = activeEvent.CountTeamSchoolYears; }
+    @foreach (var schoolYearsTotalCount in activeEvent.CountEventApplicationSchoolYears.OrderBy(p=> p.Value))
+    {
+        var schoolYear = schoolYearsTotalCount.Key;
+        var assignedCount = countTeamSchoolYears.GetValueOrDefault(schoolYear);
+        var totalCount = schoolYearsTotalCount.Value; 
+        <tr>
+            <td>@schoolYear</td>
+            <td>@assignedCount</td>
+            <td>@totalCount</td>
+        </tr>
+
+        
+    }
+    </table>
+    </div>
+    
+
 </div>
 
 @* Individual Team Charts *@
@@ -75,6 +164,7 @@
 </style>
 <form method="post" asp-action="AssignTeams" enctype="multipart/form-data" style="margin-bottom:75px;">
     <h1 class="text-white">Applications (@eventApplications.Count)</h1>
+    <a asp-action="AutoAssignTeams" class="btn btn-secondary">Auto-Assign Teams</a>
     <a asp-action="CreateTeam" class="btn btn-secondary">Create Team</a>
     <button type="submit" class="btn btn-primary">Save</button>
     <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small;">
