@@ -289,7 +289,7 @@ namespace HackathonWebApp.Models
         /// <para>eventApplications: List<EventApplications>: A list of event applications, representing the experience of various application users.</para>
         /// <para>numTeams: Int: The number of teams to assign the applications to.</para>
         /// </summary>
-        public void AssignTeams(int numTeams) {
+        public void AssignTeams(int numTeams, int maxPerTeam) {
             # region Get available applications
             // Get only unassigned applications
             var unassignedEventApplications = this.EventApplications.Values.Where(
@@ -363,7 +363,7 @@ namespace HackathonWebApp.Models
 
                 // Assign applications to teams
                 Random rand = new Random();
-                while (currSortedApplications.Count() > 0)
+                while (true)
                 {   
                     // Pick selection method for this round
                     string selectMethod = new string[] {"start", "middle", "end"}[rand.Next(3)];
@@ -374,6 +374,9 @@ namespace HackathonWebApp.Models
                         // Stop if no applications left
                         if (currSortedApplications.Count == 0)
                             break;
+                        // Skip if team already has max amount
+                        if (currTeam.EventApplications.Count == maxPerTeam)
+                           continue;
 
                         // Pick pop location
                         var popPos = 0;
@@ -397,6 +400,15 @@ namespace HackathonWebApp.Models
                         currHackathonEvent.EventAppTeams[eventApp.UserId.ToString()] = currTeam.Id.ToString();
                         currSortedApplications.RemoveAt(popPos);
                     }
+
+                    // End if all applications have been assigned.
+                    if (currSortedApplications.Count() == 0)
+                        break;
+
+                    // End if all teams have max members.
+                    var countPerTeam = currHackathonEvent.Teams.Values.Select(p=> p.EventApplications.Count).ToList();
+                    if (countPerTeam.Min() == maxPerTeam)
+                       break;
                 }
             
                 // Store Team Placement attempt
@@ -404,11 +416,14 @@ namespace HackathonWebApp.Models
             }
 
             // Select attempt with best average and standard deviation
-            var bestTeamPlacement = teamPlacementAttempts.OrderBy(p=> p.AvgOfStdDevAllExperience).First();
+            var bestTeamPlacement = teamPlacementAttempts.OrderBy(p=> p.StdDevOfStdDevAllExperience).First();
 
-            // Save results to this hackathon event
+            // Copy teams and assignements to this hackathon event
             this.EventAppTeams = bestTeamPlacement.EventAppTeams;
             this.Teams = bestTeamPlacement.Teams;
+            foreach (var team in Teams.Values) {
+                team.ReferenceEvent = this;
+            }
         }
 
     }

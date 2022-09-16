@@ -571,8 +571,8 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult AutoAssignTeams()
         {
-            // Automatically create 10 teams and assign applications to them.
-            this.activeEvent.AssignTeams(10);
+            // Automatically create 10 teams and assign up to 5 applications to them.
+            this.activeEvent.AssignTeams(10, 5);
 
             // Go back to assignments page
             return RedirectToAction("AssignTeams");
