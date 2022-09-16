@@ -295,7 +295,7 @@ namespace HackathonWebApp.Models
             var unassignedEventApplications = this.EventApplications.Values.Where(
                 p=>    p.ConfirmationState == EventApplication.ConfirmationStateOption.unassigned
                     || p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned
-                    || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
+                    // || p.ConfirmationState == EventApplication.ConfirmationStateOption.unconfirmed
             );
 
             // Count experience and max for normalization
