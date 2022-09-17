@@ -11,12 +11,16 @@
 		<h2 class="osu-orange">@activeEvent.StartTime.ToString("dd")-@activeEvent.EndTime.ToString("dd MMM. yyyy")</h2>
 		<h2>OSU Endeavor<br/> 215 N Hester St, Stillwater, OK 74078</h2>
 		<br/>
-		@if (DateTime.Now.Date >= activeEvent.RegistrationOpensTime.Date) {
+		@if (DateTime.Now.Date <= activeEvent.RegistrationOpensTime.Date ) {
+			<div class="btn btn-secondary js-scroll-trigger" style="z-index: 1; position: relative;">Registration Opens<br/>@activeEvent.RegistrationOpensTime.ToString("MMM. d")</div><br/>
+		}
+		@if (activeEvent.RegistrationOpensTime.Date <= DateTime.Now.Date && DateTime.Now.Date <= activeEvent.RegistrationClosesTime.Date) {
             <a class="btn btn-primary" asp-controller="Event" asp-action="Apply">Register Now!</a>
 			<div>*Early registration and entry for raffle closes on @activeEvent.EarlyRegistrationClosesTime.ToString("MMM. d")</div>
 			<div>*Normal registration closes on @activeEvent.RegistrationClosesTime.ToString("MMM. d")</div>
 		}else {
-			<div class="btn btn-secondary js-scroll-trigger" style="z-index: 1; position: relative;">Registration Opens<br/>@activeEvent.RegistrationOpensTime.ToString("MMM. d")</div><br/>
+			<div class="btn btn-secondary" style="z-index: 1; position: relative;">Registration Closed</div><br/>
+			<div> We got @activeEvent.EventApplications.Count() applications! ♥</div>
 		}
 		<br/>
 		<h3 class="white">Hosted By:<br/>Oklahoma State University<br/>and Baker Hughes</h3>

@@ -292,6 +292,13 @@ namespace HackathonWebApp.Controllers
         [AllowAnonymous]
         public IActionResult Apply()
         {
+            // Redirect to homepage if they try to visit this page outside of the registration period.
+		    if ( DateTime.Now.Date < activeEvent.RegistrationOpensTime.Date 
+                 || DateTime.Now.Date > activeEvent.RegistrationClosesTime.Date)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             // Skip to "Thank You" page if already applied
             if (User?.Identity?.IsAuthenticated ?? false)
             {
