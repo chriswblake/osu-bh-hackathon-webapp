@@ -1,0 +1,186 @@
+﻿@model List<EventApplication>
+@{
+    Layout = "";
+    ViewBag.Title = "Name Tags";
+    HackathonEvent activeEvent = ViewBag.ActiveEvent;
+    List<EventApplication> assignedEventApplications = Model; 
+}
+
+<!DOCTYPE pdf>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=8.5in, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BH/OSU Hackathon</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/img/favicon_io/favicon.ico">
+</head>
+
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+        text-align: center;
+    }
+    .instructions {
+        display: inline-block;
+        margin: 15px 30% 15px 30%;
+        padding: 0 100px 25px 100px;
+
+        border: 1px solid black;
+        border-radius: 15px;
+
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .pdf-page {
+        position: relative;
+        display: inline-block;
+        width: 8.5in;
+        max-width: 8.5in;
+        height: 11.5in;
+        max-height: 11.5in;
+
+        padding-top: 0.59in;
+        padding-left: 0.69in;
+        padding-right: 0.69in;
+        padding-bottom: 0.59in;
+        overflow: hidden;
+        
+        border: 1px solid #CCC;
+        border-radius: 3px;
+
+        margin-bottom: 15px;
+    }
+    .print-date {
+        position: absolute;
+        bottom: 0.25in;
+        left: 0.375in; 
+    }
+    .page-number {
+        position: absolute;
+        bottom: 0.25in;
+        right: 0.375in;
+    }
+    
+	.name-tag {
+        display: inline-block;
+        overflow: hidden;
+        
+        width: 3.375in;
+        max-width: 3.375in;
+        height: 2.3in;
+        max-height: 2.3in;
+
+		margin-bottom: 0 0 0.19in 0;
+
+        padding: 0.25in;
+        text-align: center;
+
+        border: 1px solid #EEE;
+        border-radius: 0.25in;
+	}
+    .name-tag.left {
+        margin-right: 0.375in;
+    }
+    .name-tag.right {
+    }
+    .name-tag .logo {
+        display: inline-block;
+        width: 70%;
+    }
+    .name-tag .user-name {
+        color: #018374;
+        font-size: 0.3in;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: bold;
+        margin-top: 0.1in;
+    }
+    .name-tag .hosts {
+        margin-top: 0.1in;
+        font-size: 0.3in;
+        font-weight: bold;
+    }
+    .name-tag .hosts img {
+        height: 0.25in;
+    }
+</style>
+
+<style>
+    @@media print {
+        .print-hide {
+            display: none;
+        }
+        .pdf-page {
+            width: 8.5in;
+            max-width: 8.5in;
+            height: 11.5in;
+            max-height: 11.5in;
+
+            page-break-after: always;
+
+            border: 0;
+            margin: 0;
+        }
+        .name-tag {
+            border: 0;
+        }
+    }
+</style>
+
+<body>
+<div class="print-hide instructions">
+    <h2>Printing Instructions</h2>
+    <div>Method: Print to PDF</div>
+    <div>Browser: Chrome</div>
+    <div>Layout: Portrait</div>
+    <div>Paper Size: Letter</div>
+    <div>Label Paper ID: XXXXX</div>
+    <div>Margin: None</div>
+</div>
+
+@{
+    int nameTagsPerPage = 8;
+    var eventApplicationsByPage = assignedEventApplications.OrderBy(p=> p.AssociatedUser.LastName)
+        .Select((x, i) => new { Index = i, Value = x })
+        .GroupBy(x => x.Index / nameTagsPerPage)
+        .Select(x => x.Select(v => v.Value).ToList())
+        .ToList();
+}
+
+@{int pageNum = 0;}
+@foreach (var group in eventApplicationsByPage)
+{
+    string colClass = "left";
+    pageNum+=1;
+
+    <div class="pdf-page">
+        <div class="print-date">@DateTime.Now.ToLocalTime()</div>
+        <div class="page-number">@pageNum</div>
+        @foreach (var eventApplication in group)
+        {
+            var appUser = eventApplication.AssociatedUser;
+
+            // Create nametag
+            <div class="name-tag @colClass">
+                <img src="/img/hackokstate-black.png" class="logo"/>
+                <div class="user-name">@appUser.FirstName @appUser.LastName</div>
+                <div class="hosts">
+                    <img src="/img/osu_logo.svg"/> + <img src="/img/bh_logo_wide_green.png"/>
+                </div>
+            </div>
+
+            // Switch column class
+            @if (colClass == "left") { colClass = "right"; } else { colClass="left"; }
+        }
+
+    </div>
+}
+
+</body>
+
+<script>
+    @* window.print(); *@
+</script>
+
+</html>

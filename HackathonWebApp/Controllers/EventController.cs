@@ -292,6 +292,13 @@ namespace HackathonWebApp.Controllers
         [AllowAnonymous]
         public IActionResult Apply()
         {
+            // Redirect to homepage if they try to visit this page outside of the registration period.
+		    if ( DateTime.Now.Date < activeEvent.RegistrationOpensTime.Date 
+                 || DateTime.Now.Date > activeEvent.RegistrationClosesTime.Date)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             // Skip to "Thank You" page if already applied
             if (User?.Identity?.IsAuthenticated ?? false)
             {
@@ -569,6 +576,14 @@ namespace HackathonWebApp.Controllers
 
             return RedirectToAction("AssignTeams");
         }
+        public IActionResult AutoAssignTeams()
+        {
+            // Automatically create 10 teams and assign up to 5 applications to them.
+            this.activeEvent.AssignTeams(10, 5);
+
+            // Go back to assignments page
+            return RedirectToAction("AssignTeams");
+        }
         public IActionResult CreateTeam() => View();
         [HttpPost]
         public async Task<IActionResult> CreateTeam(Team team)
@@ -612,7 +627,13 @@ namespace HackathonWebApp.Controllers
             // Clear active event so it is refreshed
             this.activeEvent.Teams[teamId].Name = team.Name;
         }
-       
+        
+        // Team Info
+        public IActionResult NameTags() {
+            List<EventApplication> assignedEventApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).ToList();
+            return View(assignedEventApplications);
+        }
+
         // Score Questions
         public ViewResult ScoreQuestions()
         {
