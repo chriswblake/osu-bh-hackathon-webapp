@@ -576,12 +576,55 @@ namespace HackathonWebApp.Controllers
 
             return RedirectToAction("AssignTeams");
         }
-        public IActionResult AutoAssignTeams()
+        public async Task<IActionResult> AutoAssignTeams()
         {
             // Automatically create 10 teams and assign up to 5 applications to them.
-            this.activeEvent.AssignTeams(10, 5);
+            Dictionary<string, string> teamAssignments = this.activeEvent.GenerateTeams(10, 5);
 
-            // Go back to assignments page
+            // Create change set
+            var update = Builders<HackathonEvent>.Update;
+            var updates = new List<UpdateDefinition<HackathonEvent>>();
+
+            // Schedule DB to delete existing teams
+            foreach (string teamId in this.activeEvent.Teams.Keys)
+                updates.Add(update.Unset(p => p.Teams[teamId]));
+
+            // Create teams
+            List<string> teamIds = teamAssignments.Values.Distinct().ToList();
+            int teamNameNumber = 0;
+            foreach (string teamId in teamIds)
+            {
+                teamNameNumber +=1;
+                Team team = new Team() {
+                    Id = ObjectId.Parse(teamId),
+                    Name = "Team " + teamNameNumber,
+                    ReferenceEvent = this.activeEvent
+                };
+                // Schedule to update in database
+                updates.Add(update.Set(p => p.Teams[teamId], team));
+            }
+
+            // Assign applications to teams
+            foreach(var teamAssignment in teamAssignments)
+            {
+                string userId = teamAssignment.Key;
+                string teamId = teamAssignment.Value;
+
+                // Assign application to a team
+                updates.Add(update.Set(p => p.EventAppTeams[userId], teamId));
+                // Mark the application state as assigned
+                updates.Add(update.Set(p => p.EventApplications[userId].ConfirmationState, EventApplication.ConfirmationStateOption.assigned));
+            }
+
+            // Update in DB
+            await eventCollection.FindOneAndUpdateAsync(
+                s => s.Id == activeEvent.Id,
+                update.Combine(updates)
+            );
+
+            // Clear Active Event, so it is triggered to be refreshed on next request.
+            this.activeEvent = null;
+
             return RedirectToAction("AssignTeams");
         }
         public IActionResult CreateTeam() => View();
