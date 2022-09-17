@@ -347,7 +347,7 @@ namespace HackathonWebApp.Models
         /// <para>eventApplications: List<EventApplications>: A list of event applications, representing the experience of various application users.</para>
         /// <para>numTeams: Int: The number of teams to assign the applications to.</para>
         /// </summary>
-        public void AssignTeams(int numTeams, int maxPerTeam) {
+        public Dictionary<string, string> GenerateTeams(int numTeams, int maxPerTeam) {
             # region Assign value to available applications
             // Get only unassigned applications
             var unassignedEventApplications = this.EventApplications.Values.Where(
@@ -489,11 +489,14 @@ namespace HackathonWebApp.Models
             // var bestTeamPlacement = teamPlacementAttempts.OrderBy(p=> p.MaxOfStdDevAllExperience).First();
 
             // Copy teams and assignements to this hackathon event
-            this.EventAppTeams = bestTeamPlacement.EventAppTeams;
-            this.Teams = bestTeamPlacement.Teams;
-            foreach (var team in Teams.Values) {
-                team.ReferenceEvent = this;
-            }
+            Dictionary<string, string> teamAssignments = bestTeamPlacement.EventAppTeams;
+
+            return teamAssignments;
+            // this.EventAppTeams = bestTeamPlacement.EventAppTeams;
+            // this.Teams = bestTeamPlacement.Teams;
+            // foreach (var team in Teams.Values) {
+            //     team.ReferenceEvent = this;
+            // }
         }
 
     }

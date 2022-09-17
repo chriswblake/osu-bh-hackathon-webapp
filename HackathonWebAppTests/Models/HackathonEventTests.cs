@@ -445,11 +445,22 @@ namespace HackathonWebAppTests
             // Define
             var hackathonEvent = new HackathonEvent() {Name = "HackOkState" };
             hackathonEvent.EventApplications = SampleData.SampleEventApplications_Distributed.ToDictionary(p=> p.UserId.ToString(), p=> p);
+            foreach (var eventApplication in hackathonEvent.EventApplications.Values)
+                eventApplication.ConfirmationState = EventApplication.ConfirmationStateOption.unassigned;
             var numTeams = 10;
             var maxPerTeam = 5;
 
             // Process
-            hackathonEvent.AssignTeams(numTeams, maxPerTeam);
+            Dictionary<string, string> teamAssignments = hackathonEvent.GenerateTeams(numTeams, maxPerTeam);
+            hackathonEvent.EventAppTeams = teamAssignments;
+            foreach(string teamId in teamAssignments.Values)
+            {
+                Team newTeam = new Team() {
+                    Id = ObjectId.Parse(teamId),
+                    ReferenceEvent = hackathonEvent
+                };
+                hackathonEvent.Teams[teamId] = newTeam;
+            }
 
             // Assert - That it's less than half a person's experience different
             Assert.True(hackathonEvent.AvgOfStdDevAllExperience < 2.5);
