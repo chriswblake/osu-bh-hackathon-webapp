@@ -412,6 +412,29 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction(nameof(YourTeam));
         }
 
+        // Certificate
+        public ViewResult Certificate() {
+            AwardCertificate award = new AwardCertificate() {
+                FirstName = "Christopher",
+                LastName = "Blake",
+                Award = AwardCertificate.AwardOption.first_place,
+                CreationTime = DateTime.Now,
+
+                StartTime = new DateTime(2022, 09, 23),
+                EndTime = new DateTime(2022, 09, 25),
+                JudgesCount = 3, 
+                ParticipantsCount = 44,
+
+                FirstSignatureName = "Maki Ikeda",
+                FirstSignatureTitle = "Director - Energy Innovation Center",
+                FirstSignatureOrganization = "Baker Hughes Inc.",
+
+                SecondSignatureName = "Randy Seitsinger",
+                SecondSignatureTitle = "Sr. Assoc. Dean, Academic Affairs - CEAT",
+                SecondSignatureOrganization = "Oklahoma State University"
+            };
+            return View(award);
+        }
 
         // Error Messages
         public IActionResult AccessDenied()

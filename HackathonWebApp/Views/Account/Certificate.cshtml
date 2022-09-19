@@ -1,0 +1,115 @@
+﻿@model AwardCertificate
+@{
+    Layout = "";
+    ViewBag.Title = "Certificate";
+    AwardCertificate award = Model;
+}
+
+<!DOCTYPE pdf>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=8.5in, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BH/OSU Hackathon</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/img/favicon_io/favicon.ico">
+</head>
+
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+        text-align: center;
+    }
+    .instructions {
+        display: inline-block;
+        margin: 15px 30% 15px 30%;
+        padding: 0 100px 25px 100px;
+
+        border: 1px solid black;
+        border-radius: 15px;
+
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .pdf-page {
+        position: relative;
+        display: inline-block;
+
+        width: 11in;
+        max-width: 11in;
+        height: 8.5in;
+        max-height: 8.5in;
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: left;
+        color: #22302D;  @* BH Dark Green *@
+        
+
+        overflow: hidden;
+        border: 1px solid #CCC;
+        border-radius: 3px;
+    }
+    .pdf-page > * {
+        position: absolute;
+    }
+</style>
+
+<style>
+    @@media print {
+        .pdf-page {
+            width: 11in;
+            max-width: 11in;
+            height: 8.5in;
+            max-height: 8.5in;
+
+            @* border: 0; *@
+            @* margin: 0; *@
+        }
+    }
+</style>
+
+<body>
+@* <div class="print-hide instructions">
+    <h2>Printing Instructions</h2>
+    <div>Method: Print to PDF</div>
+    <div>Browser: Chrome</div>
+    <div>Layout: Portrait</div>
+    <div>Paper Size: Letter</div>
+    <div>Label Paper ID: XXXXX</div>
+    <div>Margin: None</div>
+</div> *@
+
+
+<div class="pdf-page">
+    @* Border *@
+    <div style="top:0.25in; left:0.25in; width:calc(100% - 0.5in); height:calc(100% - 0.5in); border:1px solid #CCC;"></div>
+    
+    @* Company Logos *@
+    <div style="top:0.5in; left:0.5in; height:0.6in;">
+        <img style="height:100%;" src="/img/osu_logo.svg"/>
+        <span style="font-size:2em;position:relative; bottom:30%; padding:0 0.08in;">+</span>
+        <img style="height:100%;" src="/img/bh_logo_wide_green.png"/>
+    </div>
+
+    @* Event Logo *@
+    <img style="top:2.5in; left:1.5in; width:3in;" src="/img/hackokstate-black.png"/>
+
+
+    @* Print Stamp *@
+    <div style="font-size:0.125in; text-align:left; bottom: 0.25in; left: 0.375in;">
+        Presented On:<br/>
+        @award.CreationTime.ToString("dd MMM yyyy")
+    </div>
+    <div style="font-size:0.125in; text-align:right; bottom: 0.25in; right: 0.375in;">
+        Printed On:<br/>
+        @DateTime.Now.ToString("dd MMM yyyy")
+    </div>
+</div>
+
+</body>
+
+<script>
+    @* window.print(); *@
+</script>
+
+</html>
