@@ -10,6 +10,12 @@ namespace HackathonWebApp.Models
     [CollectionName("AwardCertificates")]
     public class AwardCertificate
     {
+        //Tracking
+        [BsonId]
+        public ObjectId Id {get; set; }
+        [BsonElement("user_id")]
+        public string UserId { get; set; }
+
         #region Certificate Receiver
         [Required(ErrorMessage = "First Name is required")]
         [BsonElement("FirstName")]
