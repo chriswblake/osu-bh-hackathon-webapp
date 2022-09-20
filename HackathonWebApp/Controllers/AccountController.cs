@@ -9,6 +9,7 @@ using System;
 using System.Net.Mail;
 using System.IO;
 using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace HackathonWebApp.Controllers
 {
@@ -20,6 +21,7 @@ namespace HackathonWebApp.Controllers
         private SignInManager<ApplicationUser> signInManager;
         private SmtpClient emailClient;
         private IMongoCollection<HackathonEvent> eventCollection;
+        private IMongoCollection<AwardCertificate> awardCertificatesCollection;
 
         // Constructor
         public AccountController(IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient, IMongoDatabase database)
@@ -29,6 +31,7 @@ namespace HackathonWebApp.Controllers
             this.signInManager = signInManager;
             this.emailClient = emailClient;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
+            this.awardCertificatesCollection = database.GetCollection<AwardCertificate>("AwardCertificates");
         }
 
         // Properties
@@ -413,26 +416,14 @@ namespace HackathonWebApp.Controllers
         }
 
         // Certificate
-        public ViewResult Certificate() {
-            AwardCertificate award = new AwardCertificate() {
-                FirstName = "Christopher",
-                LastName = "Blake",
-                Award = AwardCertificate.AwardOption.first_place,
-                CreationTime = DateTime.Now,
-
-                StartTime = new DateTime(2022, 09, 23),
-                EndTime = new DateTime(2022, 09, 25),
-                JudgesCount = 3, 
-                ParticipantsCount = 44,
-
-                FirstSignatureName = "Maki Ikeda",
-                FirstSignatureTitle = "Director - Energy Innovation Center",
-                FirstSignatureOrganization = "Baker Hughes Inc.",
-
-                SecondSignatureName = "Randy Seitsinger",
-                SecondSignatureTitle = "Sr. Assoc. Dean, Academic Affairs - CEAT",
-                SecondSignatureOrganization = "Oklahoma State University"
-            };
+        public ViewResult Certificate(string id) {
+            AwardCertificate award = null;
+            try {
+                var results = this.awardCertificatesCollection.Find(h => h.Id == ObjectId.Parse(id));
+                award = results.FirstOrDefault();
+            }catch {
+                // Leave award null
+            }
             return View(award);
         }
 

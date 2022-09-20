@@ -78,7 +78,8 @@
     <div>Margin: None</div>
 </div> *@
 
-
+@if (award != null)
+{
 <div class="pdf-page">
     @* Border *@
     <div style="top:0.25in; left:0.25in; width:10.5in; height:8in; border:1px solid #CCC;"></div>
@@ -156,7 +157,9 @@
         @DateTime.Now.ToString("dd MMM yyyy")
     </div>
 </div>
-
+}else {
+    <div style="margin: 1in;">No Certificate Found</div>
+}
 </body>
 
 <script>
