@@ -25,6 +25,7 @@ namespace HackathonWebApp.Controllers
         private IMongoCollection<Organizer> organizerCollection;
         private EventController eventController;
         private IMongoCollection<HackathonEvent> eventCollection;
+        private IMongoCollection<AwardCertificate> awardCertificatesCollection;
 
         // Constructors
         public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IMongoDatabase database, EventController eventController)
@@ -38,6 +39,7 @@ namespace HackathonWebApp.Controllers
             this.organizerCollection = database.GetCollection<Organizer>("Organizer");
             this.eventController = eventController;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
+            this.awardCertificatesCollection = database.GetCollection<AwardCertificate>("AwardCertificates");
         }
 
         // Properties
@@ -400,6 +402,12 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("Organizers");
         }
 
+        // Methods - Award Certificates
+        public ViewResult AwardCertificates()
+        {
+            var awards = this.awardCertificatesCollection.Find(p=> true).ToList();
+            return View(awards);
+        }
         // Methods - Errors
         private void Errors(Task result)
         {

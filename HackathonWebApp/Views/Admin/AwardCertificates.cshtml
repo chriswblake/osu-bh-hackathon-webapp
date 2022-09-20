@@ -1,0 +1,33 @@
+﻿@model List<AwardCertificate>
+@{
+    Layout = "_AdminLayout";
+    ViewBag.Title = "Award Certificates";
+    List<AwardCertificate> awardCertificates = Model;
+}
+
+<h1 class="text-white">@ViewBag.Title</h1>
+<table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
+    <tr>
+        <th>Created</th>
+        <th>User</th>
+        <th>Place</th>
+        <th>Certificate Link</th>
+        <th>Action</th>
+    </tr>
+    @foreach (AwardCertificate award in awardCertificates.OrderByDescending(p=> p.CreationTime))
+    {
+        <tr>
+            <td>@award.CreationTime.ToString("dd MMM yyyy")</td>
+            <td>@award.FirstName @award.LastName</td>
+            <td>@award.Award</td>
+            <td>
+                <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Certificate" asp-route-id="@award.Id" target="_blank">View</a>
+            </td>
+            <td>
+                <a class="btn btn-sm btn-secondary" style="display:inline-block;" asp-action="UpdateAwardCertificate" asp-route-id="@award.Id">Update</a>
+                <form style="display:inline-block;" asp-action="DeleteAwardCertificate" asp-route-id="@award.Id" method="post"><button type="submit" class="btn btn-sm btn-danger">Delete</button></form>
+            </td>
+        </tr>
+    }
+</table>
+<a asp-action="CreateAwardCertificate" class="btn btn-secondary" style="margin-bottom:50px;">Create a Certificate</a>
