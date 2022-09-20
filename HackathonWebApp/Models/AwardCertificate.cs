@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using MongoDbGenericRepository.Attributes;
 using MongoDB.Bson.Serialization.Attributes;
@@ -15,6 +15,8 @@ namespace HackathonWebApp.Models
         public ObjectId Id {get; set; }
         [BsonElement("user_id")]
         public string UserId { get; set; }
+        [BsonElement("event_id")]
+        public string EventId {get; set; }
 
         #region Certificate Receiver
         [Required(ErrorMessage = "First Name is required")]
