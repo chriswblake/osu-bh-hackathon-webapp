@@ -1,0 +1,98 @@
+﻿@model HackathonWebApp.Models.AwardCertificate
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Create Award Certificate";
+    Dictionary<string, string> Users = ViewBag.Users;
+    Dictionary<string, string> Events = ViewBag.Events;
+}
+<style>
+    .basic-info-selector {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container text-white">
+    <h1>Create Award Certificate</h1>
+
+    <div class="row">
+        <div class="col-md-10 col-lg-6">
+            <form asp-action="CreateAwardCertificate" enctype="multipart/form-data">
+                @* Certificate Info *@
+                <h3>Certificate Info</h3>
+                <div class="form-group">
+                    User
+                    @Html.DropDownListFor(m => m.UserId, new SelectList(Users, "Key", "Value"), "Select User", new { @class="basic-info-selector" })
+                    <span asp-validation-for="UserId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Event
+                    @Html.DropDownListFor(m => m.EventId, new SelectList(Events, "Key", "Value"), "Select Event", new { @class="basic-info-selector" })
+                    <span asp-validation-for="EventId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Award
+                    @{ Dictionary<string, string> awardOptions = new Dictionary<string, string>() {
+                        { "first_place", "1st Place" },
+                        { "second_place", "2nd Place" },
+                        { "third_place", "3rd Place" },
+                        { "fourth_place", "4th Place" },
+                        { "fifth_place", "5th Place" },
+                        { "participant", "Participant" }
+                        };
+                    }
+                    @Html.DropDownListFor(m => m.Award, new SelectList(awardOptions, "Key", "Value"), "Select Award", new { @class="basic-info-selector" })
+                    <span asp-validation-for="Award" class="text-danger"></span>
+                </div>
+
+                @* Signatures *@
+                <h3>First Signature</h3>
+                <div class="form-group">
+                    Full Name
+                    <input asp-for="FirstSignatureName" class="form-control"/>
+                    <span asp-validation-for="FirstSignatureName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Tile
+                    <input asp-for="FirstSignatureTitle" class="form-control"/>
+                    <span asp-validation-for="FirstSignatureTitle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Organization
+                    <input asp-for="FirstSignatureOrganization" class="form-control"/>
+                    <span asp-validation-for="FirstSignatureOrganization" class="text-danger"></span>
+                </div>
+
+                <h3>Second Signature</h3>
+                <div class="form-group">
+                    Full Name
+                    <input asp-for="SecondSignatureName" class="form-control"/>
+                    <span asp-validation-for="SecondSignatureName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Title
+                    <input asp-for="SecondSignatureTitle" class="form-control"/>
+                    <span asp-validation-for="SecondSignatureTitle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Organization
+                    <input asp-for="SecondSignatureOrganization" class="form-control"/>
+                    <span asp-validation-for="SecondSignatureOrganization" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="AwardCertificates">Back to List</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -408,6 +408,58 @@ namespace HackathonWebApp.Controllers
             var awards = this.awardCertificatesCollection.Find(p=> true).ToList();
             return View(awards);
         }
+        public IActionResult CreateAwardCertificate() {
+            
+            ViewBag.Users = this.userManager.Users.ToDictionary(p=> p.Id.ToString(), p=> p.FirstName+" "+p.LastName+" ("+p.Email+")");
+            ViewBag.Events = this.eventCollection.Find(e=>true).ToList().ToDictionary(p=> p.Id.ToString(), p=> p.Name);
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateAwardCertificate(AwardCertificate awardCertificate)
+        {
+            // AutoFill User Info
+            ApplicationUser appUser = await userManager.FindByIdAsync(awardCertificate.UserId);
+            awardCertificate.FirstName = appUser.FirstName;
+            awardCertificate.LastName = appUser.LastName;
+
+            // Autofill Award Info
+            awardCertificate.CreationTime = DateTime.Now;
+
+            // Autfill Event Info
+            awardCertificate.StartTime = this.activeEvent.StartTime;
+            awardCertificate.EndTime = this.activeEvent.EndTime;
+            awardCertificate.JudgesCount = this.activeEvent.Organizers.Values.Where(p=> p.Role == "Judge").Count();
+            awardCertificate.ParticipantsCount = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).Count();
+
+            // Recheck if model is valid
+            ModelState.Clear();
+
+            if (ModelState.IsValid)
+            {
+                try {
+                    await awardCertificatesCollection.InsertOneAsync(awardCertificate);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                    return View(awardCertificate);
+                }
+            }
+            return RedirectToAction(nameof(AwardCertificates));
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteAwardCertificate(string id)
+        {
+            try
+            { 
+                await awardCertificatesCollection.FindOneAndDeleteAsync(s => s.Id == ObjectId.Parse(id));
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return RedirectToAction(nameof(AwardCertificates));
+        }
         // Methods - Errors
         private void Errors(Task result)
         {
