@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using MongoDbGenericRepository.Attributes;
 using MongoDB.Bson.Serialization.Attributes;
@@ -33,6 +33,8 @@ namespace HackathonWebApp.Models
         public AwardOption Award {get; set; }
         public enum AwardOption
         {
+            [Description("Participant")]
+            participant,
             [Description("First Place")]
             first_place,
             [Description("Second Place")]
@@ -42,9 +44,7 @@ namespace HackathonWebApp.Models
             [Description("Fourth Place")]
             fourth_place,
             [Description("Fifth Place")]
-            fifth_place,
-            [Description("Participant")]
-            participant
+            fifth_place
         }
         
         [Required]
