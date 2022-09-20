@@ -1,0 +1,97 @@
+﻿@model HackathonWebApp.Models.AwardCertificate
+
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Create Award Certificate";
+}
+<style>
+    .basic-info-selector {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container text-white">
+    <h1>Create Award Certificate</h1>
+
+    <div class="row">
+        <div class="col-md-10 col-lg-6">
+            <form asp-action="UpdateAwardCertificate" enctype="multipart/form-data">
+                @* Certificate Receiver *@
+                <h3>Certificate Receiver</h3>
+                <input type="hidden" asp-for="Id" class="form-control" />
+                <div class="form-group">
+                    <label asp-for="FirstName" class="control-label"></label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="control-label"></label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Award
+                    @{ Dictionary<string, string> awardOptions = new Dictionary<string, string>() {
+                        { "participant", "Participant" },
+                        { "first_place", "1st Place" },
+                        { "second_place", "2nd Place" },
+                        { "third_place", "3rd Place" },
+                        { "fourth_place", "4th Place" },
+                        { "fifth_place", "5th Place" }
+                        };
+                    }
+                    @Html.DropDownListFor(m => m.Award, new SelectList(awardOptions, "Key", "Value"), "Select Award", new { @class="basic-info-selector" })
+                    <span asp-validation-for="Award" class="text-danger"></span>
+                </div>
+
+                @* Signatures *@
+                <h3>First Signature</h3>
+                <div class="form-group">
+                    Full Name
+                    <input asp-for="FirstSignatureName" class="form-control" value="Maki"/>
+                    <span asp-validation-for="FirstSignatureName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Tile
+                    <input asp-for="FirstSignatureTitle" class="form-control" value="Director"/>
+                    <span asp-validation-for="FirstSignatureTitle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Organization
+                    <input asp-for="FirstSignatureOrganization" class="form-control" value="Baker Hughes"/>
+                    <span asp-validation-for="FirstSignatureOrganization" class="text-danger"></span>
+                </div>
+
+                <h3>Second Signature</h3>
+                <div class="form-group">
+                    Full Name
+                    <input asp-for="SecondSignatureName" class="form-control" value="Randy"/>
+                    <span asp-validation-for="SecondSignatureName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Title
+                    <input asp-for="SecondSignatureTitle" class="form-control" value="Professor"/>
+                    <span asp-validation-for="SecondSignatureTitle" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Organization
+                    <input asp-for="SecondSignatureOrganization" class="form-control" value="OSU"/>
+                    <span asp-validation-for="SecondSignatureOrganization" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="AwardCertificates">Back to List</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
