@@ -55,7 +55,11 @@
 </style>
 
 <style>
+    
     @@media print {
+        .instructions {
+            display: none;
+        }
         .pdf-page {
             width: 11in;
             max-width: 11in;
@@ -68,15 +72,7 @@
 </style>
 
 <body>
-@* <div class="print-hide instructions">
-    <h2>Printing Instructions</h2>
-    <div>Method: Print to PDF</div>
-    <div>Browser: Chrome</div>
-    <div>Layout: Portrait</div>
-    <div>Paper Size: Letter</div>
-    <div>Label Paper ID: XXXXX</div>
-    <div>Margin: None</div>
-</div> *@
+
 
 @if (award != null)
 {
@@ -164,13 +160,20 @@
         @DateTime.Now.ToString("dd MMM yyyy")
     </div>
 </div>
+
+<div class="print-hide instructions">
+    <h2>Printing Instructions</h2>
+    <div>Web browser: Chrome</div>
+    <div>Destination: Save as PDF</div>
+    <div>Layout: Landscape</div>
+    <div>Paper size: Letter</div>
+    <div>Margins: None</div>
+    <div>Scale: Default</div>
+    <input type="button" style="font-size:14pt; cursor:pointer;" value="Print this page" onClick="window.print()">
+</div>
 }else {
     <div style="margin: 1in;">No Certificate Found</div>
 }
 </body>
-
-<script>
-    @* window.print(); *@
-</script>
 
 </html>
