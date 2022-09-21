@@ -561,7 +561,17 @@ namespace HackathonWebApp.Controllers
 
             return RedirectToAction(nameof(AwardCertificates));
         }
-
+        [HttpPost]
+        public async Task<IActionResult> CreateParticipationCertificates()
+        {
+            foreach (Team team in this.activeEvent.Teams.Values)
+            {
+                string teamId = team.Id.ToString();
+                int rank = 0; // Participation
+                await CreateTeamAwardCertificates(teamId, rank);
+            }
+            return RedirectToAction(nameof(AwardCertificates));
+        }
 
         // Methods - Errors
         private void Errors(Task result)
