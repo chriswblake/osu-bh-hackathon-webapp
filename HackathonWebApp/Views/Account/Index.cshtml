@@ -133,7 +133,7 @@
             {
                 <div class="award-certificate">
                     <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Certificate" asp-route-id="@awardCertificate.Id" target="_blank">View</a>
-                    @awardCertificate.Award - @awardCertificate.StartTime.ToString("MMM yyyy") 
+                    @awardCertificate.EventName - @awardCertificate.Award
                 </div>
             }
         }else {

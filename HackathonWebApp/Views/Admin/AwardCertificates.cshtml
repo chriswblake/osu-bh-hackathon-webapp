@@ -9,6 +9,7 @@
 <h1 class="text-white">@ViewBag.Title</h1>
 <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
     <tr>
+        <th>Event</th>
         <th>Created</th>
         <th>User</th>
         <th>Place</th>
@@ -18,6 +19,7 @@
     @foreach (AwardCertificate award in awardCertificates.OrderByDescending(p=> p.CreationTime))
     {
         <tr>
+            <td>@award.EventName</td>
             <td>@TimeZoneInfo.ConvertTime(award.CreationTime, eventTimeZoneInfo).ToString("dd MMM yyyy")</td>
             <td>@award.FirstName @award.LastName</td>
             <td>@award.Award</td>

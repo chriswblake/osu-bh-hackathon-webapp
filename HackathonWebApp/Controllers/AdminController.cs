@@ -427,6 +427,7 @@ namespace HackathonWebApp.Controllers
             awardCertificate.CreationTime = DateTime.Now;
 
             // Autfill Event Info
+            awardCertificate.EventName = this.activeEvent.Name;
             awardCertificate.StartTime = this.activeEvent.StartTime;
             awardCertificate.EndTime = this.activeEvent.EndTime;
             awardCertificate.JudgesCount = this.activeEvent.Organizers.Values.Where(p=> p.Role == "Judge").Count();
@@ -537,6 +538,7 @@ namespace HackathonWebApp.Controllers
                     LastName = appUser.LastName,
                     CreationTime = DateTime.Now,
                     // Event Info
+                    EventName = this.activeEvent.Name,
                     StartTime = this.activeEvent.StartTime,
                     EndTime = this.activeEvent.EndTime,
                     JudgesCount = this.activeEvent.Organizers.Values.Where(p=> p.Role == "Judge").Count(),

@@ -54,6 +54,10 @@ namespace HackathonWebApp.Models
 
         #region Event Details
         [Required]
+        [BsonElement("event_name")]
+        public String EventName { get; set; }
+
+        [Required]
         [BsonElement("start_time")]
         public DateTime StartTime { get; set; }
         
