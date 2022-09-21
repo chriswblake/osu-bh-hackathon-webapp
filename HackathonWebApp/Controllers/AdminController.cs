@@ -406,6 +406,7 @@ namespace HackathonWebApp.Controllers
         public ViewResult AwardCertificates()
         {
             var awards = this.awardCertificatesCollection.Find(p=> true).ToList();
+            ViewBag.EventTimeZoneInfo = this.activeEvent.TimeZoneInfo;
             return View(awards);
         }
         public IActionResult CreateAwardCertificate() {

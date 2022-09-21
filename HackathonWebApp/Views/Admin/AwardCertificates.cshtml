@@ -3,6 +3,7 @@
     Layout = "_AdminLayout";
     ViewBag.Title = "Award Certificates";
     List<AwardCertificate> awardCertificates = Model;
+    TimeZoneInfo eventTimeZoneInfo = ViewBag.EventTimeZoneInfo;
 }
 
 <h1 class="text-white">@ViewBag.Title</h1>
@@ -17,7 +18,7 @@
     @foreach (AwardCertificate award in awardCertificates.OrderByDescending(p=> p.CreationTime))
     {
         <tr>
-            <td>@award.CreationTime.ToString("dd MMM yyyy")</td>
+            <td>@TimeZoneInfo.ConvertTime(award.CreationTime, eventTimeZoneInfo).ToString("dd MMM yyyy")</td>
             <td>@award.FirstName @award.LastName</td>
             <td>@award.Award</td>
             <td>

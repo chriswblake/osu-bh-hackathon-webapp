@@ -427,6 +427,7 @@ namespace HackathonWebApp.Controllers
             }catch {
                 // Leave award null
             }
+            ViewBag.EventTimeZoneInfo = this.activeEvent.TimeZoneInfo;
             return View(award);
         }
 

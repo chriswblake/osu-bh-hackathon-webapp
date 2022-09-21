@@ -3,6 +3,7 @@
     Layout = "";
     ViewBag.Title = "Certificate";
     AwardCertificate award = Model;
+    TimeZoneInfo eventTimeZoneInfo = ViewBag.EventTimeZoneInfo;
 }
 
 <!DOCTYPE pdf>
@@ -89,6 +90,7 @@
 
     @* Event Logo *@
     <img style="top:1.5in; left:0.75in; width:4.5in;" src="/img/hackokstate-black.png"/>
+
     @* Event Date *@
     <div style="top:3.4in; left:0.9in; font-size:18pt; font-weight:bold;">
         @award.StartTime.ToString("MMMM d") - @award.EndTime.ToString(" d")
@@ -152,12 +154,12 @@
 
     @* Timestamps *@
     <div style="font-size:9pt; text-align:left; bottom: 0.25in; left: 0.32in;">
-        Presented On:<br/>
-        @award.CreationTime.ToString("dd MMM yyyy")
+        Awarded Date:<br/>
+        @TimeZoneInfo.ConvertTime(award.CreationTime, eventTimeZoneInfo).ToString("dd MMM yyyy")
     </div>
     <div style="font-size:9pt; text-align:right; bottom: 0.25in; right: 0.27in;">
-        Printed On:<br/>
-        @DateTime.Now.ToString("dd MMM yyyy")
+        Printed Date:<br/>
+        @TimeZoneInfo.ConvertTime(DateTime.Now, eventTimeZoneInfo).ToString("dd MMM yyyy")
     </div>
 </div>
 
