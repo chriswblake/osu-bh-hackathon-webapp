@@ -52,6 +52,9 @@ namespace HackathonWebApp.Controllers
             // Add event application, if they have one
             if (this.activeEvent.EventApplications.ContainsKey(appUser.Id.ToString()))
                 ViewBag.EventApplication = this.activeEvent.EventApplications[appUser.Id.ToString()];
+
+            // Add Award Certificates
+            ViewBag.AwardCertificates = this.awardCertificatesCollection.Find(p=> p.UserId == appUser.Id.ToString()).ToList();
     
             return View(appUser);
         }
