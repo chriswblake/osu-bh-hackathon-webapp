@@ -4,6 +4,7 @@
     ViewBag.Title = "Scoring Dashboard";
     Dictionary<string, Team> allTeams = ViewBag.AllTeams;
     Dictionary<string, Team> orderedTeams = allTeams.OrderByDescending(t=> t.Value.CombinedScore).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Value);
+    List<Team> winningTeams = orderedTeams.Values.Take(3).ToList();
     Team activeTeam = ViewBag.ActiveTeam;
     Dictionary<string, ScoreQuestion> scoringQuestions = ViewBag.ScoringQuestions;
 }
@@ -116,6 +117,29 @@ else {
     <br/>
     <input type="submit" value="Save" class="btn btn-primary" style="margin-top:15px;"/>
 </form>
+
+@* Results *@
+<h3 style="margin-top:15px;">Results</h3>
+@{int rank = 0; }
+@foreach (Team winningTeam in winningTeams)
+{
+    rank += 1;
+    <form style="display:inline-block;" asp-action="CreateTeamAwardCertificates" asp-controller="Admin" method="post">
+        <div class="team-card" style="font-size:8pt;">
+            <h3>Place @rank</h3>
+            <div>@winningTeam.Name</div>
+            <ul>
+                @foreach (ApplicationUser appUser in winningTeam.TeamMembers.Values)
+                {
+                    <li>@appUser.FirstName @appUser.LastName</li>
+                }
+            </ul>
+            <input type="hidden" name="teamId" value="@winningTeam.Id"/>
+            <input type="hidden" name="rank" value="@rank"/>
+            <button type="submit" class="btn btn-sm btn-secondary" style="width:100%; margin-bottom:10px;">Create Certificates</button>
+        </div>
+    </form>
+}
 
 @* Combined Score *@
 <h3 style="margin-top:15px;">Combined Score</h3>

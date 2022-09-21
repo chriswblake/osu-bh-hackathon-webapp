@@ -504,6 +504,64 @@ namespace HackathonWebApp.Controllers
             }
             return View(awardCertificate);
         }
+        [HttpPost]
+        public async Task<IActionResult> CreateTeamAwardCertificates(string teamId, int rank)
+        {
+            // Convert Rank to award option
+            var award = AwardCertificate.AwardOption.participant;
+            switch (rank)
+            {
+                case 1:
+                    award = AwardCertificate.AwardOption.first_place;
+                    break;
+                case 2:
+                    award = AwardCertificate.AwardOption.second_place;
+                    break;
+                case 3:
+                    award = AwardCertificate.AwardOption.third_place;
+                    break;
+            }
+
+            // Get Team Members
+            var appUsers = this.activeEvent.Teams[teamId].TeamMembers.Values;
+
+            // Modify template for each user and create certificate
+            foreach (ApplicationUser appUser in appUsers)
+            {
+                // Define Certificate
+                AwardCertificate awardCertificate = new AwardCertificate() {
+                    // Receiver
+                    Award = award,
+                    FirstName = appUser.FirstName,
+                    LastName = appUser.LastName,
+                    CreationTime = DateTime.Now,
+                    // Event Info
+                    StartTime = this.activeEvent.StartTime,
+                    EndTime = this.activeEvent.EndTime,
+                    JudgesCount = this.activeEvent.Organizers.Values.Where(p=> p.Role == "Judge").Count(),
+                    ParticipantsCount = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).Count(),
+                    // Signatures
+                    FirstSignatureName = this.activeEvent.PrimaryHost.DisplayName,
+                    FirstSignatureTitle = this.activeEvent.PrimaryHost.Title,
+                    FirstSignatureOrganization = this.activeEvent.PrimaryHost.Organization,
+                    SecondSignatureName = this.activeEvent.SecondaryHost.DisplayName,
+                    SecondSignatureTitle = this.activeEvent.SecondaryHost.Title,
+                    SecondSignatureOrganization = this.activeEvent.SecondaryHost.Organization
+                };
+
+                // Save to DB
+                try {
+                   await awardCertificatesCollection.InsertOneAsync(awardCertificate);
+                }
+                catch (Exception e)
+                {
+                   Errors(e);
+                }
+            }
+
+            return RedirectToAction(nameof(AwardCertificates));
+        }
+
 
         // Methods - Errors
         private void Errors(Task result)
