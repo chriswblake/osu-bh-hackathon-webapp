@@ -170,6 +170,7 @@
     <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray); font-size:small;">
         <tr>
             <th>User</th>
+            <th>Email</th>
             <th>Applied On</th>
             <th>Major</th>
             <th>School Year</th>
@@ -188,7 +189,9 @@
             <tr>
                 <td style="font-size:x-small; white-space: nowrap;">
                     @appUser.FirstName @appUser.LastName<br/>
-                    @eventApplication.UserId
+                </td>
+                <td style="font-size:x-small; white-space: nowrap;">
+                    @appUser.Email<br/>
                 </td>
                 <td style="font-size:x-small; white-space: nowrap;">@TimeZoneInfo.ConvertTime(eventApplication.CreatedOn, activeEvent.TimeZoneInfo)</td>
                 <td>@eventApplication.Major</td>
