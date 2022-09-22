@@ -1,4 +1,4 @@
-@model List<EventApplication>
+﻿@model List<EventApplication>
 @{
     Layout = "";
     ViewBag.Title = "Name Tags";
@@ -60,8 +60,13 @@
     }
     .page-number {
         position: absolute;
-        bottom: 0.25in;
-        right: 0.375in;
+        bottom: 0.15in;
+        right: 0.25in;
+    }
+    .paper-label-id {
+        position: absolute;
+        bottom: 0.15in;
+        left: 4.4in;
     }
     
 	.name-tag {
@@ -136,7 +141,7 @@
     <div>Browser: Chrome</div>
     <div>Layout: Portrait</div>
     <div>Paper Size: Letter</div>
-    <div>Label Paper ID: XXXXX</div>
+    <div>Label Paper ID: AVERY 5395</div>
     <div>Margin: None</div>
 </div>
 
@@ -158,6 +163,7 @@
     <div class="pdf-page">
         <div class="print-date">@DateTime.Now.ToLocalTime()</div>
         <div class="page-number">@pageNum</div>
+        <div class="paper-label-id">AVERY 5395</div>
         @foreach (var eventApplication in group)
         {
             var appUser = eventApplication.AssociatedUser;
