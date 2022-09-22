@@ -4,6 +4,7 @@
     ViewBag.Title = "Scoring Roles";
     var scoringRoles = Model;
     Dictionary<string, ScoreQuestion> scoringQuestions = ViewBag.ScoringQuestions;
+    var allQuestionCounts = scoringRoles.SelectMany(p=> p.ScoreQuestionsIds).GroupBy(p=> p).ToDictionary(p=> p.Key, p=> p.Count());
 }
 
 <style>
@@ -22,13 +23,33 @@
 </style>
 
 <h1 class="text-white">@ViewBag.Title</h1>
+<a asp-action="CreateScoringRole" class="btn btn-secondary" style="margin: 0 0 50px 0;">Add a Role</a>
+
+<h3 class="text-white">Overall Question Coverage</h3>
+<div class="row p-2 text-white">
+@foreach (var scoringQuestionGroup in scoringQuestions.Values.GroupBy(p=> p.Group))
+{
+    <div class="col-3 m-1" style="border: 1px solid var(--bh-green); border-radius: 10px;">
+        <h5>@scoringQuestionGroup.Key</h5>
+        <table>
+        @foreach (ScoreQuestion scoringQuestion in scoringQuestionGroup)
+        {
+            <tr>
+                <td style="padding-right:10px;">@scoringQuestion.Title</td>
+                <td>@allQuestionCounts.GetValueOrDefault(scoringQuestion.Id.ToString())</td>
+            </tr>
+        }
+        </table>
+    </div>
+}
+</div>
 
 @foreach (var group in scoringRoles.GroupBy(p=> p.ScoringGroup).OrderByDescending(g=> g.Average(p=>p.ScoringWeight)))
 {
+    @* Role Questions *@
     double avgRoleWeight = Math.Round(group.ToList().Average(p=> p.ScoringWeight),2);
-
     <h3 class="text-white">@group.Key <span style="font-size:small;">(Avg. Weight: @avgRoleWeight)</span></h3>
-    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
+    <table class="table table-sm table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
         <tr>
             <th>Role</th>
             <th>Questions</th>
@@ -56,7 +77,31 @@
             </tr>
         }
     </table>
+
+    @* Role's Question Coverage *@
+    var questionCounts = group.SelectMany(p=> p.ScoreQuestionsIds).GroupBy(p=> p).ToDictionary(p=> p.Key, p=> p.Count());
+    <a class="btn btn-primary" data-toggle="collapse" href="#collapse_@group.Key" role="button" aria-expanded="false" aria-controls="collapseExample">
+        Show/Hide Role's Question Coverage
+    </a>
+    <div class="row p-2 text-white collapse" id="collapse_@group.Key">
+        @foreach (var scoringQuestionGroup in scoringQuestions.Values.GroupBy(p=> p.Group))
+        {
+            <div class="col-3 m-1" style="border: 1px solid var(--bh-green); border-radius: 10px;">
+                <h5>@scoringQuestionGroup.Key</h5>
+                <table>
+                @foreach (ScoreQuestion scoringQuestion in scoringQuestionGroup)
+                {
+                    <tr>
+                        <td style="padding-right:10px;">@scoringQuestion.Title</td>
+                        <td>@questionCounts.GetValueOrDefault(scoringQuestion.Id.ToString())</td>
+                    </tr>
+                }
+                </table>
+            </div>
+        }
+    </div>
+    <br/>
+    <br/>
 }
-<a asp-action="CreateScoringRole" class="btn btn-secondary" style="margin: 0 0 50px 0;">Add a Role</a>
 
 
