@@ -1,5 +1,6 @@
 ﻿@{
     Layout = "_Layout";
+    ViewBag.BackgroundParticlesEnabled = false;
 }
 
 <style>
@@ -160,7 +161,12 @@
                                 Vote
                             </a>
                         </li>
-                        
+                        <li class="nav-item">
+                            <a asp-controller="Admin" asp-action="AwardCertificates">
+                                <i class="fa-solid fa-medal"></i>
+                                Certificates
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>

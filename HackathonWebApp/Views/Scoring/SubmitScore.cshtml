@@ -1,6 +1,7 @@
 ﻿@model ScoringSubmission
 @{
     @* Layout = "_AdminLayout"; *@
+    ViewBag.BackgroundParticlesEnabled = false;
     ViewBag.Title = "Submit Vote";
     List<ScoreQuestion> scoreQuestions = ViewBag.RoleScoringQuestions;
     Team activeTeam = ViewBag.ActiveTeam;
