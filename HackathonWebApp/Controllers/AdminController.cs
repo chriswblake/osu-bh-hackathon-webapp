@@ -470,39 +470,36 @@ namespace HackathonWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateAwardCertificate(string id, AwardCertificate awardCertificate)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    //Set missing id in model
-                    awardCertificate.Id = ObjectId.Parse(id);
+                //Set missing id in model
+                awardCertificate.Id = ObjectId.Parse(id);
 
-                    // Create change set
-                    var update = Builders<AwardCertificate>.Update;
-                    var updates = new List<UpdateDefinition<AwardCertificate>>();
+                // Create change set
+                var update = Builders<AwardCertificate>.Update;
+                var updates = new List<UpdateDefinition<AwardCertificate>>();
 
-                    // Add changes to queue
-                    updates.Add(update.Set(c => c.FirstName, awardCertificate.FirstName));
-                    updates.Add(update.Set(c => c.LastName, awardCertificate.LastName));
-                    updates.Add(update.Set(c => c.Award, awardCertificate.Award));
-                    updates.Add(update.Set(c => c.FirstSignatureName, awardCertificate.FirstSignatureName));
-                    updates.Add(update.Set(c => c.FirstSignatureTitle, awardCertificate.FirstSignatureTitle));
-                    updates.Add(update.Set(c => c.FirstSignatureOrganization, awardCertificate.FirstSignatureOrganization));
-                    updates.Add(update.Set(c => c.SecondSignatureName, awardCertificate.SecondSignatureName));
-                    updates.Add(update.Set(c => c.SecondSignatureTitle, awardCertificate.SecondSignatureTitle));
-                    updates.Add(update.Set(c => c.SecondSignatureOrganization, awardCertificate.SecondSignatureOrganization));
+                // Add changes to queue
+                updates.Add(update.Set(c => c.FirstName, awardCertificate.FirstName));
+                updates.Add(update.Set(c => c.LastName, awardCertificate.LastName));
+                updates.Add(update.Set(c => c.Award, awardCertificate.Award));
+                updates.Add(update.Set(c => c.FirstSignatureName, awardCertificate.FirstSignatureName));
+                updates.Add(update.Set(c => c.FirstSignatureTitle, awardCertificate.FirstSignatureTitle));
+                updates.Add(update.Set(c => c.FirstSignatureOrganization, awardCertificate.FirstSignatureOrganization));
+                updates.Add(update.Set(c => c.SecondSignatureName, awardCertificate.SecondSignatureName));
+                updates.Add(update.Set(c => c.SecondSignatureTitle, awardCertificate.SecondSignatureTitle));
+                updates.Add(update.Set(c => c.SecondSignatureOrganization, awardCertificate.SecondSignatureOrganization));
 
-                    // Update in DB
-                    await awardCertificatesCollection.FindOneAndUpdateAsync(
-                        s => s.Id == awardCertificate.Id,
-                        update.Combine(updates)
-                    );
+                // Update in DB
+                await awardCertificatesCollection.FindOneAndUpdateAsync(
+                    s => s.Id == awardCertificate.Id,
+                    update.Combine(updates)
+                );
 
-                }
-                catch (Exception e)
-                {
-                    Errors(e);
-                }
+            }
+            catch (Exception e)
+            {
+                Errors(e);
             }
             return View(awardCertificate);
         }
