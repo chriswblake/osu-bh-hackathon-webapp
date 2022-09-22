@@ -1,0 +1,184 @@
+﻿@model AwardCertificate
+@{
+    Layout = "";
+    ViewBag.Title = "Certificate";
+    AwardCertificate award = Model;
+    TimeZoneInfo eventTimeZoneInfo = ViewBag.EventTimeZoneInfo;
+}
+
+<!DOCTYPE pdf>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=8.5in, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BH/OSU Hackathon</title>
+    <link rel="shortcut icon" type="image/x-icon" href="~/img/favicon_io/favicon.ico">
+</head>
+
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        background-color: #333;
+    }
+    .instructions {
+        display: inline-block;
+        margin: 15px 30% 15px 30%;
+        padding: 0 100px 25px 100px;
+        background-color: #FFF;
+
+        border: 1px solid black;
+        border-radius: 15px;
+
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .pdf-page {
+        position: relative;
+        display: inline-block;
+        background: #FFF;
+
+        width: 11in;
+        max-width: 11in;
+        height: 8.5in;
+        max-height: 8.5in;
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: left;
+        color: #22302D;  @* BH Dark Green *@
+        
+
+        overflow: hidden;
+        border: 1px solid #CCC;
+        border-radius: 3px;
+    }
+    .pdf-page > * {
+        position: absolute;
+    }
+</style>
+
+<style>
+    
+    @@media print {
+        .instructions {
+            display: none;
+        }
+        .pdf-page {
+            width: 11in;
+            max-width: 11in;
+            height: 8.48in;
+            max-height: 8.48in;
+
+            border: 0;
+        }
+    }
+</style>
+
+<body>
+
+
+@if (award != null)
+{
+<div class="pdf-page">
+    @* Border *@
+    <div style="top:0.25in; left:0.25in; width:10.5in; height:8in; border:1px solid #CCC;"></div>
+    
+    @* Company Logos *@
+    <div style="top:0.5in; left:0.5in; height:0.6in;">
+        <img style="height:100%;" src="/img/osu_logo.svg"/>
+        <span style="font-size:2em;position:relative; bottom:30%; padding:0 0.08in;">+</span>
+        <img style="height:100%;" src="/img/bh_logo_wide_green.png"/>
+    </div>
+
+    @* Event Logo *@
+    <img style="top:1.5in; left:0.75in; width:4.5in;" src="/img/hackokstate-black.png"/>
+
+    @* Event Date *@
+    <div style="top:3.4in; left:0.9in; font-size:18pt; font-weight:bold;">
+        @award.StartTime.ToString("MMMM d") - @award.EndTime.ToString(" d")
+    </div>
+    <div style="top:2.1in; left:4.68in; font-size:30pt; font-weight:bold;">
+        @award.StartTime.ToString("yyyy")
+    </div>
+    
+    @* Name and Place *@
+    <div style="top:4.4in; left:0.75in; width:4.5in; text-align:center;">
+        <div style="font-size:20pt;">This certificate is given to</div>
+        <div style="font-size:28pt; font-weight:bold; padding:0.10in 0;">@award.FirstName @award.LastName</div>
+        <div style="font-size:20pt;">and awards the prize</div>
+        <div style="font-size:28pt; font-weight:bold; padding: 0.05in 0 0.15in 0;">
+            @switch (@award.Award)
+            {
+                case AwardCertificate.AwardOption.first_place:
+                    <img style="height:0.6in; position:relative; bottom:-0.17in;" src="/img/award-badge.svg"/>
+                    <span>1<sup style='font-size:14pt;'>st</sup> Place</span>
+                    <img style="height:0.6in; position:relative; bottom:-0.17in;" src="/img/award-badge.svg"/>
+                    break;
+                case AwardCertificate.AwardOption.second_place:
+                    <img style="height:0.6in; position:relative; bottom:-0.17in;" src="/img/award-badge.svg"/>
+                    <span>2<sup style='font-size:14pt;'>nd</sup> Place</span>
+                    <img style="height:0.6in; position:relative; bottom:-0.17in;" src="/img/award-badge.svg"/>
+                    break;
+                case AwardCertificate.AwardOption.third_place:
+                    <img style="height:0.6in; position:relative; bottom:-0.17in;" src="/img/award-badge.svg"/>
+                    <span>3<sup style='font-size:14pt;'>rd</sup> Place</span>
+                    <img style="height:0.6in; position:relative; bottom:-0.17in;" src="/img/award-badge.svg"/>
+                    break;
+                default:
+                    <span>Participant</span>
+                    break;
+            }
+        </div>
+        <div style="font-size:12pt;">
+            for an excellent project as reviewed by @award.JudgesCount industry representatives and
+            @award.ParticipantsCount fellow participants, with considerations from 20 different criteria,
+            including technical, non-technical, and influence on energy transition.
+        </div>
+    </div>
+    
+    @* Signatures *@
+    <img style="top:1in; right:1in; width:4in;" src="/img/bh_mobius-thin.png"/>
+    <div style="bottom:1in; right:1in; width:4in; font-size: larger;">
+        <div style="border-top: 1px solid #999; padding-top: 0.125in;">
+            @award.FirstSignatureName<br/>
+            @award.FirstSignatureTitle<br/>
+            @award.FirstSignatureOrganization<br/>
+        </div>
+        <br/>
+        <br/>
+        <div style="border-top: 1px solid #999; padding-top: 0.125in;">
+        @award.SecondSignatureName<br/>
+        @award.SecondSignatureTitle<br/>
+        @award.SecondSignatureOrganization<br/>
+        </div>
+    </div>
+
+
+    @* Timestamps *@
+    <div style="font-size:9pt; text-align:left; bottom: 0.25in; left: 0.32in;">
+        Awarded Date:<br/>
+        @TimeZoneInfo.ConvertTime(award.CreationTime, eventTimeZoneInfo).ToString("dd MMM yyyy")
+    </div>
+    <div style="font-size:9pt; text-align:right; bottom: 0.25in; right: 0.27in;">
+        Printed Date:<br/>
+        @TimeZoneInfo.ConvertTime(DateTime.Now, eventTimeZoneInfo).ToString("dd MMM yyyy")
+    </div>
+</div>
+
+<div class="print-hide instructions">
+    <h2>Printing Instructions</h2>
+    <div>Web browser: Chrome</div>
+    <div>Destination: Save as PDF</div>
+    <div>Layout: Landscape</div>
+    <div>Paper size: Letter</div>
+    <div>Margins: None</div>
+    <div>Scale: Default</div>
+    <input type="button" style="font-size:14pt; cursor:pointer;" value="Print this page" onClick="window.print()">
+</div>
+}else {
+    <div style="margin: 1in;">No Certificate Found</div>
+}
+</body>
+
+</html>

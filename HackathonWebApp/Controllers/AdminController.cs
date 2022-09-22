@@ -25,6 +25,7 @@ namespace HackathonWebApp.Controllers
         private IMongoCollection<Organizer> organizerCollection;
         private EventController eventController;
         private IMongoCollection<HackathonEvent> eventCollection;
+        private IMongoCollection<AwardCertificate> awardCertificatesCollection;
 
         // Constructors
         public AdminController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager, IMongoDatabase database, EventController eventController)
@@ -38,6 +39,7 @@ namespace HackathonWebApp.Controllers
             this.organizerCollection = database.GetCollection<Organizer>("Organizer");
             this.eventController = eventController;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
+            this.awardCertificatesCollection = database.GetCollection<AwardCertificate>("AwardCertificates");
         }
 
         // Properties
@@ -398,6 +400,177 @@ namespace HackathonWebApp.Controllers
                 Errors(e);
             }
             return RedirectToAction("Organizers");
+        }
+
+        // Methods - Award Certificates
+        public ViewResult AwardCertificates()
+        {
+            var awards = this.awardCertificatesCollection.Find(p=> true).ToList();
+            ViewBag.EventTimeZoneInfo = this.activeEvent.TimeZoneInfo;
+            return View(awards);
+        }
+        public IActionResult CreateAwardCertificate() {
+            
+            ViewBag.Users = this.userManager.Users.ToDictionary(p=> p.Id.ToString(), p=> p.FirstName+" "+p.LastName+" ("+p.Email+")");
+            ViewBag.Events = this.eventCollection.Find(e=>true).ToList().ToDictionary(p=> p.Id.ToString(), p=> p.Name);
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateAwardCertificate(AwardCertificate awardCertificate)
+        {
+            // AutoFill User Info
+            ApplicationUser appUser = await userManager.FindByIdAsync(awardCertificate.UserId);
+            awardCertificate.FirstName = appUser.FirstName;
+            awardCertificate.LastName = appUser.LastName;
+
+            // Autofill Award Info
+            awardCertificate.CreationTime = DateTime.Now;
+
+            // Autfill Event Info
+            awardCertificate.EventName = this.activeEvent.Name;
+            awardCertificate.StartTime = this.activeEvent.StartTime;
+            awardCertificate.EndTime = this.activeEvent.EndTime;
+            awardCertificate.JudgesCount = this.activeEvent.Organizers.Values.Where(p=> p.Role == "Judge").Count();
+            awardCertificate.ParticipantsCount = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).Count();
+
+            // Recheck if model is valid
+            ModelState.Clear();
+
+            if (ModelState.IsValid)
+            {
+                try {
+                    await awardCertificatesCollection.InsertOneAsync(awardCertificate);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                    return View(awardCertificate);
+                }
+            }
+            return RedirectToAction(nameof(AwardCertificates));
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteAwardCertificate(string id)
+        {
+            try
+            { 
+                await awardCertificatesCollection.FindOneAndDeleteAsync(s => s.Id == ObjectId.Parse(id));
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return RedirectToAction(nameof(AwardCertificates));
+        }
+        public IActionResult UpdateAwardCertificate(string id)
+        {
+            AwardCertificate award = this.awardCertificatesCollection.Find(p=> p.Id == ObjectId.Parse(id)).FirstOrDefault();
+            return View(award);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateAwardCertificate(string id, AwardCertificate awardCertificate)
+        {
+            try
+            {
+                //Set missing id in model
+                awardCertificate.Id = ObjectId.Parse(id);
+
+                // Create change set
+                var update = Builders<AwardCertificate>.Update;
+                var updates = new List<UpdateDefinition<AwardCertificate>>();
+
+                // Add changes to queue
+                updates.Add(update.Set(c => c.FirstName, awardCertificate.FirstName));
+                updates.Add(update.Set(c => c.LastName, awardCertificate.LastName));
+                updates.Add(update.Set(c => c.Award, awardCertificate.Award));
+                updates.Add(update.Set(c => c.FirstSignatureName, awardCertificate.FirstSignatureName));
+                updates.Add(update.Set(c => c.FirstSignatureTitle, awardCertificate.FirstSignatureTitle));
+                updates.Add(update.Set(c => c.FirstSignatureOrganization, awardCertificate.FirstSignatureOrganization));
+                updates.Add(update.Set(c => c.SecondSignatureName, awardCertificate.SecondSignatureName));
+                updates.Add(update.Set(c => c.SecondSignatureTitle, awardCertificate.SecondSignatureTitle));
+                updates.Add(update.Set(c => c.SecondSignatureOrganization, awardCertificate.SecondSignatureOrganization));
+
+                // Update in DB
+                await awardCertificatesCollection.FindOneAndUpdateAsync(
+                    s => s.Id == awardCertificate.Id,
+                    update.Combine(updates)
+                );
+
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return View(awardCertificate);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateTeamAwardCertificates(string teamId, int rank)
+        {
+            // Convert Rank to award option
+            var award = AwardCertificate.AwardOption.participant;
+            switch (rank)
+            {
+                case 1:
+                    award = AwardCertificate.AwardOption.first_place;
+                    break;
+                case 2:
+                    award = AwardCertificate.AwardOption.second_place;
+                    break;
+                case 3:
+                    award = AwardCertificate.AwardOption.third_place;
+                    break;
+            }
+
+            // Get Team Members
+            var appUsers = this.activeEvent.Teams[teamId].TeamMembers.Values;
+
+            // Modify template for each user and create certificate
+            foreach (ApplicationUser appUser in appUsers)
+            {
+                // Define Certificate
+                AwardCertificate awardCertificate = new AwardCertificate() {
+                    // Receiver
+                    Award = award,
+                    FirstName = appUser.FirstName,
+                    LastName = appUser.LastName,
+                    CreationTime = DateTime.Now,
+                    // Event Info
+                    EventName = this.activeEvent.Name,
+                    StartTime = this.activeEvent.StartTime,
+                    EndTime = this.activeEvent.EndTime,
+                    JudgesCount = this.activeEvent.Organizers.Values.Where(p=> p.Role == "Judge").Count(),
+                    ParticipantsCount = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).Count(),
+                    // Signatures
+                    FirstSignatureName = this.activeEvent.PrimaryHost.DisplayName,
+                    FirstSignatureTitle = this.activeEvent.PrimaryHost.Title,
+                    FirstSignatureOrganization = this.activeEvent.PrimaryHost.Organization,
+                    SecondSignatureName = this.activeEvent.SecondaryHost.DisplayName,
+                    SecondSignatureTitle = this.activeEvent.SecondaryHost.Title,
+                    SecondSignatureOrganization = this.activeEvent.SecondaryHost.Organization
+                };
+
+                // Save to DB
+                try {
+                   await awardCertificatesCollection.InsertOneAsync(awardCertificate);
+                }
+                catch (Exception e)
+                {
+                   Errors(e);
+                }
+            }
+
+            return RedirectToAction(nameof(AwardCertificates));
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateParticipationCertificates()
+        {
+            foreach (Team team in this.activeEvent.Teams.Values)
+            {
+                string teamId = team.Id.ToString();
+                int rank = 0; // Participation
+                await CreateTeamAwardCertificates(teamId, rank);
+            }
+            return RedirectToAction(nameof(AwardCertificates));
         }
 
         // Methods - Errors

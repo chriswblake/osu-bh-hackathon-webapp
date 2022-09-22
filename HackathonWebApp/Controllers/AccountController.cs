@@ -9,6 +9,7 @@ using System;
 using System.Net.Mail;
 using System.IO;
 using MongoDB.Driver;
+using MongoDB.Bson;
 
 namespace HackathonWebApp.Controllers
 {
@@ -20,6 +21,7 @@ namespace HackathonWebApp.Controllers
         private SignInManager<ApplicationUser> signInManager;
         private SmtpClient emailClient;
         private IMongoCollection<HackathonEvent> eventCollection;
+        private IMongoCollection<AwardCertificate> awardCertificatesCollection;
 
         // Constructor
         public AccountController(IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient, IMongoDatabase database)
@@ -29,6 +31,7 @@ namespace HackathonWebApp.Controllers
             this.signInManager = signInManager;
             this.emailClient = emailClient;
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
+            this.awardCertificatesCollection = database.GetCollection<AwardCertificate>("AwardCertificates");
         }
 
         // Properties
@@ -49,6 +52,9 @@ namespace HackathonWebApp.Controllers
             // Add event application, if they have one
             if (this.activeEvent.EventApplications.ContainsKey(appUser.Id.ToString()))
                 ViewBag.EventApplication = this.activeEvent.EventApplications[appUser.Id.ToString()];
+
+            // Add Award Certificates
+            ViewBag.AwardCertificates = this.awardCertificatesCollection.Find(p=> p.UserId == appUser.Id.ToString()).ToList();
     
             return View(appUser);
         }
@@ -412,6 +418,18 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction(nameof(YourTeam));
         }
 
+        // Certificate
+        public ViewResult Certificate(string id) {
+            AwardCertificate award = null;
+            try {
+                var results = this.awardCertificatesCollection.Find(h => h.Id == ObjectId.Parse(id));
+                award = results.FirstOrDefault();
+            }catch {
+                // Leave award null
+            }
+            ViewBag.EventTimeZoneInfo = this.activeEvent.TimeZoneInfo;
+            return View(award);
+        }
 
         // Error Messages
         public IActionResult AccessDenied()

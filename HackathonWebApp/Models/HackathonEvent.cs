@@ -49,6 +49,14 @@ namespace HackathonWebApp.Models
         public DateTime EndTime { get; set; }
 
         [Required]
+        [BsonElement("primary_host")]
+        public Host PrimaryHost { get; set; }
+
+        [Required]
+        [BsonElement("secondary_host")]
+        public Host SecondaryHost { get; set; }
+
+        [Required]
         [BsonElement("registration_opens_time")]
         public DateTime RegistrationOpensTime { get; set; }
 

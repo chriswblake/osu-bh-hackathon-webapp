@@ -44,6 +44,40 @@
                     <span asp-validation-for="IsActive" class="text-danger"></span>
                 </div>
 
+                <h2>Event Hosts</h2>
+                <h3>Primary Host</h3>
+                <div class="form-group">
+                    <label asp-for="PrimaryHost.DisplayName" class="control-label"></label>
+                    <input asp-for="PrimaryHost.DisplayName" class="form-control"/>
+                    <span asp-validation-for="PrimaryHost.DisplayName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PrimaryHost.Title" class="control-label"></label>
+                    <input asp-for="PrimaryHost.Title" class="form-control"/>
+                    <span asp-validation-for="PrimaryHost.Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PrimaryHost.Organization" class="control-label"></label>
+                    <input asp-for="PrimaryHost.Organization" class="form-control"/>
+                    <span asp-validation-for="PrimaryHost.Organization" class="text-danger"></span>
+                </div>
+                <h3>Secondary Host</h3>
+                <div class="form-group">
+                    <label asp-for="SecondaryHost.DisplayName" class="control-label"></label>
+                    <input asp-for="SecondaryHost.DisplayName" class="form-control"/>
+                    <span asp-validation-for="SecondaryHost.DisplayName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SecondaryHost.Title" class="control-label"></label>
+                    <input asp-for="SecondaryHost.Title" class="form-control"/>
+                    <span asp-validation-for="SecondaryHost.Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SecondaryHost.Organization" class="control-label"></label>
+                    <input asp-for="SecondaryHost.Organization" class="form-control"/>
+                    <span asp-validation-for="SecondaryHost.Organization" class="text-danger"></span>
+                </div>
+
                 <h2>Registration Settings</h2>
                 <div class="form-group">
                     <label asp-for="RegistrationOpensTime" class="control-label"></label>
