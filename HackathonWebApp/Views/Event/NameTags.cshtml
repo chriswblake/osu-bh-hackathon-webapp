@@ -36,15 +36,16 @@
     .pdf-page {
         position: relative;
         display: inline-block;
+        text-align: left;
         width: 8.5in;
         max-width: 8.5in;
         height: 11.5in;
         max-height: 11.5in;
 
-        padding-top: 0.59in;
-        padding-left: 0.69in;
-        padding-right: 0.69in;
-        padding-bottom: 0.59in;
+        padding-top: 0.72in;
+        padding-left: 0.65625in;
+        padding-right: 0.6875in;
+        padding-bottom: 0.5625in;
         overflow: hidden;
         
         border: 1px solid #CCC;
@@ -54,13 +55,18 @@
     }
     .print-date {
         position: absolute;
-        bottom: 0.25in;
-        left: 0.375in; 
+        bottom: 0.15in;
+        left: 0.25in; 
     }
     .page-number {
         position: absolute;
-        bottom: 0.25in;
-        right: 0.375in;
+        bottom: 0.15in;
+        right: 0.25in;
+    }
+    .paper-label-id {
+        position: absolute;
+        bottom: 0.15in;
+        left: 4.4in;
     }
     
 	.name-tag {
@@ -69,10 +75,10 @@
         
         width: 3.375in;
         max-width: 3.375in;
-        height: 2.3in;
-        max-height: 2.3in;
+        height: 2.2in;
+        max-height: 2.3125in;
 
-		margin-bottom: 0 0 0.19in 0;
+		margin-bottom: 0.15625in ;
 
         padding: 0.25in;
         text-align: center;
@@ -91,7 +97,7 @@
     }
     .name-tag .user-name {
         color: #018374;
-        font-size: 0.3in;
+        font-size: 0.25in;
         font-family: Arial, Helvetica, sans-serif;
         font-weight: bold;
         margin-top: 0.1in;
@@ -114,8 +120,8 @@
         .pdf-page {
             width: 8.5in;
             max-width: 8.5in;
-            height: 11.5in;
-            max-height: 11.5in;
+            height: 11.4in;
+            max-height: 11.4in;
 
             page-break-after: always;
 
@@ -135,7 +141,7 @@
     <div>Browser: Chrome</div>
     <div>Layout: Portrait</div>
     <div>Paper Size: Letter</div>
-    <div>Label Paper ID: XXXXX</div>
+    <div>Label Paper ID: AVERY 5395</div>
     <div>Margin: None</div>
 </div>
 
@@ -157,6 +163,7 @@
     <div class="pdf-page">
         <div class="print-date">@DateTime.Now.ToLocalTime()</div>
         <div class="page-number">@pageNum</div>
+        <div class="paper-label-id">AVERY 5395</div>
         @foreach (var eventApplication in group)
         {
             var appUser = eventApplication.AssociatedUser;
