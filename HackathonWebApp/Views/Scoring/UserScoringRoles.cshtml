@@ -9,6 +9,9 @@
 
     // Group by users that have an ApplicationRole (Staff) or not (Participant)
     var appUsersByGroup = appUsers.ToLookup(u=> (u.Roles.Count() > 0) ? "Staff" : "Participant");
+
+    // Count number of users in each role
+    Dictionary<string,int> userRoleCounts = userScoringRoles.GroupBy(p=> p.Value).ToDictionary(p=> p.Key, p=> p.Count());
 }
 
 <style>
@@ -22,6 +25,29 @@
 
 <h1 class="text-white">@ViewBag.Title</h1>
 <form asp-action="UpdateUserScoringRoles" enctype="multipart/form-data">
+<button type="submit" class="btn btn-primary">Save</button>
+
+<h3 class="text-white">Overall Role Coverage</h3>
+<div class="row p-2 text-white">
+@foreach (var scoringRoleGroup in scoringRoles.Values.GroupBy(p=> p.ScoringGroup))
+{
+    <div class="col-3 m-1" style="border: 1px solid var(--bh-green); border-radius: 10px;">
+        <h5>@scoringRoleGroup.Key</h5>
+        <table>
+        @foreach (ScoringRole scoringRole in scoringRoleGroup)
+        {
+            string scoringRoleId = scoringRole.Id.ToString();
+            int userRoleCount = userRoleCounts.GetValueOrDefault(scoringRoleId);
+            <tr>
+                <td style="padding-right:15px;">@scoringRole.Name</td>
+                <td>@userRoleCount</td>
+            </tr>
+        }
+        </table>
+    </div>
+}
+</div>
+
 @foreach (var appUsersGroup in appUsersByGroup)
 {
     @* Show table for each group of users *@

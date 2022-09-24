@@ -35,22 +35,30 @@
                     <span asp-validation-for="ScoringWeight" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    Questions
-                    <table>
-                    @foreach (var scoreQuestion in scoringQuestions.Values)
+                    <h3>Questions</h3>
+                    @foreach (var scoringQuestionGroup in scoringQuestions.Values.GroupBy(p=> p.Group))
                     {
-                        <tr>
-                            @if(scoringRole.ScoreQuestionsIds.Contains(scoreQuestion.Id.ToString()))
-                            {
-                                <td><input type="checkbox" name="ScoreQuestionsIds" value="@scoreQuestion.Id" checked></td>
-                            }else
-                            {
-                                <td><input type="checkbox" name="ScoreQuestionsIds" value="@scoreQuestion.Id"></td>
-                            }
-                            <td>@scoreQuestion.Title</td>
-                        </tr>
+                        <h5>@scoringQuestionGroup.Key</h5>  
+                        <table style="line-height: 0.9; margin-bottom: 15px;">
+                        @foreach (var scoreQuestion in scoringQuestionGroup)
+                        {
+                            <tr>
+                                @if(scoringRole.ScoreQuestionsIds.Contains(scoreQuestion.Id.ToString()))
+                                {
+                                    <td style="vertical-align:top;"><input type="checkbox" name="ScoreQuestionsIds" value="@scoreQuestion.Id" checked></td>
+                                }else
+                                {
+                                    <td style="vertical-align:top;"><input type="checkbox" name="ScoreQuestionsIds" value="@scoreQuestion.Id"></td>
+                                }
+                                <td style="padding: 0 0 10px 10px;">
+                                    @scoreQuestion.Title
+                                    <span style="font-size:8pt;"><br/>@scoreQuestion.Description</span>
+                                </td>
+                            </tr>
+                        }
+                        </table>
                     }
-                    </table>
+
                 </div>
                 
                 <div class="form-group">
