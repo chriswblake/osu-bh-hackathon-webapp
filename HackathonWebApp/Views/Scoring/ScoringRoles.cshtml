@@ -65,9 +65,12 @@
                 <td>
                     @foreach (string scoreQuestionId in scoringRole.ScoreQuestionsIds)
                     {
-                        var scoreQuestion = scoringQuestions[scoreQuestionId];
-                        <div class="question-title">@scoreQuestion.Title</div>
-                        <div class="question-description">@scoreQuestion.Description</div>
+                        var scoreQuestion = scoringQuestions.GetValueOrDefault(scoreQuestionId);
+                        if (scoreQuestion != null)
+                        {
+                            <div class="question-title">@scoreQuestion.Title</div>
+                            <div class="question-description">@scoreQuestion.Description</div>
+                        }
                     }
                 </td>
                 <td>
