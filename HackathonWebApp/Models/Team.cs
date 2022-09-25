@@ -157,10 +157,13 @@ namespace HackathonWebApp.Models
                         int score = kvp2.Value;
 
                         // Get question using question id
-                        ScoreQuestion question = this.ReferenceEvent.ScoringQuestions[questionId];
+                        ScoreQuestion question = this.ReferenceEvent.ScoringQuestions.GetValueOrDefault(questionId);
 
-                        var weightedScore = new WeightedScore(score, scoringRole, question);
-                        weightedScores.Add(weightedScore);
+                        // Add weighted score to list
+                        if (question != null){
+                            var weightedScore = new WeightedScore(score, scoringRole, question);
+                            weightedScores.Add(weightedScore);
+                        }
                     }
                 }
 
