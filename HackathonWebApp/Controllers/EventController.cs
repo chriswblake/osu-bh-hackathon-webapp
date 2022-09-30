@@ -634,11 +634,12 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("AssignTeams");
         }
         public IActionResult CreateTeam() => View();
+        
+        // Team Info
         public IActionResult Teams() {
             List<Team> teams = this.activeEvent.Teams.Values.ToList();
             return View(teams);
         }
-        [HttpPost]
         public async Task<IActionResult> CreateTeam(Team team)
         {
             try
@@ -699,8 +700,42 @@ namespace HackathonWebApp.Controllers
 
             return RedirectToAction(nameof(Teams));
         }
-        
-        // Team Info
+        [HttpPost]
+        public async Task<IActionResult> DeleteTeam(string id)
+        {
+            //Check if team is empty
+            Team team = this.activeEvent.Teams.GetValueOrDefault(id);
+            if (team == null)
+            {
+                Errors(new KeyNotFoundException("Unknown Team ID"));
+                return RedirectToAction(nameof(Teams));
+            }
+            else if (team.TeamMembers.Count() > 0)
+            {
+                Errors(new Exception("Team must not have members."));
+                return RedirectToAction(nameof(Teams));
+            }
+
+            try
+            { 
+                // Create change set
+                var updateDefinition = Builders<HackathonEvent>.Update.Unset(p=> p.Teams[id]);
+
+                // Update in DB
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == activeEvent.Id,
+                    updateDefinition
+                );
+
+                // Update in Memory
+                this.activeEvent.Teams.Remove(id);
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return RedirectToAction(nameof(Teams));
+        }
         public IActionResult NameTags() {
             List<EventApplication> assignedEventApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).ToList();
             return View(assignedEventApplications);
