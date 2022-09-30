@@ -364,6 +364,89 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("UserScoringRoles");
         }
 
+        // Results
+        [AllowAnonymous]
+        [HttpGet]
+        public JsonResult CombinedScores(string orderBy, bool descending=false) {
+            var allTeams = this.activeEvent.Teams.Values;
+
+            // Return just required info
+            var teamScores = allTeams.Select(
+                team => new {
+                    id = team.Id.ToString(),
+                    name = team.Name,
+                    combined_score = Math.Round(team.CombinedScore, 3),
+                    submissions_count = team.ScoringSubmissions.Count()
+                });
+            
+            // Order by selection
+            switch (orderBy.ToLower())
+            {
+                case "combined_score":
+                    teamScores = teamScores.OrderBy(t=> t.combined_score);
+                    break;
+                case "submissions_count":
+                    teamScores = teamScores.OrderBy(t=> t.submissions_count);
+                    break;
+                case "name":
+                default:
+                teamScores = teamScores.OrderBy(t=> t.name);
+                    break;
+            }
+
+            // Reverse order if requested
+            if (descending)
+                teamScores = teamScores.Reverse();
+
+            return new JsonResult(teamScores);
+        }
+        [AllowAnonymous]
+        [HttpGet]
+        public JsonResult QuestionScores(string teamId, string orderBy, bool descending=false) {
+            // Check input
+            if (teamId == null)
+                return new JsonResult(new {});            
+
+            // Get the team
+            Team team = this.activeEvent.Teams.GetValueOrDefault(teamId);
+            if (team == null)
+                return new JsonResult(new {});            
+
+
+            // Return just required info
+            var questions = this.activeEvent.ScoringQuestions;
+            var scoreCounts = team.CountScoresByQuestionId;
+            var questionScores = team.AvgWeightedScoresByQuestionId.Select(
+                questionScore => new {
+                    id = questionScore.Key,
+                    score = Math.Round(questionScore.Value, 3),
+                    submissions_count = scoreCounts.GetValueOrDefault(questionScore.Key, 0),
+                    question_title = questions.GetValueOrDefault(questionScore.Key, new ScoreQuestion()).Title,
+                }
+            );
+
+            // Order by selection
+            switch (orderBy.ToLower())
+            {
+                case "score":
+                    questionScores = questionScores.OrderBy(t=> t.score);
+                    break;
+                case "submissions_count":
+                    questionScores = questionScores.OrderBy(t=> t.submissions_count);
+                    break;
+                case "question_title":
+                default:
+                questionScores = questionScores.OrderBy(t=> t.question_title);
+                    break;
+            }
+
+            // Reverse order if requested
+            if (descending)
+                questionScores = questionScores.Reverse();
+                
+            return new JsonResult(questionScores);
+        }
+
         // Errors
         private void Errors(Task result)
         {

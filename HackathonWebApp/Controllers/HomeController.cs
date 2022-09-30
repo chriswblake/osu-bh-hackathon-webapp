@@ -129,6 +129,13 @@ namespace HackathonWebApp.Controllers
             return View(organizers);
         }
 
+        public IActionResult Results()
+        {
+            var allTeams = this.activeEvent.Teams;
+            Dictionary<string, Team> orderedTeams = allTeams.OrderByDescending(t=> t.Value.CombinedScore).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Value);
+            return View(orderedTeams);
+        }
+
         public IActionResult Privacy()
         {
             return View();
