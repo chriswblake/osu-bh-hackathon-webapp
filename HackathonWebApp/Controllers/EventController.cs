@@ -634,7 +634,12 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("AssignTeams");
         }
         public IActionResult CreateTeam() => View();
-        [HttpPost]
+        
+        // Team Info
+        public IActionResult Teams() {
+            List<Team> teams = this.activeEvent.Teams.Values.ToList();
+            return View(teams);
+        }
         public async Task<IActionResult> CreateTeam(Team team)
         {
             try
@@ -662,22 +667,75 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("AssignTeams");
         }
+        public IActionResult UpdateTeam(string id) {
+            Team team = this.activeEvent.Teams.GetValueOrDefault(id);
+            return View(team);
+        }
         [HttpPost]
-        public async void UpdateTeam(Team team){
+        public async Task<IActionResult> UpdateTeam(string id, Team team){
+            // Check input
+            if (id == null || team == null)
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+            if (!this.activeEvent.Teams.ContainsKey(id))
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
+            string teamId = id;
+
             // Update team name
-            string teamId = team.Id.ToString();
             var updateDefinition = Builders<HackathonEvent>.Update
-                .Set(p => p.Teams[teamId].Name, team.Name);
+                .Set(p => p.Teams[teamId].Name, team.Name)
+                .Set(p=> p.Teams[teamId].ProjectName, team.ProjectName)
+                .Set(p=> p.Teams[teamId].ProjectDescription, team.ProjectDescription)
+                .Set(p=> p.Teams[teamId].ProjectVideoURL, team.ProjectVideoURL);
             await eventCollection.FindOneAndUpdateAsync(
                 s => s.Id == this.activeEvent.Id,
                 updateDefinition
             );
 
-            // Clear active event so it is refreshed
-            this.activeEvent.Teams[teamId].Name = team.Name;
+            // Update in memory
+            Team theTeam = this.activeEvent.Teams[teamId];
+            theTeam.Name = team.Name;
+            theTeam.ProjectName = team.ProjectName;
+            theTeam.ProjectDescription = team.ProjectDescription;
+            theTeam.ProjectVideoURL = team.ProjectVideoURL;
+
+            return RedirectToAction(nameof(Teams));
         }
-        
-        // Team Info
+        [HttpPost]
+        public async Task<IActionResult> DeleteTeam(string id)
+        {
+            //Check if team is empty
+            Team team = this.activeEvent.Teams.GetValueOrDefault(id);
+            if (team == null)
+            {
+                Errors(new KeyNotFoundException("Unknown Team ID"));
+                return RedirectToAction(nameof(Teams));
+            }
+            else if (team.TeamMembers.Count() > 0)
+            {
+                Errors(new Exception("Team must not have members."));
+                return RedirectToAction(nameof(Teams));
+            }
+
+            try
+            { 
+                // Create change set
+                var updateDefinition = Builders<HackathonEvent>.Update.Unset(p=> p.Teams[id]);
+
+                // Update in DB
+                await eventCollection.FindOneAndUpdateAsync(
+                    s => s.Id == activeEvent.Id,
+                    updateDefinition
+                );
+
+                // Update in Memory
+                this.activeEvent.Teams.Remove(id);
+            }
+            catch (Exception e)
+            {
+                Errors(e);
+            }
+            return RedirectToAction(nameof(Teams));
+        }
         public IActionResult NameTags() {
             List<EventApplication> assignedEventApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).ToList();
             return View(assignedEventApplications);

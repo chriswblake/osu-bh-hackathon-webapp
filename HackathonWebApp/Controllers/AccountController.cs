@@ -413,7 +413,7 @@ namespace HackathonWebApp.Controllers
             // Update team name using event controller
             team.Name = newTeamInfo.Name;
             var eventController = (EventController) this.HttpContext.RequestServices.GetService(typeof(EventController));
-            eventController.UpdateTeam(team);
+            await eventController.UpdateTeam(teamId, team);
 
             return RedirectToAction(nameof(YourTeam));
         }

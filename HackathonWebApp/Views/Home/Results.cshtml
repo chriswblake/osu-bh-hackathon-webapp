@@ -1,0 +1,423 @@
+﻿@model Dictionary<string, Team>
+@{
+    ViewBag.Title = "Results";
+    Dictionary<string, Team> orderedTeams = Model; 
+    List<Team> winningTeams = orderedTeams.Values.Take(3).ToList();
+}
+
+<style>
+    .box-rounded {
+        height: 100%;
+        width: 100%;
+        
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .project-box {
+        position:relative;
+        margin: 1em 0;
+        padding: 1em 1em;
+        background-color: var(--bh-light-gray);
+        border: 1px solid var(--bh-dark-gray);
+    }
+    .score-badge {
+        position:absolute;
+        top:0;
+        right:0;
+        z-index:1;
+        padding: 5px 1em;
+        border: 1px solid var(--bh-green);
+        border-radius:0 10px 0 10px;
+        background-color: var(--osu-orange);
+    }
+    .project-info {
+        text-align: justify;
+    }
+    .project-info .project-description {
+
+    }
+    .project-info .team-members {
+        text-align: left;
+    }
+    .project-info .project-description + .team-members {
+        font-size: 9pt;
+        margin-top: 10px;
+    }
+    .project-info .project-description + .team-members h3 {
+        font-size: 11pt;
+        margin-bottom: 3px;
+    }
+    @@media (max-width: 767px)
+    {
+        .project-video {
+            min-height: 250px;
+            margin-top: 15px;
+        }
+    }
+</style>
+
+<div class="text-center">
+	<section class="first-section" style="padding: 5em;">
+		<h1 class="osu-orange">Results</h1>
+	</section>
+
+    @* Final Scores *@
+	<section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:1em;">
+		<h2 class="osu-orange">Final Scores</h2>
+	</section>
+	<section class="diagonal-section" style="padding:1em 0 1em 0; background-color:#DDD;">
+	<div class="mx-auto diagonal-section-content container row">
+        <div class="col-12 col-sm-7" style="text-align:center;">
+            <canvas id="bar-chart-teams-combined" class="bar-chart-teams-combined" height="150" ></canvas>
+        </div>
+        <div class="col-12 col-sm-5" style="text-align: left;">
+           The <b>Final Scores</b> are a weighted summation of scores from all
+           participants (50%), judges (40%), and mentors (10%).
+           <ul>
+                <li>The orange bars represent total points earned.</li>
+                <li>The gray lines represent how many users submitted a score.</li>
+                <li>The gray lines represent how many users submitted a score.</li>
+           </ul>
+        </div>
+	</div>
+	</section>
+
+    @* Teams *@
+    <section class="diagonal-section" style="background-color:var(--bh-dark-green); padding:1em;">
+		<h2 class="osu-orange">Teams</h2>
+	</section>
+    <section class="diagonal-section" style="padding:1em 0 1em 0; background-color:#DDD;">
+	<div class="container mx-auto diagonal-section-content" align="center">
+    @foreach (Team team in orderedTeams.Values)
+    {
+        @* Skip empty teams *@
+        if(team.TeamMembers.Count() == 0) continue;
+        
+        <div class="project-box box-rounded row col-12 col-lg-10 col-xl-9">
+            @* Score Badge *@
+            <div class="score-badge">
+                <b>@Math.Round(team.CombinedScore,2)pts</b>
+            </div>
+                    
+            @* Project Info *@
+            @{
+                @* Decided width of project info *@
+                string projectInfoWidth = "";
+                if (team.ProjectVideoURL != null) { projectInfoWidth ="col-md-6"; }
+            }
+            <div class="project-info col-12 @projectInfoWidth">
+                    @if(team.ProjectName != null && team.ProjectName != ""
+                        && team.ProjectDescription != null && team.ProjectDescription != "")
+                    {
+                    <div class="project-description">
+                        <h3>@team.ProjectName</h3>
+                        <div>@team.ProjectDescription</div>
+                    </div>
+                    }
+                    
+                    @if(team.TeamMembers != null)
+                    {
+                    <div class="team-members">
+                        <h3>@team.Name</h3>
+                        @String.Join(", ", team.TeamMembers.Values.Select(t=> t.FirstName + " " + t.LastName))
+                    </div>
+                    }
+            </div>
+
+             @* Project Video *@
+            @if(team.ProjectVideoURL != null)
+            {
+            <div class="col-12 col-md-6 project-video">
+                <div class="box-rounded">
+                    <iframe src="@team.ProjectVideoURL?controls=0"
+                    title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    style="width:100%; height: 100%;"></iframe>
+                </div>
+            </div>
+            }
+
+            @* Chart - Scores *@
+            <div class="col-12" style="margin-top:15px;">
+                <canvas id="@team.Id" class="bar-chart-team-scores" height="80" ></canvas>
+                <span style="font-size:8pt;">*Questions are weighted. Maximum points not shown.</span>
+            </div>
+        </div>
+    }
+    </div>
+    </section>
+</div>
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0" asp-append-version="true"></script>
+	@* Reference: https://www.chartjs.org/docs/latest/samples/information.html *@
+	@* Reference: https://chartjs-plugin-datalabels.netlify.app/guide/#table-of-contents *@
+
+    @* Score Charts *@
+	<script>
+		$(document).ready(function(){
+			Chart.register(ChartDataLabels);
+			
+			// Colors
+			const bh_dark_green = '#05322B';
+			const bh_green =  '#018374';
+			const osu_orange = '#FE5C00';
+			charts = {};
+
+            // Formatting, combined teams
+            $(".bar-chart-teams-combined").each(function() {
+				let chartId = $(this).attr('id');
+				const ctx = document.getElementById(chartId).getContext('2d');
+				const myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						datasets: [{
+							backgroundColor: osu_orange,
+							borderColor: bh_green,
+							borderWidth: 1,
+                            datalabels: {
+								color: bh_green,
+								anchor: 'end',
+								align: 'end',
+							},
+                            yAxisID: 'y',
+                            order: 1,
+						},
+                        {
+                            borderColor: "#AAA",
+                            backgroundColor: "#AAA",
+                            type: 'line',
+                            datalabels: {
+								color: "#AAA",
+								anchor: 'end',
+								align: 'end',
+							},
+                            yAxisID: 'y2',
+                            order: 0
+                        }
+                        ]
+					},
+					options: {
+                        animation: false,
+						scales: {
+							y: {
+								min: 0,
+                                title: {
+									display: true,
+                                    color: bh_green,
+									text: 'Combined Score'
+								},
+								ticks: {
+                                    color: bh_green,
+                                    autoSkip: false,
+								},
+                                grid: {
+                                    display: false,
+                                    color: '#666',
+                                    borderColor: bh_green
+                                }
+							},
+                            y2: {
+                                min: 0,
+                                max: 50,
+                                title: {
+									display: true,
+                                    color: "#999",
+									text: 'Users'
+								},
+                                ticks: {
+                                    color: "#999",
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+							x: {
+								title: {
+									display: true,
+                                    color: osu_orange,
+									text: 'Team'
+								},
+                                ticks: {
+                                    color: osu_orange,
+                                    autoSkip: false,
+                                    maxRotation: 90
+                                    @* minRotation: 45 *@
+                                },
+                                grid: {
+                                    display: false,
+                                    color: bh_green,
+                                    borderColor: bh_green
+                                }
+							}
+						},
+						layout: {
+							padding: {
+								top: 25
+							}
+						},
+						plugins: {
+							legend: {
+								display: false
+							}
+						}
+					}
+				});
+				charts[chartId] = myChart;
+			});
+
+            // Add combined score data
+            var results_combined_scores = $.get( "/Scoring/CombinedScores", {
+                OrderBy: "combined_score",
+                Descending: true
+            })
+            .done(function(json_combined_scores) {
+                console.log("json_combined_scores: ", json_combined_scores);
+
+                var team_names = json_combined_scores.map(function(e) { return e.name; });
+                var scores = json_combined_scores.map(function(e) { return Math.round(e.combined_score*100)/100; });
+                var counts = json_combined_scores.map(function(e) { return e.submissions_count; });
+
+                charts['bar-chart-teams-combined'].data.labels = team_names;
+                charts['bar-chart-teams-combined'].data.datasets[0].data = scores;
+                charts['bar-chart-teams-combined'].data.datasets[1].data = counts;
+                charts['bar-chart-teams-combined'].update();
+            })
+            .fail(function(e) {
+                console.log("error", e);
+            });
+
+
+            // Charts for individual teams
+			$(".bar-chart-team-scores").each(function() {
+				let chartId = $(this).attr('id');
+                console.log(chartId);
+				const ctx = document.getElementById(chartId).getContext('2d');
+				const myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						datasets: [{
+							backgroundColor: osu_orange,
+							borderColor: bh_green,
+							borderWidth: 1,
+                            datalabels: {
+								color: bh_green,
+								anchor: 'end',
+								align: 'end',
+							},
+                            yAxisID: 'y',
+                            order: 1,
+						},
+                        {
+                            borderColor: "#AAA",
+                            backgroundColor: "#AAA",
+                            type: 'line',
+                            datalabels: {
+								color: "#AAA",
+								anchor: 'end',
+								align: 'end',
+							},
+                            yAxisID: 'y2',
+                            order: 0
+                        }
+                        ]
+					},
+					options: {
+                        animation: false,
+						scales: {
+							y: {
+								min: 0,
+                                title: {
+									display: true,
+                                    color: bh_green,
+									text: 'Avg. Score'
+								},
+								ticks: {
+                                    color: bh_green,
+                                    autoSkip: false,
+									stepSize: 5
+								},
+                                grid: {
+                                    display: false,
+                                    color: '#666',
+                                    borderColor: bh_green
+                                }
+							},
+                            y2: {
+                                min: 0,
+                                title: {
+									display: true,
+                                    color: "#999",
+									text: 'Users'
+								},
+                                ticks: {
+                                    color: "#999",
+                                    autoSkip: false,
+									stepSize: 5
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            },
+							x: {
+								title: {
+									display: true,
+                                    color: osu_orange,
+									text: 'Question'
+								},
+                                ticks: {
+                                    color: osu_orange,
+                                    autoSkip: false,
+                                    maxRotation: 90,
+                                    minRotation: 10
+                                },
+                                grid: {
+                                    display: false,
+                                    color: bh_green,
+                                    borderColor: bh_green
+                                }
+							}
+						},
+						layout: {
+							padding: {
+								top: 25
+							}
+						},
+						plugins: {
+							legend: {
+								display: false
+							}
+						}
+					}
+				});
+				charts[chartId] = myChart;
+
+                // Load data
+                var results_team_question_scores = $.get( "/Scoring/QuestionScores", {
+                    TeamId: chartId,
+                    OrderBy: "score",
+                    Descending: true
+                })
+                .done(function(json_question_scores) {
+                    console.log("json_question_scores: ", json_question_scores);
+
+                    var titles = json_question_scores.map(function(q) { return q.question_title; });
+                    var scores = json_question_scores.map(function(q) { return Math.round(q.score*100)/100; });
+                    var counts = json_question_scores.map(function(q) { return q.submissions_count; });
+
+                    myChart.data.labels = titles;
+                    myChart.data.datasets[0].data = scores;
+                    myChart.data.datasets[1].data = counts;
+                    myChart.update();
+                })
+                .fail(function(e) {
+                    console.log("error", e);
+                });
+			});
+		});
+	</script>
+}
