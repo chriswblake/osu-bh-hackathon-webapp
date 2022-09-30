@@ -206,5 +206,16 @@ namespace HackathonWebApp.Models
             return this.AvgWeightedScoresByQuestionId.Values.Sum();
         }}
         #endregion
+    
+        #region Project
+        [BsonElement("project_name")]
+        public string ProjectName { get; set; }
+
+        [BsonElement("project_description")]
+        public string ProjectDescription { get; set; }
+
+        [BsonElement("project_video_url")]
+        public string ProjectVideoURL { get; set; }
+        #endregion
     }
 }
