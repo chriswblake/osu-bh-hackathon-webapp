@@ -1,0 +1,46 @@
+﻿@model List<Team>
+@{
+    Layout = "_AdminLayout";
+    ViewBag.Title = "Teams";
+    var teams = Model;
+}
+
+<h1 class="text-white">Organizers</h1>
+<table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
+    <tr>
+        <th>Name</th>
+        <th>Members</th>
+        <th>Project</th>
+        <th>Actions</th>
+    </tr>
+    @foreach (Team team in teams)
+    {
+        <tr>
+            <td>@team.Name</td>
+            <td>
+                @foreach (ApplicationUser member in team.TeamMembers.Values)
+                {
+                    <div>@member.FirstName @member.LastName</div>
+                }
+            </td>
+            <td>
+                <h5>@team.ProjectName</h5>
+                <div>@team.ProjectDescription</div>
+                @if (team.ProjectVideoURL != null && team.ProjectVideoURL != "")
+                {
+                    <iframe src="@team.ProjectVideoURL?controls=0"
+                    style="width:100%; height:100%; min-height:250px;"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+                }
+            </td>
+            <td>
+                <a class="btn btn-sm btn-primary" style="margin-bottom:5px;" asp-action="UpdateTeam" asp-route-id="@team.Id">Update</a>
+                @* <form asp-action="DeleteOrganizer" asp-route-id="@organizer.Id" method="post"><button type="submit" class="btn btn-sm btn-danger">Delete</button></form> *@
+            </td>
+        </tr>
+    }
+</table>
+<a asp-action="CreateOrganizer" class="btn btn-secondary" style="margin-bottom:50px;">Add an Organizer</a>
