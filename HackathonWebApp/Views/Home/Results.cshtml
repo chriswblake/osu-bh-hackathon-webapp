@@ -9,11 +9,50 @@
     .box-rounded {
         height: 100%;
         width: 100%;
-        @* border: 1px solid var(--bh-green); *@
-        background-color: var(--bh-light-gray);
+        
         border-radius: 10px;
-        @* margin: 0 5px; *@
         overflow: hidden;
+    }
+    .project-box {
+        position:relative;
+        margin: 1em 0;
+        padding: 1em 1em;
+        background-color: var(--bh-light-gray);
+        border: 1px solid var(--bh-dark-gray);
+    }
+    .score-badge {
+        position:absolute;
+        top:0;
+        right:0;
+        z-index:1;
+        padding: 5px 1em;
+        border: 1px solid var(--bh-green);
+        border-radius:0 10px 0 10px;
+        background-color: var(--osu-orange);
+    }
+    .project-info {
+        text-align: justify;
+    }
+    .project-info .project-description {
+
+    }
+    .project-info .team-members {
+        text-align: left;
+    }
+    .project-info .project-description + .team-members {
+        font-size: 9pt;
+        margin-top: 10px;
+    }
+    .project-info .project-description + .team-members h3 {
+        font-size: 11pt;
+        margin-bottom: 3px;
+    }
+    @@media (max-width: 767px)
+    {
+        .project-video {
+            min-height: 250px;
+            margin-top: 15px;
+        }
     }
 </style>
 
@@ -48,63 +87,61 @@
 		<h2 class="osu-orange">Teams</h2>
 	</section>
     <section class="diagonal-section" style="padding:1em 0 1em 0; background-color:#DDD;">
-	<div class="mx-auto diagonal-section-content container">
+	<div class="container mx-auto diagonal-section-content" align="center">
     @foreach (Team team in orderedTeams.Values)
     {
         @* Skip empty teams *@
         if(team.TeamMembers.Count() == 0) continue;
         
-        <div class="box-rounded row justify-content-center" style="position:relative; margin: 1em 0;">
+        <div class="project-box box-rounded row col-12 col-lg-10 col-xl-9">
             @* Score Badge *@
-            <div style="position:absolute; top:0; right:0; z-index:1; padding: 5px 1em; border: 1px solid var(--bh-green); border-radius:0 10px 0 10px; background-color: var(--osu-orange);">
-                <h5>Final Score</h5>
-                @Math.Round(team.CombinedScore,2)
+            <div class="score-badge">
+                <b>@Math.Round(team.CombinedScore,2)pts</b>
             </div>
                     
-            @* Video *@
+            @* Project Info *@
+            @{
+                @* Decided width of project info *@
+                string projectInfoWidth = "";
+                if (team.ProjectVideoURL != null) { projectInfoWidth ="col-md-6"; }
+            }
+            <div class="project-info col-12 @projectInfoWidth">
+                    @if(team.ProjectName != null && team.ProjectName != ""
+                        && team.ProjectDescription != null && team.ProjectDescription != "")
+                    {
+                    <div class="project-description">
+                        <h3>@team.ProjectName</h3>
+                        <div>@team.ProjectDescription</div>
+                    </div>
+                    }
+                    
+                    @if(team.TeamMembers != null)
+                    {
+                    <div class="team-members">
+                        <h3>@team.Name</h3>
+                        @String.Join(", ", team.TeamMembers.Values.Select(t=> t.FirstName + " " + t.LastName))
+                    </div>
+                    }
+            </div>
+
+             @* Project Video *@
             @if(team.ProjectVideoURL != null)
             {
-            <div class="col-12 col-sm-6 p-1">
+            <div class="col-12 col-md-6 project-video">
                 <div class="box-rounded">
                     <iframe src="@team.ProjectVideoURL?controls=0"
                     title="YouTube video player" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen
-                    style="width:100%; height: 100%; min-height: 280px;"></iframe>
+                    style="width:100%; height: 100%;"></iframe>
                 </div>
             </div>
             }
 
-            @* Project *@
-            @if(team.ProjectName != null && team.ProjectName != "")
-            {
-            <div class="col-12 col-sm-3 p-1">
-                <div class="box-rounded p-1">
-                    <h3>@team.ProjectName</h3>
-                    <div>@team.ProjectDescription</div>
-                    
-                    
-                </div>
-            </div>
-            }
-
-            @* Team Members *@
-            @if(team.Name != null && team.Name != "")
-            {
-            <div class="col-12 col-sm-3 p-1">
-                <div class="box-rounded p-1">
-                <h3>@team.Name</h3>
-                @foreach (ApplicationUser member in team.TeamMembers.Values)
-                {
-                    <div>@member.FirstName @member.LastName</div>
-                }
-                </div>
-            </div>
-            }
-
-            @* Scores *@
+            @* Chart - Scores *@
             <div class="col-12" style="margin-top:15px;">
                 <canvas id="@team.Id" class="bar-chart-team-scores" height="80" ></canvas>
+                <span style="font-size:8pt;">*Questions are weighted. Maximum points not shown.</span>
             </div>
         </div>
     }
