@@ -46,6 +46,7 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult Prizes()
         {
+            ViewBag.ActiveEvent = this.activeEvent;
             return View();
         }
 

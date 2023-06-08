@@ -234,21 +234,6 @@ namespace HackathonWebApp.Controllers
             ViewBag.updateEndpointName = "UpdateSchedule";
             return View("UpdateStaticPageContent");
         }
-        public string GetStaticPageContent(string pageName, string sectionName)
-        {
-            // Try to get sections for the page
-            var pageSections = new Dictionary<string, string>();
-            if (this.activeEvent.StaticPageSections.ContainsKey(pageName))
-                pageSections = this.activeEvent.StaticPageSections[pageName];
-
-            // Try to get the section's html content
-            var htmlContent = "";
-            if (pageSections.ContainsKey(sectionName))
-                htmlContent = pageSections[sectionName];
-
-            return htmlContent;
-
-        }
         [HttpPost]
         public async Task<IActionResult> UpdateSchedule(string htmlContent)
         {
@@ -266,6 +251,54 @@ namespace HackathonWebApp.Controllers
             }
             // Return to edit page
             return RedirectToAction("UpdateSchedule");
+        }
+        
+        public ViewResult UpdatePrizes()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Prizes";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/home/prizes";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("prizes", "winners");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdatePrizes";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdatePrizes(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("prizes", "winners", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdatePrizes");
+        }
+        
+        
+        public string GetStaticPageContent(string pageName, string sectionName)
+        {
+            // Try to get sections for the page
+            var pageSections = new Dictionary<string, string>();
+            if (this.activeEvent.StaticPageSections.ContainsKey(pageName))
+                pageSections = this.activeEvent.StaticPageSections[pageName];
+
+            // Try to get the section's html content
+            var htmlContent = "";
+            if (pageSections.ContainsKey(sectionName))
+                htmlContent = pageSections[sectionName];
+
+            return htmlContent;
+
         }
         public async Task<UpdateResult> UpdateStaticPageContent(string pageName, string sectionName, string htmlContent)
         {
