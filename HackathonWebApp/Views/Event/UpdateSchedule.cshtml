@@ -1,0 +1,76 @@
+﻿@model string
+@{
+    ViewData["Title"] = "Edit Event";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string schedule = Model;
+}
+
+<div class="container text-white">
+    <h1 class="text-white">Update Schedule</h1>
+    <div class="row">
+        <div class="col-sm-12">
+            <form asp-action="UpdateSchedule">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    HTML Source
+                    <textarea style="width:100%;" id="schedule" name="schedule">@schedule</textarea>
+                    @* Save Button *@
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                        <a href="~/Home" target="_blank" class="btn btn-secondary">Show Page</a>
+                    </div>
+
+                    <br/>
+
+                    Preview
+                    <div class="text-center">
+                    <section class="diagonal-section" style="color:white; border: 1px solid var(--bh-gray);">
+                		<div class="diagonal-section-content" preview-id="schedule">
+                            @Html.Raw(schedule)
+                        </div>
+                    </section>
+                    </div>
+
+                    @* <div preview-id="schedule" style="border: 1px solid var(--bh-green); padding: 1em;">
+                        @Html.Raw(schedule)
+                    </div> *@
+                </div>
+
+                
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        @* enablePreviewBox() {
+            this.SearchBox.on("input", function() {
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(function() {
+                    var searchText = this.SearchBox.val();
+                    this.SearchBoxChanged(searchText);
+                }.bind(this), 500);
+            }.bind(this));
+        } *@
+
+        $( document ).ready(function() {
+            var srcTextBox = $("textarea[id=schedule]");
+            var previewDiv = $("div[preview-id=schedule]");
+
+            srcTextBox.on("input", function() {
+                clearTimeout(this.editTimeout);
+                this.editTimeout = setTimeout(function() {
+                    console.log(this, srcTextBox);
+                    var htmlText = srcTextBox.val();
+                    previewDiv.html(htmlText);
+                }, 500);
+            });
+        });
+    </script>
+
+}

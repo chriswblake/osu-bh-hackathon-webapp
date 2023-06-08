@@ -221,6 +221,68 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("Index");
         }
 
+        // Pages
+        public ViewResult UpdateSchedule()
+        {
+            var htmlContent = GetStaticPageContent("index", "schedule");
+            return View((object)htmlContent);
+        }
+        public string GetStaticPageContent(string pageName, string sectionName)
+        {
+            // Try to get sections for the page
+            var pageSections = new Dictionary<string, string>();
+            if (this.activeEvent.StaticPageSections.ContainsKey(pageName))
+                pageSections = this.activeEvent.StaticPageSections[pageName];
+
+            // Try to get the section's html content
+            var htmlContent = "";
+            if (pageSections.ContainsKey(sectionName))
+                htmlContent = pageSections[sectionName];
+
+            return htmlContent;
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSchedule(string schedule)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("index", "schedule", schedule);
+                    
+                    // Return to edit page
+                    return RedirectToAction("UpdateSchedule");
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            return View((object)schedule);
+        }
+        public async Task<UpdateResult> UpdateStaticPageContent(string pageName, string sectionName, string htmlContent)
+        {
+            // Update in DB
+            var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.StaticPageSections[pageName][sectionName], htmlContent);
+            string eventId = activeEvent.Id.ToString();
+            var updateResult = await eventCollection.UpdateOneAsync(
+                s => s.Id == ObjectId.Parse(eventId),
+                updateDefinition
+            );
+
+            // Update in Memory
+            if (updateResult.IsAcknowledged && updateResult.ModifiedCount == 1)
+            {
+                if (!this.activeEvent.StaticPageSections.ContainsKey(pageName))
+                    this.activeEvent.StaticPageSections[pageName] = new Dictionary<string, string>();
+                this.activeEvent.StaticPageSections[pageName][sectionName] = htmlContent;
+            }
+
+            return updateResult;
+        }
+
         // Equipment
         public IActionResult Equipment()
         {

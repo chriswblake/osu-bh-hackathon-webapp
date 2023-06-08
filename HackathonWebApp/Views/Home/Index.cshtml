@@ -77,56 +77,13 @@
 	<section class="diagonal-section" style="color:white;">
 		<div class="diagonal-section-content">
 			<h1 class="osu-orange">Schedule</h1>
-
-			Coming soon! 🤓
-
-			<!-- Registration  -->
-			@* <div class="schedule">
-				<h3>Get ready...</h3>
-				<table class="table table-hover">
-					<tr><th>Date</th><th>Time</th><th>Activity</th><th>Description</th></tr>
-					<tr><td>Th (09/01)</td><td>-</td><td>Early Registration Opens</td><td>Early birds get the worm! (a raffle entry)</td></tr>
-					<tr><td>Mo (09/12)</td><td>-</td><td>Early Registration Closes</td><td>Only 50 spots available!</td></tr>
-					<tr><td>Fr (09/16)</td><td>-</td><td>Registration Closes</td><td>Don't wait to the last minute! 😮</td></tr>
-					<tr><td>Mo (09/19)</td><td>-</td><td>Confirmations sent</td><td>Remind us you are awesome and can participate.</td></tr>
-					<tr><td>We (09/21)</td><td>12:00</td><td>Teams Announced</td><td>Time to get to know each other!</td></tr>
-					<tr><td>Fr (09/23)</td><td>18:00</td><td>Kickoff</td><td>Reveal the challenge at ENDEAVOR 160</td></tr>
-				</table>
-			</div> *@
-
-			<!-- Saturday -->
-			@* <div class="schedule">
-				<h3 style="font-weight: bold;">Saturday 24th</h3>
-				<table class="table table-hover">
-					<tr><th>Time</th><th>Activity</th><th>Description</th></tr>
-					<tr><td>08:30</td><td>Check-in</td><td>Show up, mingle, take a selfie...<br/> ...before we get too serious. #HackOKState</td></tr>
-					<tr><td>09:00</td><td>Raffle</td><td>It's not a bribe to get you out of bed, we promise. ;)</td></tr>
-					<tr><td>09:05</td><td>Opening Remarks</td><td>Intro of mentors and wish everyone good luck!</td></tr>
-					<tr><td>09:15</td><td>Start work!</td><td>Let's see what happens... if we...</td></tr>
-					<tr><td>13:00</td><td>Lunch</td><td>BBQ 🤤🤩</td></tr>
-					<tr><td>18:30</td><td>Dinner</td><td>🍕🍕🍕 You are welcome to multi-task. ;)</td></tr>
-					<tr><td>23:00</td><td>Submit Projects!</td><td>Put those digital toys down!</td></tr>
-					<tr><td>23:15</td><td>Raffle</td><td>Sponsors like to give us free stuff, not sure why...</td></tr>
-				</table>
-			</div> *@
-
-			<!-- Sunday -->
-			@* <div class="schedule">
-				<h3 style="font-weight: bold;">Sunday 25th</h3>
-				<table class="table table-hover">
-					<tr><th>Time</th><th>Activity</th><th>Description</th></tr>
-					<tr><td>08:30</td><td>Arrival</td><td>Show up, mingle, grab a donut...</td></tr>
-					<tr><td>09:00</td><td>Raffle</td><td>Wait, what? Another raffle? 🤩</td></tr>
-					<tr><td>09:05</td><td>Start work!</td><td>Finish up the presentations.</td></tr>
-					<tr><td>12:00</td><td>Submit Presentations, Lunch</td><td>Enjoy the calm before the storm. ;)</td></tr>
-					<tr><td>12:30</td><td>Presentations, Teams 1-5</td><td>Interpretive dance 💃🕺 gets extra points, right?</td></tr>
-					<tr><td>13:30</td><td>Break</td><td>Hopefully no death-by-powerpoint quite yet...</td></tr>
-					<tr><td>13:45</td><td>Presentations, Teams 6-10</td><td>Yeah...seems noone went for those bonus points, haha.</td></tr>
-					<tr><td>14:45</td><td>Presentations/Judging Finished</td><td>Judgement day has begun...😮</td></tr>
-					<tr><td>15:00</td><td>Awards</td><td>Results announced and prizes awarded</td></tr>
-					<tr><td>15:30</td><td>😴</td><td>Go home and... probably crash</td></tr>
-				</table>
-			</div> *@
+			@{
+			try {
+				@Html.Raw(activeEvent.StaticPageSections["index"]["schedule"])
+			} catch
+			{
+				<span>Coming soon! 🤓</span>
+			}}
 		</div>
 	</section>
 

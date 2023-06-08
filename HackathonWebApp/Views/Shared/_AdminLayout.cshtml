@@ -33,18 +33,26 @@
                 <!-- Links -->
                 <div class="leftnavbar-collapse collapse d-sm-inline flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
+                        @* Overview *@
                         <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Index">
                                 <i class="fa-solid fa-clipboard"></i>
                                 Overview
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="Index">
+                                <i class="fa-solid fa-calendar"></i>
+                                Events
+                            </a>
+                        </li>
+
+
                         @* Accounts *@
                         <li class="nav-item settings-header">
                             Accounts
                             <hr/>
                         </li>
-
                         <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Users">
                                 <i class="fa-solid fa-users"></i>
@@ -59,15 +67,15 @@
                         </li>
 
 
-                        @* Events *@
+                        @* Event *@
                         <li class="nav-item settings-header">
-                            Events
+                            Event
                             <hr/>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Event" asp-action="Index">
-                                <i class="fa-solid fa-calendar"></i>
-                                Events
+                            <a asp-controller="Event" asp-action="UpdateSchedule">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                Schedule
                             </a>
                         </li>
                         <li class="nav-item">
@@ -103,7 +111,7 @@
                         <li class="nav-item">
                             <a asp-controller="Event" asp-action="ApplicationsSummary">
                                 <i class="fa-brands fa-wpforms"></i>
-                                Applications
+                                <span style="font-size:80%">Applications</span>
                             </a>
                         </li>
                         <li class="nav-item">
