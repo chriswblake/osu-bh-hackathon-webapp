@@ -1,5 +1,6 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using System;
@@ -23,6 +24,18 @@ namespace HackathonWebApp.Controllers
             // Hackathon DBs
             this.organizerCollection = database.GetCollection<Organizer>("Organizer");
             this.eventController = eventController;
+        }
+        public override void OnActionExecuted(ActionExecutedContext filterContext) {
+            base.OnActionExecuted(filterContext);
+
+            // Show "results" tab, if event is finished.
+            if (DateTime.Now.Date > this.activeEvent.EndTime)
+                ViewBag.ShowResultsTab = true;
+
+            // Show "prizes" tab, if content is available.
+            if (this.activeEvent.StaticPageSections.ContainsKey("prizes"))
+                if (this.activeEvent.StaticPageSections["prizes"].ContainsKey("winners"))
+                    ViewBag.ShowPrizesTab = true;
         }
 
         // Properties
