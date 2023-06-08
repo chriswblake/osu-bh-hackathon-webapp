@@ -98,6 +98,8 @@
 <section class="diagonal-section" style="background-color:white;">
 	<div class="mx-auto diagonal-section-content">
 		<center><h1>Equipment & Toys</h1>
+		@if (equipment.Count > 0)
+		{
 		<div class="row col-md-10 col-lg-8 col-xl-6" style="text-align: left;">
 		@foreach (var group in groupedEquipment)
 		{
@@ -125,6 +127,10 @@
 			</table>
 		}
 		</div>
+		} else
+		{
+			<span>Coming Soon! 🤓</span>
+		}
 		</center>
 	</div>
 </section>
