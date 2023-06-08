@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -87,7 +87,6 @@ namespace HackathonWebApp.Controllers
             var equipment = this.eventController.activeEvent.Equipment.Values.ToList();
             return View(equipment);
         }
-
         public IActionResult Selection()
         {
             // Use Event Controller to get all event applications for the active event.
@@ -145,7 +144,6 @@ namespace HackathonWebApp.Controllers
 
             return View(activeEventApplications);
         }
-
         public IActionResult Sponsors()
         {
             var sponsors = this.activeEvent.Sponsors.Values.ToList();
@@ -155,20 +153,17 @@ namespace HackathonWebApp.Controllers
         {
             return View();
         }
-
         public IActionResult Team()
         {
             var organizers = this.activeEvent.Organizers.Values.ToList();
             return View(organizers);
         }
-
         public IActionResult Results()
         {
             var allTeams = this.activeEvent.Teams;
             Dictionary<string, Team> orderedTeams = allTeams.OrderByDescending(t=> t.Value.CombinedScore).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Value);
             return View(orderedTeams);
         }
-
         public IActionResult Privacy()
         {
             return View();
