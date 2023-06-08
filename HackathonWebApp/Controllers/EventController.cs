@@ -221,7 +221,8 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        // Pages
+        // Static Page Content
+        [HttpGet]
         public ViewResult UpdateSchedule()
         {
             // Set title on edit page
@@ -253,6 +254,7 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("UpdateSchedule");
         }
         
+        [HttpGet]
         public ViewResult UpdatePrizes()
         {
             // Set title on edit page
@@ -283,8 +285,40 @@ namespace HackathonWebApp.Controllers
             // Return to edit page
             return RedirectToAction("UpdatePrizes");
         }
-        
-        
+
+        [HttpGet]
+        public ViewResult UpdateRaffles()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Raffles";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/home/prizes";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("prizes", "raffles");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdateRaffles";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateRaffles(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("prizes", "raffles", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdateRaffles");
+        }
+
+
         public string GetStaticPageContent(string pageName, string sectionName)
         {
             // Try to get sections for the page
