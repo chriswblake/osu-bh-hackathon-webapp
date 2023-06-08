@@ -65,6 +65,9 @@ namespace HackathonWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ApplicationUser appUser)
         {
+            // Disable creating accounts (for now)
+            return RedirectToAction("Create");
+            
             if (ModelState.IsValid)
             {
                 // Check if user exists
