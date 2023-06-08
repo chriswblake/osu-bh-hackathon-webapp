@@ -224,8 +224,15 @@ namespace HackathonWebApp.Controllers
         // Pages
         public ViewResult UpdateSchedule()
         {
-            var htmlContent = GetStaticPageContent("index", "schedule");
-            return View((object)htmlContent);
+            // Set title on edit page
+            ViewData["Title"] = "Update Schedule";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/Home";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("index", "schedule");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdateSchedule";
+            return View("UpdateStaticPageContent");
         }
         public string GetStaticPageContent(string pageName, string sectionName)
         {
@@ -243,24 +250,22 @@ namespace HackathonWebApp.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> UpdateSchedule(string schedule)
+        public async Task<IActionResult> UpdateSchedule(string htmlContent)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     // Save to DB and local memory
-                    await UpdateStaticPageContent("index", "schedule", schedule);
-                    
-                    // Return to edit page
-                    return RedirectToAction("UpdateSchedule");
+                    await UpdateStaticPageContent("index", "schedule", htmlContent);
                 }
                 catch (Exception e)
                 {
                     Errors(e);
                 }
             }
-            return View((object)schedule);
+            // Return to edit page
+            return RedirectToAction("UpdateSchedule");
         }
         public async Task<UpdateResult> UpdateStaticPageContent(string pageName, string sectionName, string htmlContent)
         {

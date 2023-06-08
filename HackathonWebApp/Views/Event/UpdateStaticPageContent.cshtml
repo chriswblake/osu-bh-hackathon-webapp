@@ -1,24 +1,25 @@
 ﻿@model string
 @{
-    ViewData["Title"] = "Edit Event";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    string schedule = Model;
+    string contentPageURL = ViewBag.contentPageURL;
+    string htmlContent = ViewBag.htmlContent;
+    string updateEndpointName = ViewBag.updateEndpointName;
 }
 
 <div class="container text-white">
-    <h1 class="text-white">Update Schedule</h1>
+    <h1 class="text-white">@ViewData["Title"]</h1>
     <div class="row">
         <div class="col-sm-12">
-            <form asp-action="UpdateSchedule">
+            <form asp-action="@updateEndpointName">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="form-group">
                     HTML Source
-                    <textarea style="width:100%;" id="schedule" name="schedule">@schedule</textarea>
-                    @* Save Button *@
+                    <textarea style="width:100%;" id="html_content" name="htmlContent">@htmlContent</textarea>
+                    @* Buttons *@
                     <div class="form-group">
                         <input type="submit" value="Save" class="btn btn-primary" />
-                        <a href="~/Home" target="_blank" class="btn btn-secondary">Show Page</a>
+                        <a href="@contentPageURL" target="_blank" class="btn btn-secondary">Show Page</a>
                     </div>
 
                     <br/>
@@ -26,8 +27,8 @@
                     Preview
                     <div class="text-center">
                     <section class="diagonal-section" style="color:white; border: 1px solid var(--bh-gray);">
-                		<div class="diagonal-section-content" preview-id="schedule">
-                            @Html.Raw(schedule)
+                		<div class="diagonal-section-content" preview-id="html_content">
+                            @Html.Raw(htmlContent)
                         </div>
                     </section>
                     </div>
@@ -59,8 +60,8 @@
         } *@
 
         $( document ).ready(function() {
-            var srcTextBox = $("textarea[id=schedule]");
-            var previewDiv = $("div[preview-id=schedule]");
+            var srcTextBox = $("textarea[id=html_content]");
+            var previewDiv = $("div[preview-id=html_content]");
 
             srcTextBox.on("input", function() {
                 clearTimeout(this.editTimeout);
