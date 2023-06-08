@@ -1,6 +1,13 @@
 ﻿@{
     ViewData["Title"] = "Home";
 	HackathonEvent activeEvent = ViewBag.ActiveEvent;
+	DateTime startTime = ViewBag.StartTime;
+	DateTime endTime = ViewBag.EndTime;
+	DateTime registrationOpensTime = ViewBag.RegistrationOpensTime;
+	DateTime earlyRegistrationClosesTime = ViewBag.EarlyRegistrationClosesTime;
+	DateTime registrationClosesTime = ViewBag.RegistrationClosesTime;
+	int applicationsCount = ViewBag.ApplicationsCount;
+	Dictionary<string, string> pageSections = ViewBag.PageSections;
 }
 
 <div class="text-center">
@@ -8,20 +15,25 @@
 	<section class="first-section" style="color:white; padding-bottom:5em;">
 		<img class="col-10 col-sm-8 col-md-7 col-lg-6 col-xl-5 logo-shake" src="~/img/hackokstate.png"/>
 		<br>
-		<h2 class="osu-orange">@activeEvent.StartTime.ToString("dd")-@activeEvent.EndTime.ToString("dd MMM. yyyy")</h2>
+		<h2 class="osu-orange">@startTime.ToString("dd")-@endTime.ToString("dd MMM. yyyy")</h2>
 		<h2>OSU Endeavor<br/> 215 N Hester St, Stillwater, OK 74078</h2>
 		<br/>
-		@if (DateTime.Now.Date <= activeEvent.RegistrationOpensTime.Date ) {
-			<div class="btn btn-secondary js-scroll-trigger" style="z-index: 1; position: relative;">Registration Opens<br/>@activeEvent.RegistrationOpensTime.ToString("MMM. d")</div><br/>
+
+		@if (ViewBag.RegistrationMode == "pending" )
+		{
+			<div class="btn btn-secondary js-scroll-trigger" style="z-index: 1; position: relative;">Registration Opens<br/>@registrationOpensTime.ToString("MMM. d")</div><br/>
 		}
-		@if (activeEvent.RegistrationOpensTime.Date <= DateTime.Now.Date && DateTime.Now.Date <= activeEvent.RegistrationClosesTime.Date) {
+		else if (ViewBag.RegistrationMode == "open")
+		{
             <a class="btn btn-primary" asp-controller="Event" asp-action="Apply">Register Now!</a>
-			<div>*Early registration and entry for raffle closes on @activeEvent.EarlyRegistrationClosesTime.ToString("MMM. d")</div>
-			<div>*Normal registration closes on @activeEvent.RegistrationClosesTime.ToString("MMM. d")</div>
-		} else if (DateTime.Now.Date > activeEvent.RegistrationClosesTime.Date) {
+			<div>*Early registration and entry for raffle closes on @earlyRegistrationClosesTime.ToString("MMM. d")</div>
+			<div>*Normal registration closes on @registrationClosesTime.ToString("MMM. d")</div>
+		} else if (ViewBag.RegistrationMode == "finished")
+		{
 			<div class="btn btn-secondary" style="z-index: 1; position: relative;">Registration Closed</div><br/>
-			<div> We got @activeEvent.EventApplications.Count() applications! ♥</div>
+			<div> We got @applicationsCount applications! ♥</div>
 		}
+
 		<br/>
 		<h3 class="white">Hosted By:<br/>Oklahoma State University<br/>and Baker Hughes</h3>
 		<a class="btn btn-secondary" asp-area="" asp-controller="Home" asp-action="SponsorBenefits">Learn about Sponsor Benefits</a>
@@ -79,7 +91,7 @@
 			<h1 class="osu-orange">Schedule</h1>
 			@{
 			try {
-				@Html.Raw(activeEvent.StaticPageSections["index"]["schedule"])
+				@Html.Raw(pageSections["schedule"])
 			} catch
 			{
 				<span>Coming soon! 🤓</span>

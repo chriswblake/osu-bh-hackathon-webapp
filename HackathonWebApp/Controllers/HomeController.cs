@@ -49,10 +49,30 @@ namespace HackathonWebApp.Controllers
         // Methods
         public IActionResult Index()
         {
-            ViewBag.ActiveEvent = this.activeEvent;
+            // Check dates to see if registration is allowed
+            if (DateTime.Now.Date < this.activeEvent.RegistrationOpensTime.Date)
+                ViewBag.RegistrationMode = "pending";
+            else if (DateTime.Now.Date >= this.activeEvent.RegistrationOpensTime.Date 
+                  && DateTime.Now.Date <= this.activeEvent.RegistrationClosesTime.Date)
+                ViewBag.RegistrationMode = "open";
+            else if (DateTime.Now.Date > this.activeEvent.RegistrationClosesTime.Date)
+                ViewBag.RegistrationMode = "finished";
+
+            // Get Dates
+            ViewBag.StartTime = this.activeEvent.StartTime;
+            ViewBag.EndTime = this.activeEvent.EndTime;
+            ViewBag.RegistrationOpensTime = this.activeEvent.RegistrationOpensTime;
+            ViewBag.EarlyRegistrationClosesTime = this.activeEvent.EarlyRegistrationClosesTime;
+            ViewBag.RegistrationClosesTime = this.activeEvent.RegistrationClosesTime;
+
+            // Get count of applications
+            ViewBag.ApplicationsCount = this.activeEvent.EventApplications.Count();
+
+            // Get Schedule Content
+            ViewBag.PageSections = this.activeEvent.StaticPageSections["index"];
+            
             return View();
         }
-
         public IActionResult FAQs()
         {
             return View();
