@@ -79,10 +79,9 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult Prizes()
         {
-            ViewBag.ActiveEvent = this.activeEvent;
+            ViewBag.PageSections = this.activeEvent.StaticPageSections["prizes"];
             return View();
         }
-
         public IActionResult GettingReady()
         {
             var equipment = this.eventController.activeEvent.Equipment.Values.ToList();

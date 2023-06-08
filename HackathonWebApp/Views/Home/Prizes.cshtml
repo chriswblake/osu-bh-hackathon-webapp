@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Prizes";
-	HackathonEvent activeEvent = ViewBag.ActiveEvent;
+	Dictionary<string, string> pageSections = ViewBag.PageSections;
 }
 
 <style>
@@ -40,7 +40,7 @@
 	<div class="mx-auto diagonal-section-content">
 		@{
 		try {
-			@Html.Raw(activeEvent.StaticPageSections["prizes"]["winners"])
+			@Html.Raw(pageSections["winners"])
 		} catch
 		{
 			<span>Coming soon! 🤓</span>
@@ -56,11 +56,12 @@
 	<div class="mx-auto diagonal-section-content">
 		@{
 		try {
-			@Html.Raw(activeEvent.StaticPageSections["prizes"]["raffles"])
+			@Html.Raw(pageSections["raffles"])
 		} catch
 		{
 			<span>Coming soon! 🤓</span>
 		}}
+		@ViewBag.MyVar
 	</div>
 	</section>
 
