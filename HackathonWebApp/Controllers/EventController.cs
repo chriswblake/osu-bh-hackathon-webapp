@@ -416,6 +416,38 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("UpdateSponsorSupportExamples");
         }
 
+        [HttpGet]
+        public ViewResult UpdatePrepareSuggestions()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Getting Ready - Suggestions";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/Home/GettingReady";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("prepare", "suggestions");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdatePrepareSuggestions";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdatePrepareSuggestions(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("prepare", "suggestions", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdatePrepareSuggestions");
+        }
+
         public string GetStaticPageContent(string pageName, string sectionName)
         {
             // Try to get sections for the page

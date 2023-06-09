@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -84,6 +84,7 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult GettingReady()
         {
+            ViewBag.PageSections = this.activeEvent.StaticPageSections["prepare"];
             var equipment = this.eventController.activeEvent.Equipment.Values.ToList();
             return View(equipment);
         }

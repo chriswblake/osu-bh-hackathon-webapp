@@ -104,7 +104,19 @@
                                 Team
                             </a>
                         </li>
-                        
+
+
+                        @* Getting Ready *@
+                        <li class="nav-item settings-header">
+                            Getting Ready
+                            <hr/>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="UpdatePrepareSuggestions">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                <span style="font-size:80%">Suggestions</span>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a asp-controller="Event" asp-action="Equipment">
                                 <i class="fa-solid fa-microchip"></i>
@@ -112,7 +124,7 @@
                             </a>
                         </li>
                         
-                        
+
                         @* Sponsors *@
                         <li class="nav-item settings-header">
                             Sponsors
