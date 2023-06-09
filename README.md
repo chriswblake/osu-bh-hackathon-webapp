@@ -48,6 +48,9 @@ MONGODB_HACKATHON_DB_NAME=<events collection name>
 EMAIL_USERNAME=<email address>
 EMAIL_PASSWORD=<email password>
 RECAPTCHA_KEY=<private key from google recaptcha service>
+
+# OPTIONAL
+ALLOW_CREATING_ACCOUNTS=true # default: true
 ```
 
 ## Application Configuration

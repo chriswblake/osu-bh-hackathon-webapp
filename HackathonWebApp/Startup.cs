@@ -44,6 +44,10 @@ namespace HackathonWebApp
             if (Configuration["RECAPTCHA_KEY"] == null)
                 exceptions.Add(new ArgumentNullException("Missing Setting: RECAPTCHA_KEY"));
 
+            // Check optional values and set default if missing
+            if (Configuration["ALLOW_CREATING_ACCOUNTS"] == null)
+                Configuration["ALLOW_CREATING_ACCOUNTS"] = "true";
+
             // Throw exception if any settings are missing
             if (exceptions.Count > 0)
                 throw new AggregateException("Missing Configuration", exceptions);

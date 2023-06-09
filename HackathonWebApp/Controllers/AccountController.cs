@@ -66,11 +66,21 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult Create()
         {
+            ViewBag.AccountCreationAllowed = bool.Parse(configuration["ALLOW_CREATING_ACCOUNTS"]);
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> Create(ApplicationUser appUser)
         {
+            // Prevent creating accounts, if disabled
+            bool accountCreationAllowed = bool.Parse(configuration["ALLOW_CREATING_ACCOUNTS"]);
+            if (!accountCreationAllowed)
+            {
+                ModelState.Clear();
+                ModelState.AddModelError("", "Creating accounts is not currently allowed. Please try again closer to the event date.");
+                return View(appUser);
+            }
+
             // Check recaptcha token. If it fails verification, show error message and return to create account page.
             string token = Request.Form["g-recaptcha-token"];
             bool isVerified = await this.VerifyRecaptchaToken(token, 0.5);
