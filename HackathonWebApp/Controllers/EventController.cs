@@ -119,7 +119,8 @@ namespace HackathonWebApp.Controllers
             }
         }
 
-        // Event Settings
+        // Methods
+        #region Event - Basic Settings
         public IActionResult Index()
         {
             // Get events and applications for current event
@@ -220,8 +221,271 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("Index");
         }
+        #endregion
 
-        // Equipment
+        #region Event - Static Page Content
+        [HttpGet]
+        public ViewResult UpdateAbout()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update About";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/Home";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("index", "about");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdateAbout";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateAbout(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("index", "about", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdateAbout");
+        }
+
+        [HttpGet]
+        public ViewResult UpdateSchedule()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Schedule";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/Home";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("index", "schedule");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdateSchedule";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSchedule(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("index", "schedule", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdateSchedule");
+        }
+        
+        [HttpGet]
+        public ViewResult UpdatePrizes()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Prizes";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/home/prizes";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("prizes", "winners");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdatePrizes";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdatePrizes(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("prizes", "winners", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdatePrizes");
+        }
+
+        [HttpGet]
+        public ViewResult UpdateRaffles()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Raffles";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/home/prizes";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("prizes", "raffles");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdateRaffles";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateRaffles(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("prizes", "raffles", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdateRaffles");
+        }
+
+        [HttpGet]
+        public ViewResult UpdateSponsorBenefits()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Sponsor Benefits";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/Home/SponsorBenefits";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("sponsors", "benefits");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdateSponsorBenefits";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSponsorBenefits(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("sponsors", "benefits", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdateSponsorBenefits");
+        }
+
+        [HttpGet]
+        public ViewResult UpdateSponsorSupportExamples()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Sponsor - Ways to Support";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/Home/SponsorBenefits";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("sponsors", "support_examples");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdateSponsorSupportExamples";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSponsorSupportExamples(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("sponsors", "support_examples", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdateSponsorSupportExamples");
+        }
+
+        [HttpGet]
+        public ViewResult UpdatePrepareSuggestions()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Getting Ready - Suggestions";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/Home/GettingReady";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("prepare", "suggestions");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdatePrepareSuggestions";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdatePrepareSuggestions(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("prepare", "suggestions", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdatePrepareSuggestions");
+        }
+
+        public string GetStaticPageContent(string pageName, string sectionName)
+        {
+            // Try to get sections for the page
+            var pageSections = new Dictionary<string, string>();
+            if (this.activeEvent.StaticPageSections.ContainsKey(pageName))
+                pageSections = this.activeEvent.StaticPageSections[pageName];
+
+            // Try to get the section's html content
+            var htmlContent = "";
+            if (pageSections.ContainsKey(sectionName))
+                htmlContent = pageSections[sectionName];
+
+            return htmlContent;
+
+        }
+        public async Task<UpdateResult> UpdateStaticPageContent(string pageName, string sectionName, string htmlContent)
+        {
+            // Update in DB
+            var updateDefinition = Builders<HackathonEvent>.Update.Set(p => p.StaticPageSections[pageName][sectionName], htmlContent);
+            string eventId = activeEvent.Id.ToString();
+            var updateResult = await eventCollection.UpdateOneAsync(
+                s => s.Id == ObjectId.Parse(eventId),
+                updateDefinition
+            );
+
+            // Update in Memory
+            if (updateResult.IsAcknowledged && updateResult.ModifiedCount == 1)
+            {
+                if (!this.activeEvent.StaticPageSections.ContainsKey(pageName))
+                    this.activeEvent.StaticPageSections[pageName] = new Dictionary<string, string>();
+                this.activeEvent.StaticPageSections[pageName][sectionName] = htmlContent;
+            }
+
+            return updateResult;
+        }
+        #endregion
+
+        #region Hacking Toys/Equipment
         public IActionResult Equipment()
         {
             var equipment = this.activeEvent.Equipment.Values.ToList();
@@ -288,8 +552,9 @@ namespace HackathonWebApp.Controllers
                 Map(m => m.UrlMoreInformation);
             }
         }
+        #endregion
 
-        // Applications
+        #region  User Applications for Current Event
         public List<EventApplication> GetActiveEventApplications()
         {
            var activeEventApplications = this.activeEvent.EventApplications.Values.ToList();
@@ -535,8 +800,9 @@ namespace HackathonWebApp.Controllers
             ViewBag.ActiveEvent = this.activeEvent;
             return View(this.activeEvent.EventApplications);
         }
+        #endregion
 
-        // Team Placement
+        #region Team Placement
         public IActionResult AssignTeams()
         {
             // Get events and applications for current event
@@ -634,8 +900,9 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("AssignTeams");
         }
         public IActionResult CreateTeam() => View();
-        
-        // Team Info
+        #endregion
+
+        #region Team Info
         public IActionResult Teams() {
             List<Team> teams = this.activeEvent.Teams.Values.ToList();
             return View(teams);
@@ -740,8 +1007,9 @@ namespace HackathonWebApp.Controllers
             List<EventApplication> assignedEventApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).ToList();
             return View(assignedEventApplications);
         }
+        #endregion
 
-        // Score Questions
+        #region Score Questions
         public ViewResult ScoreQuestions()
         {
             var scoreQuestions = this.activeEvent.ScoringQuestions.Values.ToList();
@@ -819,8 +1087,9 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("ScoreQuestions");
         }
-        
-        // Scoring Roles
+        #endregion
+
+        #region Roles (for Scoring)
         public ViewResult ScoringRoles()
         {
             var scoringRoles = this.activeEvent.ScoringRoles.Values.ToList();
@@ -906,8 +1175,9 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("ScoringRoles");
         }
-        
-        // User Scoring Roles
+        #endregion
+
+        #region Roles for scoring (assigned to users)
         public ViewResult UserScoringRoles()
         {
             ViewBag.AppUsers = this.userManager.Users.ToList();
@@ -939,6 +1209,7 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("UserScoringRoles");
         }
+        #endregion
 
         // Errors
         private void Errors(Task result)

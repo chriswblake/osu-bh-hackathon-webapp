@@ -1,6 +1,8 @@
-﻿@{
+@{
     Layout = "_Layout";
     ViewBag.BackgroundParticlesEnabled = false;
+    ViewBag.ShowResultsTab = true;
+    ViewBag.ShowPrizesTab = true;
 }
 
 <style>
@@ -33,18 +35,26 @@
                 <!-- Links -->
                 <div class="leftnavbar-collapse collapse d-sm-inline flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
+                        @* Overview *@
                         <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Index">
                                 <i class="fa-solid fa-clipboard"></i>
                                 Overview
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="Index">
+                                <i class="fa-solid fa-calendar"></i>
+                                Events
+                            </a>
+                        </li>
+
+
                         @* Accounts *@
                         <li class="nav-item settings-header">
                             Accounts
                             <hr/>
                         </li>
-
                         <li class="nav-item">
                             <a asp-controller="Admin" asp-action="Users">
                                 <i class="fa-solid fa-users"></i>
@@ -59,15 +69,33 @@
                         </li>
 
 
-                        @* Events *@
+                        @* Event *@
                         <li class="nav-item settings-header">
-                            Events
+                            Event
                             <hr/>
                         </li>
                         <li class="nav-item">
-                            <a asp-controller="Event" asp-action="Index">
-                                <i class="fa-solid fa-calendar"></i>
-                                Events
+                            <a asp-controller="Event" asp-action="UpdateAbout">
+                                <i class="fa-solid fa-circle-info"></i>
+                                About
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="UpdateSchedule">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                Schedule
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="UpdatePrizes">
+                                <i class="fa-solid fa-gifts"></i>
+                                Prizes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="UpdateRaffles">
+                                <i class="fa-solid fa-gifts"></i>
+                                Raffles
                             </a>
                         </li>
                         <li class="nav-item">
@@ -76,10 +104,17 @@
                                 Team
                             </a>
                         </li>
+
+
+                        @* Getting Ready *@
+                        <li class="nav-item settings-header">
+                            Getting Ready
+                            <hr/>
+                        </li>
                         <li class="nav-item">
-                            <a asp-controller="Admin" asp-action="Sponsors">
-                                <i class="fa-solid fa-rectangle-ad"></i>
-                                Sponsors
+                            <a asp-controller="Event" asp-action="UpdatePrepareSuggestions">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                <span style="font-size:80%">Suggestions</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -88,10 +123,29 @@
                                 Equipment
                             </a>
                         </li>
+                        
+
+                        @* Sponsors *@
+                        <li class="nav-item settings-header">
+                            Sponsors
+                            <hr/>
+                        </li>
                         <li class="nav-item">
-                            <a asp-controller="Event" asp-action="Apply" target="_blank">
-                                <i class="fa-brands fa-wpforms"></i>
-                                Apply
+                            <a asp-controller="Admin" asp-action="Sponsors">
+                                <i class="fa-solid fa-rectangle-ad"></i>
+                                Sponsors
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="UpdateSponsorBenefits">
+                                <i class="fa-solid fa-hand-holding-heart"></i>
+                                Benefits
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="UpdateSponsorSupportExamples">
+                                <i class="fa-solid fa-hand-sparkles"></i>
+                                Examples
                             </a>
                         </li>
 
@@ -101,9 +155,15 @@
                             <hr/>
                         </li>
                         <li class="nav-item">
+                            <a asp-controller="Event" asp-action="Apply" target="_blank">
+                                <i class="fa-brands fa-wpforms"></i>
+                                Apply
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a asp-controller="Event" asp-action="ApplicationsSummary">
                                 <i class="fa-brands fa-wpforms"></i>
-                                Applications
+                                <span style="font-size:80%">Applications</span>
                             </a>
                         </li>
                         <li class="nav-item">

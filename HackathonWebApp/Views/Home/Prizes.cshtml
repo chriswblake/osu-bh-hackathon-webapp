@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Prizes";
+	Dictionary<string, string> pageSections = ViewBag.PageSections;
 }
 
 <style>
@@ -37,48 +38,13 @@
 	</section>
 	<section class="diagonal-section" style="padding:1em 0 1em 0; background-color:white;">
 	<div class="mx-auto diagonal-section-content">
-	<div class="container">
-	<div class="row">
-		<!-- Prizes -->
-		<div class="col-md-4 faq-bubble">
-			<div class="card h-100">
-				<i class="fa-solid fa-medal"></i>
-				<h4>1st Place</h4>
-				<hr>
-				<div style="font-size:large">
-					<div><a href="https://www.amazon.com/NVIDIA-Jetson-Nano-Developer-945-13541-0000-000/dp/B08J157LHH" target="_blank">Jetson Nano</a></div>
-					<div><a href="https://www.amazon.com/Makeronics-Developer-Kit-Jetson-Nano/dp/B07ZKFDMCT/" target="_blank">Jetson Nano - Developer Kit</a></div>
-					<div>JBL Bluetooth Speaker</div>
-					<div>3D Printed Trophy</div>
-					<div>Certificate</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-4 faq-bubble">
-			<div class="card h-100">
-				<i class="fa-solid fa-medal"></i>
-				<h4>2nd Place</h4>
-				<hr>
-				<div style="font-size:large">
-					<div><a href="https://www.amazon.com/SunFounder-Mega2560-Starter-Kit-Compatible/dp/B087BFP3JN" target="_blank">Arduino + Kit</a></div>
-					<div>3D Printed Trophy</div>
-					<div>Certificate</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-4 faq-bubble">
-			<div class="card h-100">
-				<i class="fa-solid fa-medal"></i>
-				<h4>Swag Bag</h4>
-				<hr>
-				<div style="font-size:large">
-					<p>I think we will keep this one a secret.</p>
-					<p>We gotta leave something as a surprise. 😉</p>
-				</div>
-			</div>
-		</div>
-	</div>
-	</div>
+		@{
+		try {
+			@Html.Raw(pageSections["winners"])
+		} catch
+		{
+			<span>Coming soon! 🤓</span>
+		}}
 	</div>
 	</section>
 
@@ -88,82 +54,14 @@
 	</section>
 	<section class="diagonal-section" style="padding:1em 0 1em 0; background-color:white;">
 	<div class="mx-auto diagonal-section-content">
-	<div class="container">
-	<div class="row">
-		<!-- Prizes -->
-		<div class="col-md-6 faq-bubble">
-			<div class="card h-100">
-				<i class="fa-solid fa-kiwi-bird"></i>
-				<h4>Early Bird</h4>
-				<div>Given at kickoff, for those who applied during early registration.</div>
-				<hr>
-				<div style="font-size:normal;">
-					<div>Backpack Bag</div>
-					<div>Steel Water Bottle</div>
-					<div>Yeti Mug</div>
-					<div>Sweatshirt</div>
-					<div>Lunch Box (Baker Hughes)</div>
-					<div>Pen (Baker Hughes)</div>
-					<div>Phone Charging Cable (MongoDB)</div>
-					<div>Sticky Notes (MongoDB)</div>
-					<div>Notepad (MongoDB)</div>
-					<div>Leaf Sticker (MongoDB)</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-6 faq-bubble">
-			<div class="card h-100">
-				<i class="fa-solid fa-sun"></i>
-				<h4>Morning Peeps <span style="font-size:x-small;">(sat)</span></h4>
-				<div>For those peeps who can arrive on time Saturday morning.</div>
-				<hr>
-				<div style="font-size:normal">
-					<div>Backpack Bag</div>
-					<div>Water Bottle</div>
-					<div>Folding Notepad (Baker Hughes)</div>
-					<div>Pen (Baker Hughes)</div>
-					<div>Phone Charging Cable (MongoDB)</div>
-					<div>Sticky Notes (MongoDB)</div>
-					<div>Notepad (MongoDB)</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-6 faq-bubble">
-			<div class="card h-100">
-				<i class="fa-solid fa-moon"></i>
-				<h4>Night Owls</h4>
-				<div>We gotta be fair for those that would rather stay up late too.</div>
-				<hr>
-				<div style="font-size:normal">
-					<div>Backpack Bag</div>
-					<div>Water Bottle</div>
-					<div>Folding Notepad (Baker Hughes)</div>
-					<div>Pen (Baker Hughes)</div>
-					<div>Phone Charging Cable (MongoDB)</div>
-					<div>Sticky Notes (MongoDB)</div>
-					<div>Notepad (MongoDB)</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-6 faq-bubble">
-			<div class="card h-100">
-				<i class="fa-solid fa-sun"></i>
-				<h4>Morning Peeps <span style="font-size:x-small;">(sun)</span></h4>
-				<div>For those peeps who can arrive on time Sunday morning.</div>
-				<hr>
-				<div style="font-size:normal">
-					<div>Backpack Bag</div>
-					<div>Water Bottle</div>
-					<div>Folding Notepad (Baker Hughes)</div>
-					<div>Pen (Baker Hughes)</div>
-					<div>Phone Charging Cable (MongoDB)</div>
-					<div>Sticky Notes (MongoDB)</div>
-					<div>Notepad (MongoDB)</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	</div>
+		@{
+		try {
+			@Html.Raw(pageSections["raffles"])
+		} catch
+		{
+			<span>Coming soon! 🤓</span>
+		}}
+		@ViewBag.MyVar
 	</div>
 	</section>
 

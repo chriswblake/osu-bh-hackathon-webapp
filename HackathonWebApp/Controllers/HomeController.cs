@@ -1,5 +1,6 @@
 ﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using System;
@@ -24,6 +25,18 @@ namespace HackathonWebApp.Controllers
             this.organizerCollection = database.GetCollection<Organizer>("Organizer");
             this.eventController = eventController;
         }
+        public override void OnActionExecuted(ActionExecutedContext filterContext) {
+            base.OnActionExecuted(filterContext);
+
+            // Show "results" tab, if event is finished.
+            if (DateTime.Now.Date > this.activeEvent.EndTime)
+                ViewBag.ShowResultsTab = true;
+
+            // Show "prizes" tab, if content is available.
+            if (this.activeEvent.StaticPageSections.ContainsKey("prizes"))
+                if (this.activeEvent.StaticPageSections["prizes"].ContainsKey("winners"))
+                    ViewBag.ShowPrizesTab = true;
+        }
 
         // Properties
         private HackathonEvent activeEvent {
@@ -36,25 +49,48 @@ namespace HackathonWebApp.Controllers
         // Methods
         public IActionResult Index()
         {
-            ViewBag.ActiveEvent = this.activeEvent;
+            // Check dates to see if registration is allowed
+            if (DateTime.Now.Date < this.activeEvent.RegistrationOpensTime.Date)
+                ViewBag.RegistrationMode = "pending";
+            else if (DateTime.Now.Date >= this.activeEvent.RegistrationOpensTime.Date 
+                  && DateTime.Now.Date <= this.activeEvent.RegistrationClosesTime.Date)
+                ViewBag.RegistrationMode = "open";
+            else if (DateTime.Now.Date > this.activeEvent.RegistrationClosesTime.Date)
+                ViewBag.RegistrationMode = "finished";
+
+            // Get Dates
+            ViewBag.StartTime = this.activeEvent.StartTime;
+            ViewBag.EndTime = this.activeEvent.EndTime;
+            ViewBag.RegistrationOpensTime = this.activeEvent.RegistrationOpensTime;
+            ViewBag.EarlyRegistrationClosesTime = this.activeEvent.EarlyRegistrationClosesTime;
+            ViewBag.RegistrationClosesTime = this.activeEvent.RegistrationClosesTime;
+
+            // Get count of applications
+            ViewBag.ApplicationsCount = this.activeEvent.EventApplications.Count();
+
+            // Get Schedule Content
+            if (this.activeEvent.StaticPageSections.ContainsKey("index"))
+                ViewBag.PageSections = this.activeEvent.StaticPageSections["index"];
+            
             return View();
         }
-
         public IActionResult FAQs()
         {
             return View();
         }
         public IActionResult Prizes()
         {
+            if (this.activeEvent.StaticPageSections.ContainsKey("prizes"))
+                ViewBag.PageSections = this.activeEvent.StaticPageSections["prizes"];
             return View();
         }
-
         public IActionResult GettingReady()
         {
+            if (this.activeEvent.StaticPageSections.ContainsKey("prepare"))
+                ViewBag.PageSections = this.activeEvent.StaticPageSections["prepare"];
             var equipment = this.eventController.activeEvent.Equipment.Values.ToList();
             return View(equipment);
         }
-
         public IActionResult Selection()
         {
             // Use Event Controller to get all event applications for the active event.
@@ -112,7 +148,6 @@ namespace HackathonWebApp.Controllers
 
             return View(activeEventApplications);
         }
-
         public IActionResult Sponsors()
         {
             var sponsors = this.activeEvent.Sponsors.Values.ToList();
@@ -120,22 +155,21 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult SponsorBenefits()
         {
+            if (this.activeEvent.StaticPageSections.ContainsKey("sponsors"))
+                ViewBag.PageSections = this.activeEvent.StaticPageSections["sponsors"];
             return View();
         }
-
         public IActionResult Team()
         {
             var organizers = this.activeEvent.Organizers.Values.ToList();
             return View(organizers);
         }
-
         public IActionResult Results()
         {
             var allTeams = this.activeEvent.Teams;
             Dictionary<string, Team> orderedTeams = allTeams.OrderByDescending(t=> t.Value.CombinedScore).ToDictionary(kvp=> kvp.Key, kvp=> kvp.Value);
             return View(orderedTeams);
         }
-
         public IActionResult Privacy()
         {
             return View();

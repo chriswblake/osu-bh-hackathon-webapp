@@ -31,18 +31,24 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        @* <li class="nav-item">
+                        @if (ViewBag.ShowResultsTab ?? false)
+                        {
+                        <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Results">Results</a>
-                        </li> *@
-                        @* <li class="nav-item">
+                        </li>
+                        }
+                        @if (ViewBag.ShowPrizesTab ?? false)
+                        {
+                        <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Prizes">Prizes</a>
-                        </li> *@
+                        </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="FAQs">FAQs</a>
                         </li>
-                        @* <li class="nav-item">
+                        <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="GettingReady">Prepare</a>
-                        </li> *@
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Selection">Selection</a>
                         </li>
