@@ -41,6 +41,12 @@ namespace HackathonWebApp
                 exceptions.Add(new ArgumentNullException("Missing Setting: EMAIL_USERNAME"));
             if (Configuration["EMAIL_PASSWORD"] == null)
                 exceptions.Add(new ArgumentNullException("Missing Setting: EMAIL_PASSWORD"));
+            if (Configuration["RECAPTCHA_KEY"] == null)
+                exceptions.Add(new ArgumentNullException("Missing Setting: RECAPTCHA_KEY"));
+
+            // Check optional values and set default if missing
+            if (Configuration["ALLOW_CREATING_ACCOUNTS"] == null)
+                Configuration["ALLOW_CREATING_ACCOUNTS"] = "true";
 
             // Throw exception if any settings are missing
             if (exceptions.Count > 0)
@@ -50,6 +56,9 @@ namespace HackathonWebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Provide config to other areas
+            services.AddSingleton<IConfiguration>(Configuration);
+
             // Add Identity Store
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(Configuration["MONGODB_URL"], Configuration["MONGODB_IDENTITY_DB_NAME"])

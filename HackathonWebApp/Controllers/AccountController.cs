@@ -2,10 +2,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using HackathonWebApp.Models;
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Mail;
 using System.IO;
 using MongoDB.Driver;
@@ -17,16 +20,19 @@ namespace HackathonWebApp.Controllers
     {
         // Fields
         private IWebHostEnvironment webHostEnvironment;
+        public IConfiguration configuration { get; }
         private UserManager<ApplicationUser> userManager;
         private SignInManager<ApplicationUser> signInManager;
         private SmtpClient emailClient;
         private IMongoCollection<HackathonEvent> eventCollection;
         private IMongoCollection<AwardCertificate> awardCertificatesCollection;
+        private static readonly HttpClient client = new HttpClient();
 
         // Constructor
-        public AccountController(IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient, IMongoDatabase database)
+        public AccountController(IWebHostEnvironment webHostEnvironment, IConfiguration configuration, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, SmtpClient emailClient, IMongoDatabase database)
         {
             this.webHostEnvironment = webHostEnvironment;
+            this.configuration = configuration;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.emailClient = emailClient;
@@ -60,14 +66,30 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult Create()
         {
+            ViewBag.AccountCreationAllowed = bool.Parse(configuration["ALLOW_CREATING_ACCOUNTS"]);
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> Create(ApplicationUser appUser)
         {
-            // Disable creating accounts (for now)
-            return RedirectToAction("Create");
-            
+            // Prevent creating accounts, if disabled
+            bool accountCreationAllowed = bool.Parse(configuration["ALLOW_CREATING_ACCOUNTS"]);
+            if (!accountCreationAllowed)
+            {
+                ModelState.Clear();
+                ModelState.AddModelError("", "Creating accounts is not currently allowed. Please try again closer to the event date.");
+                return View(appUser);
+            }
+
+            // Check recaptcha token. If it fails verification, show error message and return to create account page.
+            string token = Request.Form["g-recaptcha-token"];
+            bool isVerified = await this.VerifyRecaptchaToken(token, 0.5);
+            if (!isVerified)
+            {
+                ModelState.AddModelError("", "Unusual activity. Please try again shortly.");
+                return View(appUser);
+            }
+
             if (ModelState.IsValid)
             {
                 // Check if user exists
@@ -156,7 +178,44 @@ namespace HackathonWebApp.Controllers
                 ViewBag.EmailConfirmed = "no";
             return View();
         }
-        
+        public async Task<bool> VerifyRecaptchaToken(string token, double minScore)
+        {
+            // Send verification to recaptcha serevice. If it fails, return false.
+            var values = new Dictionary<string, string>()
+            {
+                { "secret", configuration["RECAPTCHA_KEY"] },
+                { "response", token }
+                // { "remoteip", "" }
+            };
+            var content = new FormUrlEncodedContent(values);
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("VerifyRecaptchaToken: Failed API call");
+                return false;
+            }
+
+            // Parse json response into dictionary. If it didn't process, return false.
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseDict = BsonDocument.Parse(responseString);
+            bool verificationFinished = responseDict["success"].AsBoolean;
+            if (!verificationFinished)
+            {
+                Console.WriteLine("VerifyRecaptchaToken: API call finished, but verification did process");
+                var errors = responseDict["error-codes"];
+                Console.WriteLine("VerifyRecaptchaToken: " + errors.ToString());
+                return false;
+            }
+
+            // Get the score from the verification report and compare it.
+            double score = responseDict["score"].AsDouble;
+            string action = responseDict["action"].AsString;
+            if (score >= minScore)
+                return true;
+            else
+                return false;
+        }
+
         // Account - General Usage
         public IActionResult Login()
         {
@@ -167,6 +226,15 @@ namespace HackathonWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([Required][EmailAddress] string email, [Required] string password, string returnurl)
         {
+            // Check recaptcha token. If it fails verification, show error message and return to create account page.
+            string token = Request.Form["g-recaptcha-token"];
+            bool isVerified = await this.VerifyRecaptchaToken(token, 0.5);
+            if (!isVerified)
+            {
+                ModelState.AddModelError("", "Unusual activity. Please try again shortly.");
+                return View();
+            }
+
             // If model is not complete, show login
             if (!ModelState.IsValid)
                 return View();
