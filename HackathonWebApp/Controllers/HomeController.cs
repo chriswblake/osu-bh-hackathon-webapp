@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -69,7 +69,8 @@ namespace HackathonWebApp.Controllers
             ViewBag.ApplicationsCount = this.activeEvent.EventApplications.Count();
 
             // Get Schedule Content
-            ViewBag.PageSections = this.activeEvent.StaticPageSections["index"];
+            if (this.activeEvent.StaticPageSections.ContainsKey("index"))
+                ViewBag.PageSections = this.activeEvent.StaticPageSections["index"];
             
             return View();
         }
@@ -79,12 +80,14 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult Prizes()
         {
-            ViewBag.PageSections = this.activeEvent.StaticPageSections["prizes"];
+            if (this.activeEvent.StaticPageSections.ContainsKey("prizes"))
+                ViewBag.PageSections = this.activeEvent.StaticPageSections["prizes"];
             return View();
         }
         public IActionResult GettingReady()
         {
-            ViewBag.PageSections = this.activeEvent.StaticPageSections["prepare"];
+            if (this.activeEvent.StaticPageSections.ContainsKey("prepare"))
+                ViewBag.PageSections = this.activeEvent.StaticPageSections["prepare"];
             var equipment = this.eventController.activeEvent.Equipment.Values.ToList();
             return View(equipment);
         }
@@ -152,7 +155,8 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult SponsorBenefits()
         {
-            ViewBag.PageSections = this.activeEvent.StaticPageSections["sponsors"];
+            if (this.activeEvent.StaticPageSections.ContainsKey("sponsors"))
+                ViewBag.PageSections = this.activeEvent.StaticPageSections["sponsors"];
             return View();
         }
         public IActionResult Team()
