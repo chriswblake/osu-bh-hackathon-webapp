@@ -1,7 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Create Account";
-    ViewBag.AccountCreationAllowed = false;
-    bool AccountCreationAllowed = ViewBag.AccountCreationAllowed ?? false;
+    bool accountCreationAllowed = ViewBag.AccountCreationAllowed;
 }
 
 @model ApplicationUser
@@ -21,7 +20,7 @@
     <div asp-validation-summary="All" class="text-danger"></div>
  
     <div class="row">
-        @if(AccountCreationAllowed)
+        @if(accountCreationAllowed)
         {
 
         <div class="col-md-4">
@@ -59,22 +58,6 @@
                 <a id="submit-btn" type="button" class="btn btn-primary">Create</a>
             </form>
         </div>
-        } else
-        {
-        <div class="col-md-4">
-            Um... this is a bit embarassing... we can't help right now. Such a shame. We would love to have you join us. But...we had to disable creating new accounts (for now). 😢
-            <br/>
-            <br/>
-            The bots found our site... and yep... they started spam creating hundreds of accounts. 🤖
-            We knew it would happen eventually, but we didn't expect this fast! 
-            <br/>
-            <br/>
-            Anyway, we are currently doing some upgrades to block them. We'll have registration back up shortly! 🤓
-        </div>
-
-        }
-
-
 
         <div class="col-md-6">
             <h3>Please Note</h3>
@@ -84,6 +67,21 @@
                             
             If you would like to apply for the event at the same time as creating your account, please use the <a asp-area="" asp-controller="Event" asp-action="Apply">Event Registration</a> page.
         </div>
+
+        } else
+        {
+
+        <div class="col-md-8">
+            Thank you for your interest to join the hacking! 🤓<br/>
+            Creating new accounts is currently disabled.<br/>
+            Please come back closer to the event date. ♥️
+        </div>
+
+        }
+
+
+
+        
     </div>
 </div>
 
