@@ -151,6 +151,7 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult SponsorBenefits()
         {
+            ViewBag.PageSections = this.activeEvent.StaticPageSections["sponsors"];
             return View();
         }
         public IActionResult Team()

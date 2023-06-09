@@ -352,6 +352,70 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("UpdateRaffles");
         }
 
+        [HttpGet]
+        public ViewResult UpdateSponsorBenefits()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Sponsor Benefits";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/Home/SponsorBenefits";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("sponsors", "benefits");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdateSponsorBenefits";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSponsorBenefits(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("sponsors", "benefits", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdateSponsorBenefits");
+        }
+
+        [HttpGet]
+        public ViewResult UpdateSponsorSupportExamples()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update Sponsor - Ways to Support";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/Home/SponsorBenefits";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("sponsors", "support_examples");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdateSponsorSupportExamples";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSponsorSupportExamples(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("sponsors", "support_examples", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdateSponsorSupportExamples");
+        }
+
         public string GetStaticPageContent(string pageName, string sectionName)
         {
             // Try to get sections for the page
