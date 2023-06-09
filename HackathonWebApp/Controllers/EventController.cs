@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -119,7 +119,8 @@ namespace HackathonWebApp.Controllers
             }
         }
 
-        // Event Settings
+        // Methods
+        #region Event - Basic Settings
         public IActionResult Index()
         {
             // Get events and applications for current event
@@ -220,6 +221,7 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("Index");
         }
+        #endregion
 
         #region Event - Static Page Content
         [HttpGet]
@@ -350,7 +352,6 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("UpdateRaffles");
         }
 
-
         public string GetStaticPageContent(string pageName, string sectionName)
         {
             // Try to get sections for the page
@@ -388,7 +389,7 @@ namespace HackathonWebApp.Controllers
         }
         #endregion
 
-        // Equipment
+        #region Hacking Toys/Equipment
         public IActionResult Equipment()
         {
             var equipment = this.activeEvent.Equipment.Values.ToList();
@@ -455,8 +456,9 @@ namespace HackathonWebApp.Controllers
                 Map(m => m.UrlMoreInformation);
             }
         }
+        #endregion
 
-        // Applications
+        #region  User Applications for Current Event
         public List<EventApplication> GetActiveEventApplications()
         {
            var activeEventApplications = this.activeEvent.EventApplications.Values.ToList();
@@ -702,8 +704,9 @@ namespace HackathonWebApp.Controllers
             ViewBag.ActiveEvent = this.activeEvent;
             return View(this.activeEvent.EventApplications);
         }
+        #endregion
 
-        // Team Placement
+        #region Team Placement
         public IActionResult AssignTeams()
         {
             // Get events and applications for current event
@@ -801,8 +804,9 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("AssignTeams");
         }
         public IActionResult CreateTeam() => View();
-        
-        // Team Info
+        #endregion
+
+        #region Team Info
         public IActionResult Teams() {
             List<Team> teams = this.activeEvent.Teams.Values.ToList();
             return View(teams);
@@ -907,8 +911,9 @@ namespace HackathonWebApp.Controllers
             List<EventApplication> assignedEventApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).ToList();
             return View(assignedEventApplications);
         }
+        #endregion
 
-        // Score Questions
+        #region Score Questions
         public ViewResult ScoreQuestions()
         {
             var scoreQuestions = this.activeEvent.ScoringQuestions.Values.ToList();
@@ -986,8 +991,9 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("ScoreQuestions");
         }
-        
-        // Scoring Roles
+        #endregion
+
+        #region Roles (for Scoring)
         public ViewResult ScoringRoles()
         {
             var scoringRoles = this.activeEvent.ScoringRoles.Values.ToList();
@@ -1073,8 +1079,9 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("ScoringRoles");
         }
-        
-        // User Scoring Roles
+        #endregion
+
+        #region Roles for scoring (assigned to users)
         public ViewResult UserScoringRoles()
         {
             ViewBag.AppUsers = this.userManager.Users.ToList();
@@ -1106,6 +1113,7 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("UserScoringRoles");
         }
+        #endregion
 
         // Errors
         private void Errors(Task result)
