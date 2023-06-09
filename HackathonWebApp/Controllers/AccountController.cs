@@ -216,6 +216,15 @@ namespace HackathonWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login([Required][EmailAddress] string email, [Required] string password, string returnurl)
         {
+            // Check recaptcha token. If it fails verification, show error message and return to create account page.
+            string token = Request.Form["g-recaptcha-token"];
+            bool isVerified = await this.VerifyRecaptchaToken(token, 0.5);
+            if (!isVerified)
+            {
+                ModelState.AddModelError("", "Unusual activity. Please try again shortly.");
+                return View();
+            }
+
             // If model is not complete, show login
             if (!ModelState.IsValid)
                 return View();
