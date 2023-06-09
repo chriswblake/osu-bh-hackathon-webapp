@@ -1,6 +1,7 @@
 ﻿@model List<HackingEquipment>
 @{
     ViewData["Title"] = "Prepare";
+	Dictionary<string, string> pageSections = ViewBag.PageSections;
 	List<HackingEquipment> equipment = Model;
 
 	// Hide equipment with zero quantity
@@ -8,6 +9,8 @@
 	// Put into groups
     var groupedEquipment = equipment.GroupBy(p=> p.Category);
 }
+
+<div class="text-center">
 
 <!-- Title -->
 <section class="first-section text-center" style="padding: 5em;">
@@ -17,32 +20,14 @@
 <!-- Suggestions -->
 <section class="diagonal-section" style="background-color:white;">
 	<div class="mx-auto diagonal-section-content" style="padding: 15px;">
-		<center>
-			<h1>Suggestions</h1>
-			<div class="col-md-10 col-lg-9 col-xl-6" style="text-align:left;">
-				There are <u><b>no prerequisites</b></u> to attend the hackathon, but doing a bit of training can definitley increase your chances of having a fun time!
-				<br/>
-				<br/>
-				<div>
-					Here are some ideas:
-					<ul>
-						<li>Check out the hackathon equipment below. Maybe google/youtube some tutorials.</li>
-						<li>Get to know your team BEFORE the first day. Share skills/backgrounds/ideas.</li>
-						<li>Get certified to use the tools/equipment in ENDEAVOR.</li>
-						<li>Research issues in your field industry. Everything is produced using energy!</li>
-						<li>Research issues in the energy industry. (solar, wind, thermal, nuclear, oil, gas, etc.)</li>
-					</ul>
-				</div>
-				<div>
-					Also, just a few reminders:
-					<ul>
-						<li>The challenge is always energy-forward/sustainability/green oriented.</li>
-						<li>Your team can be ANY major, not just engineering/science.</li>
-						<li>The project can be pure software, hardware, marketing plans, business plans, or policy. There are multiple ways to earn points!</li>
-						<li>This is also a networking event to make friends, especially outside your discipline.</li>
-					</ul>
-				</div>
-			</div>
+		<h1>Suggestions</h1>
+		@{
+		try {
+			@Html.Raw(pageSections["suggestions"])
+		} catch
+		{
+			<span>Coming soon! 🤓</span>
+		}}
 		</center>
 	</div>
 </section>
@@ -98,6 +83,8 @@
 <section class="diagonal-section" style="background-color:white;">
 	<div class="mx-auto diagonal-section-content">
 		<center><h1>Equipment & Toys</h1>
+		@if (equipment.Count > 0)
+		{
 		<div class="row col-md-10 col-lg-8 col-xl-6" style="text-align: left;">
 		@foreach (var group in groupedEquipment)
 		{
@@ -125,6 +112,12 @@
 			</table>
 		}
 		</div>
+		} else
+		{
+			<span>Coming Soon! 🤓</span>
+		}
 		</center>
 	</div>
 </section>
+
+</div>

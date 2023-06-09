@@ -1,0 +1,77 @@
+﻿@model string
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    string contentPageURL = ViewBag.contentPageURL;
+    string htmlContent = ViewBag.htmlContent;
+    string updateEndpointName = ViewBag.updateEndpointName;
+}
+
+<div class="container text-white">
+    <h1 class="text-white">@ViewData["Title"]</h1>
+    <div class="row">
+        <div class="col-sm-12">
+            <form asp-action="@updateEndpointName">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    HTML Source
+                    <textarea style="width:100%;" id="html_content" name="htmlContent">@htmlContent</textarea>
+                    @* Buttons *@
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                        <a href="@contentPageURL" target="_blank" class="btn btn-secondary">Show Page</a>
+                    </div>
+
+                    <br/>
+
+                    Preview
+                    <div class="text-center">
+                    <section class="diagonal-section" style="color:white; border: 1px solid var(--bh-gray);">
+                		<div class="diagonal-section-content" preview-id="html_content">
+                            @Html.Raw(htmlContent)
+                        </div>
+                    </section>
+                    </div>
+
+                    @* <div preview-id="schedule" style="border: 1px solid var(--bh-green); padding: 1em;">
+                        @Html.Raw(schedule)
+                    </div> *@
+                </div>
+
+                
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        @* enablePreviewBox() {
+            this.SearchBox.on("input", function() {
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(function() {
+                    var searchText = this.SearchBox.val();
+                    this.SearchBoxChanged(searchText);
+                }.bind(this), 500);
+            }.bind(this));
+        } *@
+
+        $( document ).ready(function() {
+            var srcTextBox = $("textarea[id=html_content]");
+            var previewDiv = $("div[preview-id=html_content]");
+
+            srcTextBox.on("input", function() {
+                clearTimeout(this.editTimeout);
+                this.editTimeout = setTimeout(function() {
+                    console.log(this, srcTextBox);
+                    var htmlText = srcTextBox.val();
+                    previewDiv.html(htmlText);
+                }, 500);
+            });
+        });
+    </script>
+
+}

@@ -85,6 +85,13 @@ namespace HackathonWebApp.Models
         public Dictionary<string,HackingEquipment> Equipment { get; set; } = new Dictionary<string, HackingEquipment>();
         #endregion
 
+        #region Static Page Content
+        [Required]
+        [BsonElement("static_page_sections")]
+        // key:pageName, value:(key:sectionName, value:htmlContent)
+        public Dictionary<string, Dictionary<string, string>> StaticPageSections {get; set;} = new Dictionary<string, Dictionary<string, string>>();
+        #endregion
+
         #region Team Management
         [Required]
         [BsonElement("show_teams_time")]
