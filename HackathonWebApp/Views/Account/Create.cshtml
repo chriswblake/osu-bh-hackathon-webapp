@@ -29,7 +29,7 @@
             {
                 <div class="p-1 mb-2 bg-success text-white">@ViewBag.Message</div>
             }
-            <form method="post">
+            <form id="create-account-form" method="post">
                 <div class="form-group">
                     First Name
                     <input asp-for="FirstName" class="form-control" placeholder="Ben"/>
@@ -56,7 +56,7 @@
                         <li>Min one uppercase ('A'-'Z').</li>
                     </ul>
                 </div>
-                <button type="submit" class="btn btn-primary">Create</button>
+                <a id="submit-btn" type="button" class="btn btn-primary">Create</a>
             </form>
         </div>
         } else
@@ -86,3 +86,26 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+
+    <script>
+    $( document ).ready(function() {
+        $("#create-account-form").find("#submit-btn").click(function(e){
+            e.preventDefault();
+            // Identify submit button and form
+            var btn = $(this);
+            var form = btn.parent("form");
+            // Call recaptcha service
+            grecaptcha.ready(function() {
+                grecaptcha.execute('6LfvvH8mAAAAADDTVfQ4nh91t0cygR1LacVne-uZ', {action: 'create_account'}).then(function(token) {
+                    // Add a hidden field with the response token
+                    $(`<input type="hidden" name="g-recaptcha-token" value="${token}"/>`).insertBefore(btn);
+                    // Submit the form
+                    form.submit();
+                });
+            });
+        })
+    });
+    </script>
+}
