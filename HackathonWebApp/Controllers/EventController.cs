@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -221,7 +221,39 @@ namespace HackathonWebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        // Static Page Content
+        #region Event - Static Page Content
+        [HttpGet]
+        public ViewResult UpdateAbout()
+        {
+            // Set title on edit page
+            ViewData["Title"] = "Update About";
+            // Specify page this content appears on
+            ViewBag.contentPageURL = "/Home";
+            // Get html from DB
+            ViewBag.htmlContent = GetStaticPageContent("index", "about");
+            // Specify method to call for saving
+            ViewBag.updateEndpointName = "UpdateAbout";
+            return View("UpdateStaticPageContent");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateAbout(string htmlContent)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Save to DB and local memory
+                    await UpdateStaticPageContent("index", "about", htmlContent);
+                }
+                catch (Exception e)
+                {
+                    Errors(e);
+                }
+            }
+            // Return to edit page
+            return RedirectToAction("UpdateAbout");
+        }
+
         [HttpGet]
         public ViewResult UpdateSchedule()
         {
@@ -354,6 +386,7 @@ namespace HackathonWebApp.Controllers
 
             return updateResult;
         }
+        #endregion
 
         // Equipment
         public IActionResult Equipment()
