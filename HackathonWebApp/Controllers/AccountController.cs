@@ -115,8 +115,8 @@ namespace HackathonWebApp.Controllers
         public async Task<IActionResult> Create(ApplicationUser appUser)
         {
             // Prevent creating accounts, if disabled
-            bool accountCreationAllowed = bool.Parse(configuration["ALLOW_CREATING_ACCOUNTS"]);
-            if (!accountCreationAllowed)
+            ViewBag.AccountCreationAllowed = bool.Parse(configuration["ALLOW_CREATING_ACCOUNTS"]);
+            if (!ViewBag.AccountCreationAllowed)
             {
                 ModelState.Clear();
                 ModelState.AddModelError("", "Creating accounts is not currently allowed. Please try again closer to the event date.");
