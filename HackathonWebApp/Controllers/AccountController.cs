@@ -160,6 +160,7 @@ namespace HackathonWebApp.Controllers
                 var r = new Random();
                 appUser.Password = GenerateRandomPassword(r.Next(8, 24));
                 ModelState.Clear();
+                TryValidateModel(appUser);
             }
 
             if (ModelState.IsValid)
