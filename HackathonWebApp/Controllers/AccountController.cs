@@ -236,6 +236,8 @@ namespace HackathonWebApp.Controllers
         {
             // Get the user
             var appUser = await userManager.FindByIdAsync(userId);
+            if (appUser == null)
+                return View();
 
             // Check if already confirmed
             bool emailAlreadyConfirmed = await userManager.IsEmailConfirmedAsync(appUser);
