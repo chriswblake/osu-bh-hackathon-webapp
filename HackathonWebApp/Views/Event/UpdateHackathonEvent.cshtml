@@ -107,7 +107,7 @@
                 <div class="form-group">
                     @{ var tShirtSizeOptionsText = String.Join("\n", hackathonEvent.RegistrationSettings.TShirtSizeOptions.Values).Trim(); }
                     <label class="control-label" for="TShirtSizeOptions">T-Shirt Size Options</label>
-                    <textarea style="width:100%;" id="TShirtSizeOptions" name="TShirtSizeOptions">@tShirtSizeOptionsText</textarea>
+                    <textarea style="width:100%;" id="TShirtSizeOptions" name="TShirtSizeOptions" sort="false">@tShirtSizeOptionsText</textarea>
                 </div>
 
                 <h2>Team Settings</h2>
@@ -181,10 +181,14 @@
 
         // Regenerate hidden inputs
         var optionsText = optionsTextArea.val();
-        var optionsList = optionsText.split("\n")
-            .filter(a=>a) // remove blanks
-            .sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase());
-            });
+        var optionsList = optionsText.split("\n").filter(a=>a); // remove blanks
+
+        // Default to sorting options alphanumerically, unless there is a flag that prevents it.
+        var sortOptions = optionsTextArea.attr('sort');
+        if (sortOptions == undefined || sortOptions.toLowerCase() === "true" )
+            optionsList = optionsList.sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase());});
+
+        // Append each item as a hidden field
         $.each(optionsList.reverse(), function(index, value) {
             var option = value.replace(/[^a-zA-Z0-9 ]/g, '').trim();
             var key = option.toLowerCase().replace(/ /g, '_').trim();
