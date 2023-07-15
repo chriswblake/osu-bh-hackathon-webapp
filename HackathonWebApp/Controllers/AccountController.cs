@@ -89,23 +89,45 @@ namespace HackathonWebApp.Controllers
 
             return new string(chars.ToArray());
         }
+        public async Task<bool> VerifyRecaptchaToken(string token, double minScore)
+        {
+            // Send verification to recaptcha serevice. If it fails, return false.
+            var values = new Dictionary<string, string>()
+            {
+                { "secret", configuration["RECAPTCHA_KEY"] },
+                { "response", token }
+                // { "remoteip", "" }
+            };
+            var content = new FormUrlEncodedContent(values);
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("VerifyRecaptchaToken: Failed API call");
+                return false;
+            }
+
+            // Parse json response into dictionary. If it didn't process, return false.
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseDict = BsonDocument.Parse(responseString);
+            bool verificationFinished = responseDict["success"].AsBoolean;
+            if (!verificationFinished)
+            {
+                Console.WriteLine("VerifyRecaptchaToken: API call finished, but verification did process");
+                var errors = responseDict["error-codes"];
+                Console.WriteLine("VerifyRecaptchaToken: " + errors.ToString());
+                return false;
+            }
+
+            // Get the score from the verification report and compare it.
+            double score = responseDict["score"].AsDouble;
+            string action = responseDict["action"].AsString;
+            if (score >= minScore)
+                return true;
+            else
+                return false;
+        }
 
         // Account - Create
-        [Authorize]
-        public ViewResult Index()
-        {
-            string userName = User.Identity.Name;
-            ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
-
-            // Add event application, if they have one
-            if (this.activeEvent.EventApplications.ContainsKey(appUser.Id.ToString()))
-                ViewBag.EventApplication = this.activeEvent.EventApplications[appUser.Id.ToString()];
-
-            // Add Award Certificates
-            ViewBag.AwardCertificates = this.awardCertificatesCollection.Find(p=> p.UserId == appUser.Id.ToString()).ToList();
-    
-            return View(appUser);
-        }
         public IActionResult Create()
         {
             ViewBag.AccountCreationAllowed = bool.Parse(configuration["ALLOW_CREATING_ACCOUNTS"]);
@@ -229,43 +251,6 @@ namespace HackathonWebApp.Controllers
             else
                 ViewBag.EmailConfirmed = "no";
             return View();
-        }
-        public async Task<bool> VerifyRecaptchaToken(string token, double minScore)
-        {
-            // Send verification to recaptcha serevice. If it fails, return false.
-            var values = new Dictionary<string, string>()
-            {
-                { "secret", configuration["RECAPTCHA_KEY"] },
-                { "response", token }
-                // { "remoteip", "" }
-            };
-            var content = new FormUrlEncodedContent(values);
-            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("VerifyRecaptchaToken: Failed API call");
-                return false;
-            }
-
-            // Parse json response into dictionary. If it didn't process, return false.
-            var responseString = await response.Content.ReadAsStringAsync();
-            var responseDict = BsonDocument.Parse(responseString);
-            bool verificationFinished = responseDict["success"].AsBoolean;
-            if (!verificationFinished)
-            {
-                Console.WriteLine("VerifyRecaptchaToken: API call finished, but verification did process");
-                var errors = responseDict["error-codes"];
-                Console.WriteLine("VerifyRecaptchaToken: " + errors.ToString());
-                return false;
-            }
-
-            // Get the score from the verification report and compare it.
-            double score = responseDict["score"].AsDouble;
-            string action = responseDict["action"].AsString;
-            if (score >= minScore)
-                return true;
-            else
-                return false;
         }
 
         // Show login form
@@ -392,6 +377,21 @@ namespace HackathonWebApp.Controllers
         }
         
         // Manage Account
+        [Authorize]
+        public ViewResult Index()
+        {
+            string userName = User.Identity.Name;
+            ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+
+            // Add event application, if they have one
+            if (this.activeEvent.EventApplications.ContainsKey(appUser.Id.ToString()))
+                ViewBag.EventApplication = this.activeEvent.EventApplications[appUser.Id.ToString()];
+
+            // Add Award Certificates
+            ViewBag.AwardCertificates = this.awardCertificatesCollection.Find(p=> p.UserId == appUser.Id.ToString()).ToList();
+    
+            return View(appUser);
+        }
         [Authorize]
         public async Task<IActionResult> Logout()
         {
