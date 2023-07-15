@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Mail;
 using System.IO;
+using System.Linq;
 using MongoDB.Driver;
 using MongoDB.Bson;
 
@@ -48,7 +49,48 @@ namespace HackathonWebApp.Controllers
             }
         }
 
-        // Account - Create and confirm account
+        // General
+        public static string GenerateRandomPassword(int requiredLength = 8, int requiredUniqueChars = 4, bool requireDigit = true, bool requireLowercase = true, bool requireNonAlphanumeric = true, bool requireUppercase = true)
+        {
+            // Reference: https://github.com/Darkseal/PasswordGenerator
+
+            string[] randomChars = new[] {
+                "ABCDEFGHJKLMNOPQRSTUVWXYZ",    // uppercase 
+                "abcdefghijkmnopqrstuvwxyz",    // lowercase
+                "0123456789",                   // digits
+                "!@$?_-"                        // non-alphanumeric
+            };
+            var rand = new Random();
+            List<char> chars = new List<char>();
+
+            if (requireUppercase)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[0][rand.Next(0, randomChars[0].Length)]);
+
+            if (requireLowercase)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[1][rand.Next(0, randomChars[1].Length)]);
+
+            if (requireDigit)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[2][rand.Next(0, randomChars[2].Length)]);
+
+            if (requireNonAlphanumeric)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[3][rand.Next(0, randomChars[3].Length)]);
+
+            for (int i = chars.Count; i < requiredLength
+                || chars.Distinct().Count() < requiredUniqueChars; i++)
+            {
+                string rcs = randomChars[rand.Next(0, randomChars.Length)];
+                chars.Insert(rand.Next(0, chars.Count),
+                    rcs[rand.Next(0, rcs.Length)]);
+            }
+
+            return new string(chars.ToArray());
+        }
+
+        // Account - Create
         [Authorize]
         public ViewResult Index()
         {
@@ -90,6 +132,14 @@ namespace HackathonWebApp.Controllers
                 return View(appUser);
             }
 
+            // If password is blank, assign it something random
+            if (appUser.Password == null || appUser.Password == "")
+            {
+                var r = new Random();
+                appUser.Password = GenerateRandomPassword(r.Next(8, 24));
+                ModelState.Clear();
+            }
+
             if (ModelState.IsValid)
             {
                 // Check if user exists
@@ -119,6 +169,8 @@ namespace HackathonWebApp.Controllers
             }
             return View(appUser);
         }
+
+        // Confirm Email
         public IActionResult ConfirmAccount()
         {
             return View();
