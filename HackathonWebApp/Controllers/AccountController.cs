@@ -366,7 +366,7 @@ namespace HackathonWebApp.Controllers
             var result = await userManager.ConfirmEmailAsync(appUser, code);
             if (!result.Succeeded)
             {
-                ModelState.AddModelError(nameof(userId), "Login Failed: Invalid Invalid user or code");
+                ModelState.AddModelError(nameof(userId), "Login Failed: Invalid user or code");
                 return View (nameof(Login));
             }
 
