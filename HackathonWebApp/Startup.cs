@@ -66,7 +66,7 @@ namespace HackathonWebApp
 
             // Set timeout for tkens
             services.Configure<DataProtectionTokenProviderOptions>(opt =>
-                opt.TokenLifespan = TimeSpan.FromHours(24));
+                opt.TokenLifespan = TimeSpan.FromMinutes(10));
 
             // Add database for collections
             var mongo_client = new MongoClient(Configuration["MONGODB_URL"]);

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Mail;
 using System.IO;
+using System.Linq;
 using MongoDB.Driver;
 using MongoDB.Bson;
 
@@ -48,22 +49,85 @@ namespace HackathonWebApp.Controllers
             }
         }
 
-        // Account - Create and confirm account
-        [Authorize]
-        public ViewResult Index()
+        // General
+        public static string GenerateRandomPassword(int requiredLength = 8, int requiredUniqueChars = 4, bool requireDigit = true, bool requireLowercase = true, bool requireNonAlphanumeric = true, bool requireUppercase = true)
         {
-            string userName = User.Identity.Name;
-            ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+            // Reference: https://github.com/Darkseal/PasswordGenerator
 
-            // Add event application, if they have one
-            if (this.activeEvent.EventApplications.ContainsKey(appUser.Id.ToString()))
-                ViewBag.EventApplication = this.activeEvent.EventApplications[appUser.Id.ToString()];
+            string[] randomChars = new[] {
+                "ABCDEFGHJKLMNOPQRSTUVWXYZ",    // uppercase 
+                "abcdefghijkmnopqrstuvwxyz",    // lowercase
+                "0123456789",                   // digits
+                "!@$?_-"                        // non-alphanumeric
+            };
+            var rand = new Random();
+            List<char> chars = new List<char>();
 
-            // Add Award Certificates
-            ViewBag.AwardCertificates = this.awardCertificatesCollection.Find(p=> p.UserId == appUser.Id.ToString()).ToList();
-    
-            return View(appUser);
+            if (requireUppercase)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[0][rand.Next(0, randomChars[0].Length)]);
+
+            if (requireLowercase)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[1][rand.Next(0, randomChars[1].Length)]);
+
+            if (requireDigit)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[2][rand.Next(0, randomChars[2].Length)]);
+
+            if (requireNonAlphanumeric)
+                chars.Insert(rand.Next(0, chars.Count),
+                    randomChars[3][rand.Next(0, randomChars[3].Length)]);
+
+            for (int i = chars.Count; i < requiredLength
+                || chars.Distinct().Count() < requiredUniqueChars; i++)
+            {
+                string rcs = randomChars[rand.Next(0, randomChars.Length)];
+                chars.Insert(rand.Next(0, chars.Count),
+                    rcs[rand.Next(0, rcs.Length)]);
+            }
+
+            return new string(chars.ToArray());
         }
+        public async Task<bool> VerifyRecaptchaToken(string token, double minScore)
+        {
+            // Send verification to recaptcha serevice. If it fails, return false.
+            var values = new Dictionary<string, string>()
+            {
+                { "secret", configuration["RECAPTCHA_KEY"] },
+                { "response", token }
+                // { "remoteip", "" }
+            };
+            var content = new FormUrlEncodedContent(values);
+            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("VerifyRecaptchaToken: Failed API call");
+                return false;
+            }
+
+            // Parse json response into dictionary. If it didn't process, return false.
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseDict = BsonDocument.Parse(responseString);
+            bool verificationFinished = responseDict["success"].AsBoolean;
+            if (!verificationFinished)
+            {
+                Console.WriteLine("VerifyRecaptchaToken: API call finished, but verification did process");
+                var errors = responseDict["error-codes"];
+                Console.WriteLine("VerifyRecaptchaToken: " + errors.ToString());
+                return false;
+            }
+
+            // Get the score from the verification report and compare it.
+            double score = responseDict["score"].AsDouble;
+            string action = responseDict["action"].AsString;
+            if (score >= minScore)
+                return true;
+            else
+                return false;
+        }
+
+        // Account - Create
         public IActionResult Create()
         {
             ViewBag.AccountCreationAllowed = bool.Parse(configuration["ALLOW_CREATING_ACCOUNTS"]);
@@ -73,8 +137,8 @@ namespace HackathonWebApp.Controllers
         public async Task<IActionResult> Create(ApplicationUser appUser)
         {
             // Prevent creating accounts, if disabled
-            bool accountCreationAllowed = bool.Parse(configuration["ALLOW_CREATING_ACCOUNTS"]);
-            if (!accountCreationAllowed)
+            ViewBag.AccountCreationAllowed = bool.Parse(configuration["ALLOW_CREATING_ACCOUNTS"]);
+            if (!ViewBag.AccountCreationAllowed)
             {
                 ModelState.Clear();
                 ModelState.AddModelError("", "Creating accounts is not currently allowed. Please try again closer to the event date.");
@@ -88,6 +152,15 @@ namespace HackathonWebApp.Controllers
             {
                 ModelState.AddModelError("", "Unusual activity. Please try again shortly.");
                 return View(appUser);
+            }
+
+            // If password is blank, assign it something random
+            if (appUser.Password == null || appUser.Password == "")
+            {
+                var r = new Random();
+                appUser.Password = GenerateRandomPassword(r.Next(8, 24));
+                ModelState.Clear();
+                TryValidateModel(appUser);
             }
 
             if (ModelState.IsValid)
@@ -119,6 +192,8 @@ namespace HackathonWebApp.Controllers
             }
             return View(appUser);
         }
+
+        // Confirm Email
         public IActionResult ConfirmAccount()
         {
             return View();
@@ -161,6 +236,8 @@ namespace HackathonWebApp.Controllers
         {
             // Get the user
             var appUser = await userManager.FindByIdAsync(userId);
+            if (appUser == null)
+                return View();
 
             // Check if already confirmed
             bool emailAlreadyConfirmed = await userManager.IsEmailConfirmedAsync(appUser);
@@ -178,49 +255,14 @@ namespace HackathonWebApp.Controllers
                 ViewBag.EmailConfirmed = "no";
             return View();
         }
-        public async Task<bool> VerifyRecaptchaToken(string token, double minScore)
-        {
-            // Send verification to recaptcha serevice. If it fails, return false.
-            var values = new Dictionary<string, string>()
-            {
-                { "secret", configuration["RECAPTCHA_KEY"] },
-                { "response", token }
-                // { "remoteip", "" }
-            };
-            var content = new FormUrlEncodedContent(values);
-            var response = await client.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("VerifyRecaptchaToken: Failed API call");
-                return false;
-            }
 
-            // Parse json response into dictionary. If it didn't process, return false.
-            var responseString = await response.Content.ReadAsStringAsync();
-            var responseDict = BsonDocument.Parse(responseString);
-            bool verificationFinished = responseDict["success"].AsBoolean;
-            if (!verificationFinished)
-            {
-                Console.WriteLine("VerifyRecaptchaToken: API call finished, but verification did process");
-                var errors = responseDict["error-codes"];
-                Console.WriteLine("VerifyRecaptchaToken: " + errors.ToString());
-                return false;
-            }
-
-            // Get the score from the verification report and compare it.
-            double score = responseDict["score"].AsDouble;
-            string action = responseDict["action"].AsString;
-            if (score >= minScore)
-                return true;
-            else
-                return false;
-        }
-
-        // Account - General Usage
+        // Show login form
         public IActionResult Login()
         {
             return View();
         }
+        
+        // Login by password
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -266,6 +308,92 @@ namespace HackathonWebApp.Controllers
                ModelState.AddModelError(nameof(email), "Login Failed: Invalid Email or Password");
                 return View();
             }
+        }
+        
+        // Login by emailed link
+        [HttpPost]
+        public async Task<IActionResult> SendLoginEmail(string email)
+        {
+            // Check recaptcha token. If it fails verification, show error message and return to login page.
+            string token = Request.Form["g-recaptcha-token"];
+            bool isVerified = await this.VerifyRecaptchaToken(token, 0.5);
+            if (!isVerified)
+            {
+                ModelState.AddModelError("", "Unusual activity. Please try again shortly.");
+                return View(nameof(Login));
+            }
+
+            // Lookup user
+            ApplicationUser appUser = await userManager.FindByEmailAsync(email);
+
+            // Skip sending email if user doesn't exist, but fail silently.
+            if (appUser != null)
+            {
+                // Generate confirmation email body with token
+                string templatePath = Path.Combine(webHostEnvironment.WebRootPath, "email-templates", "LoginByEmailLink.html");
+                string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
+                string code = await userManager.GenerateEmailConfirmationTokenAsync(appUser);
+                var callbackUrl = Url.Action("ConfirmLoginEmail", "Account", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                string userName = appUser.UserName;
+                string msgBody = string.Format(msgBodyTemplate, userName, callbackUrl);
+
+                // Send Email
+                MailMessage mail = new MailMessage();
+                mail.To.Add(appUser.Email);
+                mail.From = new MailAddress("hackokstate@gmail.com");
+                mail.Subject = "Quick Login - HackOKState";
+                mail.Body = msgBody;
+                mail.IsBodyHtml = true;
+                await emailClient.SendMailAsync(mail);
+            }
+
+            // Forward user to page that they should check their email
+            return RedirectToAction(nameof(ConfirmLoginEmailSent));
+        }
+        public IActionResult ConfirmLoginEmailSent()
+        {
+            return View();
+        }
+        public async Task<IActionResult> ConfirmLoginEmail(string userId, string code)
+        {
+            // Get the user
+            var appUser = await userManager.FindByIdAsync(userId);
+            if (appUser == null)
+            {
+                ModelState.AddModelError(nameof(userId), "Login Failed: Invalid user or code");
+                return View(nameof(Login));
+            }
+
+            // Verify code is correct for user. If not, redirect to login form
+            var result = await userManager.ConfirmEmailAsync(appUser, code);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(nameof(userId), "Login Failed: Invalid user or code");
+                return View (nameof(Login));
+            }
+
+            // Login the user
+            await signInManager.SignInAsync(appUser, true);
+
+            // Send to user account page
+            return RedirectToAction(nameof(Index));
+        }
+        
+        // Manage Account
+        [Authorize]
+        public ViewResult Index()
+        {
+            string userName = User.Identity.Name;
+            ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+
+            // Add event application, if they have one
+            if (this.activeEvent.EventApplications.ContainsKey(appUser.Id.ToString()))
+                ViewBag.EventApplication = this.activeEvent.EventApplications[appUser.Id.ToString()];
+
+            // Add Award Certificates
+            ViewBag.AwardCertificates = this.awardCertificatesCollection.Find(p=> p.UserId == appUser.Id.ToString()).ToList();
+    
+            return View(appUser);
         }
         [Authorize]
         public async Task<IActionResult> Logout()

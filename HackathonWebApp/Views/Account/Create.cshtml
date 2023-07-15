@@ -46,13 +46,13 @@
                     <input asp-for="Email" class="form-control" placeholder="obiwan@jedimasters.net"/>
                 </div>
                 <div class="form-group">
-                    Password
+                    Password (optional)
                     <input asp-for="Password" type="password" class="form-control" placeholder="Choose a password"/>
                     <ul class="subinfo">
                         <li>Min 6 characters.</li>
-                        <li>Min one non alphanumeric character.</li>
-                        <li>Min one digit ('0'-'9').</li>
-                        <li>Min one uppercase ('A'-'Z').</li>
+                        <li>Min one special character.</li>
+                        <li>Min one digit (0-9).</li>
+                        <li>Min one uppercase (A-Z).</li>
                     </ul>
                 </div>
                 <a id="submit-btn" type="button" class="btn btn-primary">Create</a>
@@ -61,11 +61,15 @@
 
         <div class="col-md-6">
             <h3>Please Note</h3>
-            <p>Creating an account does <b><u>not</u></b> automatically register you for the upcoming event.
-            It just makes registering for future events easier.
+            <p>
+            Creating an account does <b><u>not</u></b> register you for the upcoming event.
+            You can register for the event <b><u>after</u></b> you have an account.
             </p>
-                            
-            If you would like to apply for the event at the same time as creating your account, please use the <a asp-area="" asp-controller="Event" asp-action="Apply">Event Registration</a> page.
+
+            <p>
+            A password is optional. There is an option to login via an emailed link.
+            And, a new password can be set by using the <a href="/Account/ForgotPassword" target="_blank">Forgot Password</a> form.
+            </p>
         </div>
 
         } else
