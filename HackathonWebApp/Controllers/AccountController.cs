@@ -216,11 +216,13 @@ namespace HackathonWebApp.Controllers
                 return false;
         }
 
-        // Account - General Usage
+        // Show login form
         public IActionResult Login()
         {
             return View();
         }
+        
+        // Login by password
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -267,6 +269,77 @@ namespace HackathonWebApp.Controllers
                 return View();
             }
         }
+        
+        // Login by emailed link
+        [HttpPost]
+        public async Task<IActionResult> SendLoginEmail(string email)
+        {
+            // Check recaptcha token. If it fails verification, show error message and return to login page.
+            string token = Request.Form["g-recaptcha-token"];
+            bool isVerified = await this.VerifyRecaptchaToken(token, 0.5);
+            if (!isVerified)
+            {
+                ModelState.AddModelError("", "Unusual activity. Please try again shortly.");
+                return View(nameof(Login));
+            }
+
+            // Lookup user
+            ApplicationUser appUser = await userManager.FindByEmailAsync(email);
+
+            // Skip sending email if user doesn't exist, but fail silently.
+            if (appUser != null)
+            {
+                // Generate confirmation email body with token
+                string templatePath = Path.Combine(webHostEnvironment.WebRootPath, "email-templates", "LoginByEmailLink.html");
+                string msgBodyTemplate = System.IO.File.ReadAllText(templatePath);
+                string code = await userManager.GenerateEmailConfirmationTokenAsync(appUser);
+                var callbackUrl = Url.Action("ConfirmLoginEmail", "Account", new { userId = appUser.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                string userName = appUser.UserName;
+                string msgBody = string.Format(msgBodyTemplate, userName, callbackUrl);
+
+                // Send Email
+                MailMessage mail = new MailMessage();
+                mail.To.Add(appUser.Email);
+                mail.From = new MailAddress("hackokstate@gmail.com");
+                mail.Subject = "Quick Login - HackOKState";
+                mail.Body = msgBody;
+                mail.IsBodyHtml = true;
+                await emailClient.SendMailAsync(mail);
+            }
+
+            // Forward user to page that they should check their email
+            return RedirectToAction(nameof(ConfirmLoginEmailSent));
+        }
+        public IActionResult ConfirmLoginEmailSent()
+        {
+            return View();
+        }
+        public async Task<IActionResult> ConfirmLoginEmail(string userId, string code)
+        {
+            // Get the user
+            var appUser = await userManager.FindByIdAsync(userId);
+            if (appUser == null)
+            {
+                ModelState.AddModelError(nameof(userId), "Login Failed: Invalid user or code");
+                return View(nameof(Login));
+            }
+
+            // Verify code is correct for user. If not, redirect to login form
+            var result = await userManager.ConfirmEmailAsync(appUser, code);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(nameof(userId), "Login Failed: Invalid Invalid user or code");
+                return View (nameof(Login));
+            }
+
+            // Login the user
+            await signInManager.SignInAsync(appUser, true);
+
+            // Send to user account page
+            return RedirectToAction(nameof(Index));
+        }
+        
+        // Manage Account
         [Authorize]
         public async Task<IActionResult> Logout()
         {

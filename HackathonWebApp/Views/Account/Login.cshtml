@@ -2,24 +2,62 @@
     ViewData["Title"] = "Login";
 }
 
+<style>
+    #login-tabs-buttons {
+        border: 0;
+    }
+    #login-tabs-buttons .nav-link {
+        border: 1px solid var(--bh-green);
+        border-radius: 10px 10px 0 0;
+    }
+    #login-tabs-buttons .nav-link.active {
+        color: var(--osu-orange);
+        background-color: var(--bh-dark-green-gray);
+        border-bottom: 0;
+    }
+    #login-tabs-content {
+        background-color: var(--bh-dark-green-gray);
+        border: 1px solid var(--bh-green);
+        border-top: 0;
+        border-radius: 0 0 10px 10px;
+        padding: 15px; 10px;
+    }
+</style>
+
 <div class="container text-white">
     <h1 class="text-white">Login</h1>
     <div class="text-danger" asp-validation-summary="All"></div>
  
     <div class="row">
-        <div class="col-md-4">
-            <form id="login-form" method="post">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input name="email" class="form-control" />
+        <div class="col-lg-4 col-md-5 col-sm-8">
+            @* Tabs: Options *@
+            <ul id="login-tabs-buttons" class="nav nav-tabs nav-fill">
+                <li class="nav-item"><a href="" data-target="#WithPassword" data-toggle="tab" class="nav-link small text-uppercase active">With Password</a></li>
+                <li class="nav-item"><a href="" data-target="#SendLoginEmail" data-toggle="tab" class="nav-link small text-uppercase">Emailed Link</a></li>
+            </ul>
+            
+            @* Login Forms *@
+            <div id="login-tabs-content" class="tab-content" style="">
+                @* By Password *@
+                <div id="WithPassword" class="tab-pane fade show active">
+                    <form class="login-form" method="post" action="">
+                        <input name="email" class="form-control" placeholder="Email" />
+                        <input name="password" type="password" class="form-control" placeholder="Password" style="margin-top:5px;"/>
+                        <a id="submit-btn" type="button" class="btn btn-primary" style="margin-top:10px;">Login</a>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input name="password" type="password" class="form-control" />
+                
+                @* By Email Link *@
+                <div id="SendLoginEmail" class="tab-pane fade">
+                    <form class="login-form" method="post" action="SendLoginEmail">
+                        <input name="email" class="form-control" placeholder="Email" value="christopher.blake@bakerhughes.com"/>
+                        <a id="submit-btn" type="button" class="btn btn-primary" style="margin-top:10px;">Send login link</a>
+                    </form>
                 </div>
-                <a id="submit-btn" type="button" class="btn btn-primary">Login In</a>
-            </form>
-            <br/>
+            </div>
+        </div>
+
+        <div class="col-md-4" style="padding-top:5px;">
             or... <a class="" asp-controller="Account" asp-action="Create">Create an Account</a>
             <br/>
             or... <a class="" asp-controller="Account" asp-action="ForgotPassword">Forgot Password</a>
@@ -32,7 +70,7 @@
 @section Scripts {
     <script>
     $( document ).ready(function() {
-        $("#login-form").find("#submit-btn").click(function(e){
+        $(".login-form").find("#submit-btn").click(function(e){
             e.preventDefault();
             // Identify submit button and form
             var btn = $(this);
