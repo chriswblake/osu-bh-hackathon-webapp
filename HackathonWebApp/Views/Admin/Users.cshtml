@@ -11,6 +11,8 @@
         <th>Name</th>
         <th>UserName</th>
         <th>Email</th>
+        <th>Confirmed</th>
+        <th>Created</th>
         <th>Roles</th>
         <th>Update</th>
     </tr>
@@ -25,6 +27,8 @@
             </td>
             <td>@appUser.UserName</td>
             <td>@appUser.Email</td>
+            <td>@appUser.EmailConfirmed</td>
+            <td>@appUser.CreatedOn</td>
             <td>
                 @foreach (var roleId in appUser.Roles)
                 {
