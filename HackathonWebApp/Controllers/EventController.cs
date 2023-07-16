@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -983,6 +983,16 @@ namespace HackathonWebApp.Controllers
         public IActionResult NameTags() {
             List<EventApplication> assignedEventApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).ToList();
             return View(assignedEventApplications);
+        }
+        public ViewResult ApplicationResumes()
+        {
+            // Only provide applications with career info
+            ViewBag.EventApplications = this.activeEvent.EventApplications.Values.Where( ea =>
+                ea.ResumeUrl != null
+                || ea.LinkedInUrl != null
+                || ea.WebsiteUrl != null 
+            ).ToList();
+            return View();
         }
         #endregion
 
