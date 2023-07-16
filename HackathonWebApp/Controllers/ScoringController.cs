@@ -153,10 +153,18 @@ namespace HackathonWebApp.Controllers
 
         // Score Questions
         [Authorize(Roles = "Admin")]
-        public ViewResult ScoreQuestions()
+        public async Task<ViewResult> ScoreQuestions()
         {
-            var scoreQuestions = this.activeEvent.ScoringQuestions.Values.ToList();
-            return View(scoreQuestions);
+            // Get all hackathon Ids and name
+            var eventController = (EventController) this.HttpContext.RequestServices.GetService(typeof(EventController));
+            var simpleProjection = Builders<HackathonEvent>.Projection
+                .Include(u => u.Id)
+                .Include(u => u.Name);
+            ViewBag.OtherHackathonEvents = await eventCollection.Find(s => s.Id != this.activeEvent.Id).Project(simpleProjection).ToListAsync();
+
+            // Get Quetions
+            ViewBag.ScoreQuestions = this.activeEvent.ScoringQuestions.Values.ToList();
+            return View();
         }
         [Authorize(Roles = "Admin")]
         public IActionResult CreateScoreQuestion() => View();
@@ -235,7 +243,22 @@ namespace HackathonWebApp.Controllers
             }
             return RedirectToAction("ScoreQuestions");
         }
+        [HttpPost]
+        public async Task<IActionResult> LoadScoreQuestions(string eventId)
+        {
+            // Find requested hackathon event
+            var eventController = (EventController) this.HttpContext.RequestServices.GetService(typeof(EventController));
+            HackathonEvent sourceEvent = eventCollection.Find(s => s.Id == ObjectId.Parse(eventId)).FirstOrDefault();
+
+            // Copy questions to current event
+            foreach (ScoreQuestion scoreQuestion in sourceEvent.ScoringQuestions.Values)
+            {
+                await CreateScoreQuestion(scoreQuestion);
+            }
+            return RedirectToAction(nameof(ScoreQuestions));
+        }
         
+
         // Scoring Roles
         [Authorize(Roles = "Admin")]
         public ViewResult ScoringRoles()
