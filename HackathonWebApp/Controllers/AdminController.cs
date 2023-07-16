@@ -71,7 +71,19 @@ namespace HackathonWebApp.Controllers
         // Methods - Roles
         public ViewResult Roles()
         {
-            return View(roleManager.Roles);
+            // Retrieve users with a role and group by roleId
+            var usersByRoleId = new Dictionary<Guid, List<ApplicationUser>>();
+            foreach (var user in userManager.Users.Where(u => u.Roles.Count > 0))
+                foreach (var roleId in user.Roles)
+                {
+                    // Create list if missing
+                    usersByRoleId[roleId] = usersByRoleId.GetValueOrDefault(roleId, new List<ApplicationUser>());
+                    // Add user to list
+                    usersByRoleId[roleId].Add(user);
+                }
+            ViewBag.UsersByRoleId = usersByRoleId;
+            ViewBag.Roles = roleManager.Roles;
+            return View();
         }
         public IActionResult CreateRole() => View();
         [HttpPost]
