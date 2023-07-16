@@ -1,4 +1,4 @@
-using HackathonWebApp.Models;
+﻿using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -993,6 +993,33 @@ namespace HackathonWebApp.Controllers
                 || ea.WebsiteUrl != null 
             ).ToList();
             return View();
+        }
+        [HttpPost]
+        public IActionResult DownloadApplicationResumesCSV()
+        {
+            // Save to string
+            string csvText = "";
+            using (var writer = new StringWriter())
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.Context.RegisterClassMap<ApplicationResumeMap>();
+                csv.WriteRecords(activeEvent.EventApplications.Values);
+                csvText = writer.ToString();
+            }
+
+            return File(new System.Text.UTF8Encoding().GetBytes(csvText), "text/csv", "resumes.csv");
+        }
+        public sealed class ApplicationResumeMap : ClassMap<EventApplication>
+        {
+            public ApplicationResumeMap()
+            {
+                Map(m => m.AssociatedUser.FirstName);
+                Map(m => m.AssociatedUser.LastName);
+                Map(m => m.AssociatedUser.Email);
+                Map(m => m.ResumeUrl);
+                Map(m => m.LinkedInUrl);
+                Map(m => m.WebsiteUrl);
+            }
         }
         #endregion
 
