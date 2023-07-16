@@ -115,5 +115,17 @@ namespace HackathonWebApp.Models
 
         [BsonElement("dietary_restrictions")]
         public string DietaryRestrictions { get; set; }
+
+
+
+        // Career Info
+        [BsonElement("resume_url")]
+        public string ResumeUrl { get; set; }
+
+        [BsonElement("linkedin_url")]
+        public string LinkedInUrl { get; set; }
+
+        [BsonElement("website_url")]
+        public string WebsiteUrl { get; set; }
     }
 }
