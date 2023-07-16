@@ -12,8 +12,11 @@
         <th>UserName</th>
         <th>Email</th>
         <th>Roles</th>
+        <th>Update</th>
     </tr>
-    @foreach (ApplicationUser appUser in users)
+
+    @* Show users with roles at top *@
+    @foreach (ApplicationUser appUser in users.OrderByDescending(u => u.Roles))
     {
         <tr>
             <td style="font-size:x-small; white-space: nowrap;">
@@ -28,6 +31,7 @@
                     <div>@roles[roleId].Name</div>
                 }
             </td>
+            <td><a class="btn btn-sm btn-primary" asp-action="UpdateUserRoles" asp-route-id="@appUser.Id">Update Roles</a></td>
         </tr>
     }
 </table>

@@ -11,7 +11,6 @@
         <th>ID</th>
         <th>Name</th>
         <th>Users</th>
-        <th>Update</th>
         <th>Delete</th>
     </tr>
     @foreach (ApplicationRole role in roles)
@@ -25,7 +24,6 @@
                     <div>@user.UserName</div>
                 }
             </td>
-            <td><a class="btn btn-sm btn-primary" asp-action="UpdateRole" asp-route-id="@role.Id">Update</a></td>
             <td>
                 <form asp-action="DeleteRole" asp-route-id="@role.Id" method="post">
                     <button type="submit" class="btn btn-sm btn-danger">
