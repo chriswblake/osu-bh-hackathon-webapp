@@ -62,7 +62,9 @@ namespace HackathonWebApp.Controllers
         //Methods - Users
         public ViewResult Users()
         {
-            return View(userManager.Users);
+            ViewBag.Users = userManager.Users;
+            ViewBag.Roles = roleManager.Roles.ToDictionary(r => r.Id, r=> r);
+            return View();
         }
 
 
