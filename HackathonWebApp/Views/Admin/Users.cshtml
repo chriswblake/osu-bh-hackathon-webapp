@@ -1,23 +1,41 @@
-﻿@model IQueryable<ApplicationUser>
-@{
+﻿@{
     Layout = "_AdminLayout";
     ViewBag.Title = "Users";
-    var users = Model;
+    Dictionary<Guid,ApplicationRole> roles = ViewBag.Roles;
+    IQueryable<ApplicationUser> users = ViewBag.Users;
 }
 
 <h1 class="text-white">Users</h1>
-<table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
+<table class="table table-sm table-bordered table-bordered text-white" style="font-size:small; background-color:var(--bh-dark-green-gray);">
     <tr>
+        <th>Name</th>
         <th>UserName</th>
         <th>Email</th>
+        <th>Confirmed</th>
+        <th>Created</th>
         <th>Roles</th>
+        <th>Update</th>
     </tr>
-    @foreach (ApplicationUser user in users)
+
+    @* Show users with roles at top *@
+    @foreach (ApplicationUser appUser in users.OrderByDescending(u => u.Roles))
     {
         <tr>
-            <td>@user.UserName</td>
-            <td>@user.Email</td>
-            <td i-user="@user.Id"></td>
+            <td>
+                @appUser.FirstName @appUser.LastName<br/>
+                <span style="font-size:xx-small;">@appUser.Id</span>
+            </td>
+            <td>@appUser.UserName</td>
+            <td>@appUser.Email</td>
+            <td>@appUser.EmailConfirmed</td>
+            <td>@appUser.CreatedOn</td>
+            <td>
+                @foreach (var roleId in appUser.Roles)
+                {
+                    <div>@roles[roleId].Name</div>
+                }
+            </td>
+            <td><a class="btn btn-sm btn-primary" asp-action="UpdateUserRoles" asp-route-id="@appUser.Id">Update Roles</a></td>
         </tr>
     }
 </table>
