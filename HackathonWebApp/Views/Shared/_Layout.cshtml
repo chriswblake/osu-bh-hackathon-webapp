@@ -52,6 +52,12 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Selection">Selection</a>
                         </li>
+                        @if (ViewBag.ShowScoringTab ?? false)
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Scoring">Scoring</a>
+                        </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Sponsors">Sponsors</a>
                         </li>

@@ -1,0 +1,117 @@
+﻿@using MongoDB.Bson;
+@{
+    ViewBag.Title = "Scoring";
+
+    // Group Questions
+    List<ScoreQuestion> scoreQuestions = ViewBag.ScoreQuestions;
+	var groupedQuestions = scoreQuestions.GroupBy(p => p.Group).OrderByDescending(g=> g.Sum(q=>q.PossiblePoints));
+}
+
+<style>
+
+    .table-bordered th {
+        border: 1px solid var(--bh-dark-green);
+    }
+
+    .table-bordered td {
+        border: 1px solid var(--bh-dark-green);
+    }
+</style>
+
+<div class="text-center">
+	<!-- Intro -->
+	<section class="first-section" style="padding: 5em;">
+		<h1 class="osu-orange">Scoring Criteria</h1>
+	</section>
+	<section class="diagonal-section" style="background-color:#EEE; padding-top:3em;">
+		<div class="mx-auto diagonal-section-content">
+			<div class="container">
+				<div class="row">
+					<!-- Earning Points-->
+					<div class="col-6" style="text-align:left;">
+						<h3>Earning Points</h3>
+                        Since the hackathon is interdisciplinary, projects must be compared
+                        across a wide range of aspects... think 🍎 and 🍊!
+                        <br/>
+                        <br/>
+                        To aid in this rather difficult comparison, projects can earn points in many different ways
+                        and those points are added up to produce a final score, as displayed in the Results section,
+                        after judging is finished.
+                        <br/>
+                        <br/>
+                        Points can be earned in three different categories:
+						<br/>
+						<ul>
+							<li><b>Project Basics</b> - It's possible to earn all points here. Think of it like getting 💯 on your homework.</li>
+							<li><b>Interdisciplinary Collaboration Bonus</b> - If a project uses the skills of multiple majors, it earns extra points. But, don't expect a 🦄 project, hence the term "bonus".</li>
+
+							<li><b>Upcoming Technologies Bonus</b> - Fond of a cool new tech? 🤓 Try something with it to get some extra credit!</li>
+						</ul>
+					</div>
+					<!-- Judgement Day  -->
+					<div class="col-6" style="text-align:left;"> 
+						<h3>Judgement Day</h3>
+						<b>Fair and Unbiased Scoring</b> is very important to us.
+                        We believe that the everyone should have an opinion in picking the best projects.
+                        As such, we are committed to transparency in the voting process and use a crowdsourced approach
+                        where every attendee, mentor, and judge votes.
+                        <br/>
+                        <br/>
+                        During judging, each person gets 
+                        a few questions below and ranks each project (except their own). The scores are combined automatically
+                        and a total score + breakdown is displayed in the results area immediately after judging is finished.
+                        <br/>
+                        <br/>
+                        
+						<b>The scores are weighted:</b><br/>
+						<ul>
+							<li><b>Attendees</b> - 50%</li>
+							<li><b>Judges</b> - 40%</li>
+							<li><b>Mentors</b> - 10%</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+    <!-- Questions -->
+	<section class="diagonal-section" style="padding: 3em;">
+		<h1 class="osu-orange">Questions</h1>
+	</section>
+	<section class="diagonal-section" style="background-color:#EEE; padding-top:3em;">
+		<div class="mx-auto diagonal-section-content" style="padding:0 10% 3em 10%; text-align:left;">
+            @foreach (var group in groupedQuestions)
+            {
+                var groupMaxPoints = group.Sum(p=> p.PossiblePoints);
+
+                <h3>@group.Key (@groupMaxPoints pts)</h3>
+                <table class="table table-sm table-bordered table-bordered">
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Answer Options</th>
+                    </tr>
+                    @foreach (ScoreQuestion scoreQuestion in group)
+                    {
+                        <tr>
+                            <td style="width:20%;">@scoreQuestion.Title</td>
+                            <td style="width:40%;">@scoreQuestion.Description</td>
+                            <td style="width:40%;">
+                                @foreach (var answerOption in scoreQuestion.AnswerOptions.OrderBy(a=>a.Key).Select(kvp=> kvp.Value))
+                                {
+                                    var weightedPts = (answerOption.Score / 5.0)*scoreQuestion.PossiblePoints;
+                                    <div class="answer-option">@weightedPts pts - @answerOption.Description</div>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+		</div>
+	</section>
+</div>
+
+
+
+

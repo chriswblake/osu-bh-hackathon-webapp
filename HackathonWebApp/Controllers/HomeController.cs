@@ -36,6 +36,10 @@ namespace HackathonWebApp.Controllers
             if (this.activeEvent.StaticPageSections.ContainsKey("prizes"))
                 if (this.activeEvent.StaticPageSections["prizes"].ContainsKey("winners"))
                     ViewBag.ShowPrizesTab = true;
+
+            // Show "Scoring" tab, if questions have been defined.
+            if (this.activeEvent.ScoringQuestions.Count > 0)
+                ViewBag.ShowScoringTab = true;
         }
 
         // Properties
@@ -163,6 +167,11 @@ namespace HackathonWebApp.Controllers
         {
             var organizers = this.activeEvent.Organizers.Values.ToList();
             return View(organizers);
+        }
+        public IActionResult Scoring()
+        {
+            ViewBag.ScoreQuestions = this.activeEvent.ScoringQuestions.Values.ToList();
+            return View();
         }
         public IActionResult Results()
         {
