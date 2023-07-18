@@ -128,6 +128,13 @@
 		</div>
     </footer>
 
+    <!-- Cookie Consent -->
+    <div class="alert alert-dark cookie_consent" role="alert" style="position:fixed; right:5%; bottom:0; width:50%;">
+        <b>We use cookies</b> and other tracking technologies to improve your browsing experience on our website,
+        to show you personalized content, to analyze our website traffic, and to understand where our visitors are coming from. For more info, please see our <a href="/Home/Privacy" target="_blank">Privacy Policy</a>.
+        <button type="button" data-dismiss="alert" aria-label="Close">Accept</button>
+    </div>
+
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -139,6 +146,16 @@
 	<script src="~/js/particles/particles.js"></script>
 	<script src="~/js/particles/app.js"></script>
     }
+    <!-- Cookie Consent -->
+    <script type="text/javascript" charset="UTF-8">
+        $(".cookie_consent button").on( "click", function() {
+            localStorage.setItem('cookie_consent_accepted', true);
+        });
+        if(!(localStorage.getItem('cookie_consent_accepted') ?? false)) {
+            $(".cookie_consent").show();
+        }
+    </script>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>
