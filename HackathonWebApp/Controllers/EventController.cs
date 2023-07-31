@@ -560,7 +560,7 @@ namespace HackathonWebApp.Controllers
            var activeEventApplications = this.activeEvent.EventApplications.Values.ToList();
            return activeEventApplications;
         }
-        [AllowAnonymous]
+        [Authorize]
         public IActionResult Apply()
         {
             // Redirect to homepage if they try to visit this page outside of the registration period.
@@ -587,7 +587,6 @@ namespace HackathonWebApp.Controllers
             ViewBag.RegistrationSettings = this.activeEvent.RegistrationSettings;
             return View();
         }
-        [AllowAnonymous]
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Apply(EventApplication eventApplication)
@@ -597,36 +596,14 @@ namespace HackathonWebApp.Controllers
             eventApplication.CreatedOn = DateTime.Now;
             eventApplication.ConfirmationState = EventApplication.ConfirmationStateOption.unconfirmed;
             
-            // Associated logged in user, or create the user then associate it
-            if (User?.Identity?.IsAuthenticated ?? false)
-            {
-                // Set application's associated user to the logged in user
-                string userName = User.Identity.Name;
-                ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
-                eventApplication.UserId = appUser.Id;
-            }
-            else
-            {
-                // Create account
-                var accountController = (AccountController) this.HttpContext.RequestServices.GetService(typeof(AccountController));
-                accountController.ControllerContext = this.ControllerContext;
-                await accountController.Create(eventApplication.AssociatedUser);
-                
-                // Return to page if error creating account
-                if (accountController.ModelState.ErrorCount > 0)
-                {
-                    ViewBag.RegistrationSettings = this.activeEvent.RegistrationSettings;
-                    return View();
-                }
+            // Set application's associated user to the logged in user
+            string userName = User.Identity.Name;
+            ApplicationUser appUser = userManager.FindByNameAsync(userName).Result;
+            eventApplication.UserId = appUser.Id;
 
-                // Set application's associated user to the new account
-                string email = eventApplication.AssociatedUser.Email;
-                ApplicationUser appUser = userManager.FindByEmailAsync(email).Result;
-                eventApplication.UserId = appUser.Id;
-            }
-
-            // Revalidated model
+            // Revalidate model
             ModelState.Clear();
+            TryValidateModel(eventApplication);
 
             if (ModelState.IsValid)
             {
@@ -1006,6 +983,43 @@ namespace HackathonWebApp.Controllers
         public IActionResult NameTags() {
             List<EventApplication> assignedEventApplications = this.activeEvent.EventApplications.Values.Where(p=> p.ConfirmationState == EventApplication.ConfirmationStateOption.assigned).ToList();
             return View(assignedEventApplications);
+        }
+        public ViewResult ApplicationResumes()
+        {
+            // Only provide applications with career info
+            ViewBag.EventApplications = this.activeEvent.EventApplications.Values.Where( ea =>
+                ea.ResumeUrl != null
+                || ea.LinkedInUrl != null
+                || ea.WebsiteUrl != null 
+            ).ToList();
+            return View();
+        }
+        [HttpPost]
+        public IActionResult DownloadApplicationResumesCSV()
+        {
+            // Save to string
+            string csvText = "";
+            using (var writer = new StringWriter())
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.Context.RegisterClassMap<ApplicationResumeMap>();
+                csv.WriteRecords(activeEvent.EventApplications.Values);
+                csvText = writer.ToString();
+            }
+
+            return File(new System.Text.UTF8Encoding().GetBytes(csvText), "text/csv", "resumes.csv");
+        }
+        public sealed class ApplicationResumeMap : ClassMap<EventApplication>
+        {
+            public ApplicationResumeMap()
+            {
+                Map(m => m.AssociatedUser.FirstName);
+                Map(m => m.AssociatedUser.LastName);
+                Map(m => m.AssociatedUser.Email);
+                Map(m => m.ResumeUrl);
+                Map(m => m.LinkedInUrl);
+                Map(m => m.WebsiteUrl);
+            }
         }
         #endregion
 

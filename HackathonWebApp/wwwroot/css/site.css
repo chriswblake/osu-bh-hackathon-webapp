@@ -277,4 +277,18 @@ footer a {
     }
 }
 
-
+/* Cookie Consent styles
+-------------------------------------------------- */
+.cookie_consent {
+    display: none;
+}
+.cookie_consent button {
+    color: var(--bh-dark-green);
+    border: 1px solid var(--bh-dark-green);
+    border-radius: 1em;
+    padding: 0 3em 0 3em;
+}
+.cookie_consent button:hover {
+    background-color: var(--bh-dark-green);
+    color: var(--bh-green);
+}

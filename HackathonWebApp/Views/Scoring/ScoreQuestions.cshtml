@@ -1,10 +1,13 @@
-﻿@model List<ScoreQuestion>
+﻿@using MongoDB.Bson;
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "Score Questions";
-    var scoreQuestions = Model;
+
+    // Other Hackathons
+    var otherHackathonEvents = ViewBag.OtherHackathonEvents;
 
     // Group Questions
+    List<ScoreQuestion> scoreQuestions = ViewBag.ScoreQuestions;
 	var groupedQuestions = scoreQuestions.GroupBy(p => p.Group).OrderByDescending(g=> g.Sum(q=>q.PossiblePoints));//.Select(g => new HistogramPoint(){ ValueLabel=g.Key.ToString(), ValueCount=g.Count() }).OrderBy(p => p.ValueLabel);
 }
 
@@ -12,9 +15,42 @@
     .answer-option {
         white-space: nowrap;
     }
+    .tool-area {
+        display: inline-block;
+        margin: 5px;
+        border: 1px solid var(--bh-green);
+        background-color: var(--bh-dark-green-gray);
+        padding: 5px 10px 10px 10px;
+        border-radius: 10px;
+    }
+    table td {
+        width: 100px;
+    }
 </style>
-\Admin\Roles
+
 <h1 class="text-white">@ViewBag.Title</h1>
+<div class="row" style="padding-left: 8px; color:white;">
+
+    <div class="tool-area">
+        <h2>Create a new question</h2>
+        <a asp-action="CreateScoreQuestion" class="btn btn-secondary">Add Question</a>
+    </div>
+
+    <div class="tool-area">
+        <h2 class="text-white">Copy from other event</h2>
+        <form method="post" asp-action="LoadScoreQuestions" enctype="multipart/form-data">
+            <select name="eventId">
+                @foreach (BsonValue hackathonEvent in otherHackathonEvents)
+                {
+                    string eventId = hackathonEvent["_id"].AsObjectId.ToString();
+                    string eventName = hackathonEvent["name"].AsString;
+                    <option value="@eventId">@eventName</option>
+                }
+            </select><br/>
+            <input type="submit" value="Load Questions" class="btn btn-secondary" style="margin-top:5px"/>
+        </form>
+    </div>
+</div>
 
 @foreach (var group in groupedQuestions)
 {
@@ -48,6 +84,5 @@
         }
     </table>
 }
-<a asp-action="CreateScoreQuestion" class="btn btn-secondary" style="margin: 0 0 50px 0;">Add a Question</a>
 
 

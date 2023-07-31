@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "_AdminLayout";
+    ViewBag.Title = "Users";
+    List<EventApplication> eventApplications = ViewBag.EventApplications;
+}
+
+<h1 class="text-white">Resumes</h1>
+<form method="post" asp-action="DownloadApplicationResumesCSV" enctype="multipart/form-data" style="padding-bottom:5px;">
+    <input type="submit" value="Download as CSV file" class="btn btn-secondary" />
+</form>
+<table class="table table-sm table-bordered table-bordered text-white" style="font-size:small; background-color:var(--bh-dark-green-gray);">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Resume</th>
+        <th>LinkedIn</th>
+        <th>Website</th>
+    </tr>
+
+    @foreach (EventApplication eventApplication in eventApplications)
+    {
+        ApplicationUser appUser = eventApplication.AssociatedUser;
+        <tr>
+            <td>@appUser.FirstName @appUser.LastName<br/></td>
+            <td>@appUser.Email</td>
+            <td><a href="@eventApplication.ResumeUrl" target="_blank">Resume/CV</a></td>
+            <td><a href="@eventApplication.LinkedInUrl" target="_blank">LinkedIn</a></td>
+            <td>
+                @if (eventApplication.WebsiteUrl != null)
+                {
+                    <a href="@eventApplication.WebsiteUrl" target="_blank">Website</a>
+                }
+            </td>
+        </tr>
+    }
+</table>

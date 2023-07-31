@@ -3,6 +3,7 @@
     ViewBag.BackgroundParticlesEnabled = false;
     ViewBag.ShowResultsTab = true;
     ViewBag.ShowPrizesTab = true;
+    ViewBag.ShowScoringTab = true;
 }
 
 <style>
@@ -188,6 +189,12 @@
                             <a asp-controller="Event" asp-action="Teams">
                                 <i class="fa-solid fa-people-group"></i>
                                 Teams
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Event" asp-action="ApplicationResumes">
+                                <i class="fa-solid fa-file-pdf"></i>
+                                Resumes
                             </a>
                         </li>
 

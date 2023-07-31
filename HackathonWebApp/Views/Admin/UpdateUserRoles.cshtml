@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Update Role";
+    ApplicationUser user = ViewBag.User;
+    Dictionary<Guid, ApplicationRole> roles = ViewBag.Roles;
+}
+
+<div class="container text-white">
+    <h1 class="text-white">Update Role</h1>
+    <div asp-validation-summary="All" class="text-danger"></div>
+  
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                <input type="hidden" name="userId" value="@user.Id" />
+                <h2 class="p-1 text-white">User: @user.FirstName @user.LastName</h2>
+                <table class="table table-bordered table-sm text-white">
+                    @foreach (ApplicationRole role in roles.Values)
+                    {
+                        bool isChecked = user.Roles.Contains(role.Id);
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="roleIds" value="@role.Id" checked="@isChecked"> @role.Name
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+    <br/>
+    <div>
+        <a asp-action="Users">Back to List</a>
+    </div>
+</div>
