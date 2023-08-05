@@ -2,26 +2,22 @@
 
 @{
     Layout = "_AdminLayout";
-    ViewBag.Title = "User Roles";
-    List<ApplicationUser> appUsers = ViewBag.AppUsers;
+    ViewBag.Title = "User Scoring Roles";
+
+    // Group users
+    var appUsersByGroup = new Dictionary<string, List<ApplicationUser>>() {
+        { "Staff", ViewBag.Staff },
+        { "Volunteers", ViewBag.Volunteers },
+        { "Participants", ViewBag.Participants }
+    };
+
+    // Get scoring roles and user assignments
     Dictionary<string, ScoringRole> scoringRoles = ViewBag.ScoringRoles;
     Dictionary<string, string> userScoringRoles = ViewBag.UserScoringRoles;
-
-    // Group by users that have an ApplicationRole (Staff) or not (Participant)
-    var appUsersByGroup = appUsers.ToLookup(u=> (u.Roles.Count() > 0) ? "Staff" : "Participant");
 
     // Count number of users in each role
     Dictionary<string,int> userRoleCounts = userScoringRoles.GroupBy(p=> p.Value).ToDictionary(p=> p.Key, p=> p.Count());
 }
-
-<style>
-    .user-name {
-        font-size: large;
-    }
-    .user-subtext {
-        font-size: small;
-    }
-</style>
 
 <h1 class="text-white">@ViewBag.Title</h1>
 <form asp-action="UpdateUserScoringRoles" enctype="multipart/form-data">
@@ -48,25 +44,27 @@
 }
 </div>
 
-@foreach (var appUsersGroup in appUsersByGroup)
+@foreach (var appUsersGroup  in appUsersByGroup)
 {
+    var groupName = appUsersGroup.Key;
+    var appUsers = appUsersGroup.Value;
     @* Show table for each group of users *@
     <h3 class="text-white">@appUsersGroup.Key</h3>
-    <table class="table table-sm table-bordered table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
+    <table class="table table-sm table-bordered text-white" style="background-color:var(--bh-dark-green-gray);">
         <tr>
             <th>User</th>
             <th>Role</th>
         </tr>
         @* Show Each User *@
-        @foreach (ApplicationUser appUser in appUsersGroup)
-        {   
+        @foreach (ApplicationUser appUser in appUsers)
+        { 
             string userScoringRoleId = appUser.Id.ToString();
             <tr>
                 @* Show User Info *@
                 <td>
-                    <div class="user-name">@appUser.FirstName @appUser.LastName</div>
-                    <div class="user-subtext">@appUser.Email</div>
-                    <div class="user-subtext" style="font-size: xx-small">@appUser.Id</div>
+                    <div title="@appUser.Email&#13;@appUser.Id">
+                        @appUser.FirstName @appUser.LastName
+                    </div>
                 </td>
                 @* Build Selector *@
                 <td>
