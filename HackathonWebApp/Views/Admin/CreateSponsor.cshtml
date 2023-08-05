@@ -22,6 +22,11 @@
                     <span asp-validation-for="Tier" class="text-danger"></span>
                 </div>
                 <div class="form-group">
+                    <label asp-for="DisplayPriority" class="control-label"></label>
+                    <input asp-for="DisplayPriority" class="form-control" />
+                    <span asp-validation-for="DisplayPriority" class="text-danger"></span>
+                </div>
+                <div class="form-group">
                     <label asp-for="YearsConsecutiveSuppport" class="control-label"></label>
                     <input asp-for="YearsConsecutiveSuppport" class="form-control" />
                     <span asp-validation-for="YearsConsecutiveSuppport" class="text-danger"></span>
@@ -35,6 +40,15 @@
                     <label asp-for="Logo" class="control-label"></label>
                     <input type="file" asp-for="Logo" class="form-control" />
                     <span asp-validation-for="Logo" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Notes" class="control-label"></label>
+                    <input asp-for="Notes" class="form-control" />
+                    <span asp-validation-for="Notes" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Is Visible: <input asp-for="IsVisible" />
+                    <span asp-validation-for="IsVisible" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />

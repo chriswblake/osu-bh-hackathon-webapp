@@ -354,11 +354,22 @@ namespace HackathonWebApp.Controllers
         
         // User Scoring Roles
         [Authorize(Roles = "Admin")]
-        public ViewResult UserScoringRoles()
+        public async Task<ViewResult> UserScoringRoles()
         {
-            ViewBag.AppUsers = this.userManager.Users.ToList();
+            // Get participants
+            ViewBag.Participants = this.activeEvent.EventApplications
+                .Where(p=> p.Value.ConfirmationState == EventApplication.ConfirmationStateOption.assigned)
+                .Select(p=> p.Value.AssociatedUser)
+                .ToList();
+            
+            // Get staff and volunteers
+            ViewBag.Staff = await this.userManager.GetUsersInRoleAsync("Staff");
+            ViewBag.Volunteers = await this.userManager.GetUsersInRoleAsync("Volunteer");
+
+            // Get scoring roles and user assignments
             ViewBag.ScoringRoles = this.activeEvent.ScoringRoles;
             ViewBag.UserScoringRoles = this.activeEvent.UserScoringRoles;
+
             return View();
         }
         [Authorize(Roles = "Admin")]
