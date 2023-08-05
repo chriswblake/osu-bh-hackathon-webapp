@@ -154,7 +154,10 @@ namespace HackathonWebApp.Controllers
         }
         public IActionResult Sponsors()
         {
-            var sponsors = this.activeEvent.Sponsors.Values.OrderBy(p=> p.DisplayPriority).ToList();
+            var sponsors = this.activeEvent.Sponsors.Values
+                .Where(p=> p.IsVisible)
+                .OrderBy(p=> p.DisplayPriority)
+                .ToList();
             return View(sponsors);
         }
         public IActionResult SponsorBenefits()

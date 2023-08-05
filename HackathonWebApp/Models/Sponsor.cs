@@ -15,6 +15,9 @@ namespace HackathonWebApp.Models
         [BsonElement("tier")]
         public string Tier { get; set; }
 
+        [BsonElement("is_visible")]
+        public bool IsVisible { get; set; }
+
         [BsonElement("display_priority")]
         public int DisplayPriority { get; set; }
 
@@ -26,5 +29,8 @@ namespace HackathonWebApp.Models
         
         [BsonElement("logo")]
         public string Logo { get; set; }
+
+        [BsonElement("notes")]
+        public string Notes { get; set; }
     }
 }
