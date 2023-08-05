@@ -130,17 +130,24 @@ namespace HackathonWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteRole(string id)
         {
+            // Find role info
             ApplicationRole role = await roleManager.FindByIdAsync(id);
-            if (role != null)
+            if (role == null)
             {
-                IdentityResult result = await roleManager.DeleteAsync(role);
-                if (result.Succeeded)
-                    return RedirectToAction("Roles");
-                else
-                    Errors(result);
-            }
-            else
                 ModelState.AddModelError("", "No role found");
+                return RedirectToAction("Roles");
+            }
+
+            // Remove role from all users
+            var affectedUsers = await userManager.GetUsersInRoleAsync(role.Name);
+            foreach (var user in affectedUsers)
+                await userManager.RemoveFromRoleAsync(user, role.Name);
+
+            // Delete role
+            IdentityResult result = await roleManager.DeleteAsync(role);
+            if (!result.Succeeded)
+                Errors(result);
+            
             return RedirectToAction("Roles");
         }
 
