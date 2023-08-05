@@ -1,4 +1,4 @@
-﻿@model HackathonWebApp.Models.Sponsor
+@model HackathonWebApp.Models.Sponsor
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Update Sponsor";
@@ -43,6 +43,10 @@
                     <img src="@String.Format("data:image/png;base64,{0}", @Model.Logo)" style="height:100px;"/>
                     <input type="file" id="NewLogo" name="NewLogo" class="form-control"/>
                     <span asp-validation-for="Logo" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Is Visible: <input asp-for="IsVisible" />
+                    <span asp-validation-for="IsVisible" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Save" class="btn btn-primary" />

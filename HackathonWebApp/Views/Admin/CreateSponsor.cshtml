@@ -1,4 +1,4 @@
-﻿@model HackathonWebApp.Models.Sponsor
+@model HackathonWebApp.Models.Sponsor
 
 @{
     Layout = "_AdminLayout";
@@ -40,6 +40,10 @@
                     <label asp-for="Logo" class="control-label"></label>
                     <input type="file" asp-for="Logo" class="form-control" />
                     <span asp-validation-for="Logo" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    Is Visible: <input asp-for="IsVisible" />
+                    <span asp-validation-for="IsVisible" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />

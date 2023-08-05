@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace HackathonWebApp.Models
@@ -14,6 +14,9 @@ namespace HackathonWebApp.Models
 
         [BsonElement("tier")]
         public string Tier { get; set; }
+
+        [BsonElement("is_visible")]
+        public bool IsVisible { get; set; }
 
         [BsonElement("display_priority")]
         public int DisplayPriority { get; set; }

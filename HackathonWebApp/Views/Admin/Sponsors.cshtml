@@ -17,6 +17,7 @@
         <tr>
             <th>Logo</th>
             <th>Name</th>
+            <th>Visible</th>
             <th>Priority</th>
             <th>Years</th>
             <th>Update</th>
@@ -27,6 +28,7 @@
             <tr>
                 <td style="text-align:center;"><img src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" style="height:100px;"/></td>
                 <td>@sponsor.Name</td>
+                <td>@sponsor.IsVisible</td>
                 <td>@sponsor.DisplayPriority</td>
                 <td>@sponsor.YearsConsecutiveSuppport</td>
                 <td><a class="btn btn-sm btn-primary" asp-action="UpdateSponsor" asp-route-id="@sponsor.Id">Update</a></td>
