@@ -1,4 +1,4 @@
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace HackathonWebApp.Models
@@ -29,5 +29,8 @@ namespace HackathonWebApp.Models
         
         [BsonElement("logo")]
         public string Logo { get; set; }
+
+        [BsonElement("notes")]
+        public string Notes { get; set; }
     }
 }

@@ -6,6 +6,12 @@
     var sponsorsByTier = sponsors.GroupBy(p => p.Tier);
 }
 
+<style>
+    table td:nth-child(1) {
+        width: 25%;
+    }
+</style>
+
 <h1 class="text-white">Sponsors</h1>
 <a asp-action="CreateSponsor" class="btn btn-secondary">Add a Sponsor</a>
 @foreach (var group in sponsorsByTier)
@@ -20,20 +26,21 @@
             <th>Visible</th>
             <th>Priority</th>
             <th>Years</th>
-            <th>Update</th>
-            <th>Delete</th>
+            <th>Notes</th>
+            <th>Actions</th>
         </tr>
         @foreach (Sponsor sponsor in group)
         {
             <tr>
-                <td style="text-align:center;"><img src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" style="height:100px;"/></td>
+                <td style="text-align:center;"><img src="@String.Format("data:image/png;base64,{0}", sponsor.Logo)" style="width:100%;"/></td>
                 <td>@sponsor.Name</td>
                 <td>@sponsor.IsVisible</td>
                 <td>@sponsor.DisplayPriority</td>
                 <td>@sponsor.YearsConsecutiveSuppport</td>
-                <td><a class="btn btn-sm btn-primary" asp-action="UpdateSponsor" asp-route-id="@sponsor.Id">Update</a></td>
+                <td>@sponsor.Notes</td>
                 <td>
-                    <form asp-action="DeleteSponsor" asp-route-id="@sponsor.Id" method="post">
+                    <a class="btn btn-sm btn-primary" asp-action="UpdateSponsor" asp-route-id="@sponsor.Id">Update</a>
+                    <form asp-action="DeleteSponsor" asp-route-id="@sponsor.Id" method="post" style="margin-top:5px">
                         <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                     </form>
                 </td>
