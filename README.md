@@ -35,11 +35,11 @@ Deployment settings are configured via environment variables. After that, all ot
 ## ENV: Database + Emails
 The registered users, teams, sponsors and other event data are all stored in a MongoDB NoSQL database.
 - Emails during registration are sent via google's email service.
-- Form protection is provided by Recaptcha.
-- Usage statistics are collected via Google Analytics, if a tag is provided.
+- If a recaptcha token is provided, forms are protected by [Google reCAPTCHA](https://www.google.com/recaptcha/admin)
+- If a google analytics tag is provided, usage statistics are collected via [Google Analytics](https://analytics.google.com/).
 
 Configuration for all of the above must be defined via environment variables.
-- During development this is provided via the file `develop.env`.
+- During development this can be provided via the file `develop.env`.
 - There is also an option for the file `prod.env` for running the local app against the production database, but it is not recommended and should be avoided.
 
 Example: develop.env
@@ -49,11 +49,16 @@ MONGODB_IDENTITY_DB_NAME=<user collection name>
 MONGODB_HACKATHON_DB_NAME=<events collection name>
 EMAIL_USERNAME=<email address>
 EMAIL_PASSWORD=<email password>
-RECAPTCHA_KEY=<private key from google recaptcha service>
 
-# OPTIONAL
-# ALLOW_CREATING_ACCOUNTS=true # default=true
-# GOOGLE_ANALYTICS_TAG=<gtag id> # Example: G-R8L8N9JPTD
+# OPTIONAL - If set to false, sign up page is hidden. default=true.
+# ALLOW_CREATING_ACCOUNTS=true
+
+# OPTIONAL - If provided, the application will protected from robots.
+# RECAPTCHA_SITE_KEY=<public key from google recaptcha service>
+# RECAPTCHA_SECRET_KEY=<private key from google recaptcha service>
+
+# OPTIONAL - If provided, the application will collect usage statistics.
+# GOOGLE_ANALYTICS_TAG=<gtag id>
 ```
 
 ## Application Configuration

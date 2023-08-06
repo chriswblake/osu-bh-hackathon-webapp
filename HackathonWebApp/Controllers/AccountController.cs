@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -40,7 +41,15 @@ namespace HackathonWebApp.Controllers
             this.eventCollection = database.GetCollection<HackathonEvent>("Events");
             this.awardCertificatesCollection = database.GetCollection<AwardCertificate>("AwardCertificates");
         }
+        public override void OnActionExecuted(ActionExecutedContext filterContext) {
+            base.OnActionExecuted(filterContext);
 
+            // If Recaptcha Site Key provided, enable recaptcha script
+            ViewBag.RecaptchaSiteKey = configuration["RECAPTCHA_SITE_KEY"] ?? null;
+            
+            // If google analytics tag provided, to enable google analytics script
+            ViewBag.GoogleAnalyticsTag = configuration["GOOGLE_ANALYTICS_TAG"] ?? null;
+        }
         // Properties
         private HackathonEvent activeEvent {
             get {
@@ -91,10 +100,16 @@ namespace HackathonWebApp.Controllers
         }
         public async Task<bool> VerifyRecaptchaToken(string token, double minScore)
         {
+            string recaptchaSecretKey = configuration["RECAPTCHA_SECRET_KEY"] ?? null;
+            
+            // If no key provided, recaptcha is disabled. Return true.
+            if (recaptchaSecretKey == null || recaptchaSecretKey == "")
+                return true;
+
             // Send verification to recaptcha serevice. If it fails, return false.
             var values = new Dictionary<string, string>()
             {
-                { "secret", configuration["RECAPTCHA_KEY"] },
+                { "secret", recaptchaSecretKey },
                 { "response", token }
                 // { "remoteip", "" }
             };

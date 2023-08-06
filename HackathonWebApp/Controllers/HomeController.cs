@@ -1,4 +1,4 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -44,6 +44,9 @@ namespace HackathonWebApp.Controllers
             if (this.activeEvent.ScoringQuestions.Count > 0)
                 ViewBag.ShowScoringTab = true;
 
+            // If Recaptcha Site Key provided, enable recaptcha script
+            ViewBag.RecaptchaSiteKey = configuration["RECAPTCHA_SITE_KEY"] ?? null;
+            
             // If google analytics tag provided, to enable google analytics script
             ViewBag.GoogleAnalyticsTag = configuration["GOOGLE_ANALYTICS_TAG"] ?? null;
         }
