@@ -292,3 +292,6 @@ footer a {
     background-color: var(--bh-dark-green);
     color: var(--bh-green);
 }
+.grecaptcha-badge { 
+    visibility: hidden;
+}
