@@ -34,11 +34,13 @@ Deployment settings are configured via environment variables. After that, all ot
 
 ## ENV: Database + Emails
 The registered users, teams, sponsors and other event data are all stored in a MongoDB NoSQL database.
-Emails during registration are sent via google's email service. 
+- Emails during registration are sent via google's email service.
+- Form protection is provided by Recaptcha.
+- Usage statistics are collected via Google Analytics, if a tag is provided.
 
-The connection string, collection names, and email credentials must be defined via environment variables. 
-During development this is provided via the file `develop.env`.
-> There is also an option for `prod.env` for running the local app against the production database, but that should be avoided.
+Configuration for all of the above must be defined via environment variables.
+- During development this is provided via the file `develop.env`.
+- There is also an option for the file `prod.env` for running the local app against the production database, but it is not recommended and should be avoided.
 
 Example: develop.env
 ```
@@ -50,7 +52,8 @@ EMAIL_PASSWORD=<email password>
 RECAPTCHA_KEY=<private key from google recaptcha service>
 
 # OPTIONAL
-ALLOW_CREATING_ACCOUNTS=true # default: true
+# ALLOW_CREATING_ACCOUNTS=true # default=true
+# GOOGLE_ANALYTICS_TAG=<gtag id> # Example: G-R8L8N9JPTD
 ```
 
 ## Application Configuration

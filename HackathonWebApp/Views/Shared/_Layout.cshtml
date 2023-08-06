@@ -10,15 +10,18 @@
     <link rel="shortcut icon" type="image/x-icon" href="~/img/favicon_io/favicon.ico">
 </head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-R8L8N9JPTD"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-R8L8N9JPTD');
-</script>
+@if (ViewBag.GoogleAnalyticsTag != null)
+{
+    string gtagid = ViewBag.GoogleAnalyticsTag;
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=@gtagid"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '@gtagid');
+    </script>
+}
 
 <body>
     <!-- Navigation Bar-->
