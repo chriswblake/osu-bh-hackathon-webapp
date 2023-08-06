@@ -10,15 +10,18 @@
     <link rel="shortcut icon" type="image/x-icon" href="~/img/favicon_io/favicon.ico">
 </head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-R8L8N9JPTD"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-R8L8N9JPTD');
-</script>
+@if (ViewBag.GoogleAnalyticsTag != null)
+{
+    string gtagid = ViewBag.GoogleAnalyticsTag;
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=@gtagid"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '@gtagid');
+    </script>
+}
 
 <body>
     <!-- Navigation Bar-->
@@ -138,7 +141,11 @@
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js?render=6LfvvH8mAAAAADDTVfQ4nh91t0cygR1LacVne-uZ"></script>
+    @if (ViewBag.RecaptchaSiteKey != null)
+    {
+    string siteKey = ViewBag.RecaptchaSiteKey;
+    <script src="https://www.google.com/recaptcha/api.js?render=@siteKey"></script>
+    }
     <script src="~/js/site.js" asp-append-version="true"></script>
     @if (ViewBag.BackgroundParticlesEnabled ?? true)
     {

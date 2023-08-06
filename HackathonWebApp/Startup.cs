@@ -41,8 +41,6 @@ namespace HackathonWebApp
                 exceptions.Add(new ArgumentNullException("Missing Setting: EMAIL_USERNAME"));
             if (Configuration["EMAIL_PASSWORD"] == null)
                 exceptions.Add(new ArgumentNullException("Missing Setting: EMAIL_PASSWORD"));
-            if (Configuration["RECAPTCHA_KEY"] == null)
-                exceptions.Add(new ArgumentNullException("Missing Setting: RECAPTCHA_KEY"));
 
             // Check optional values and set default if missing
             if (Configuration["ALLOW_CREATING_ACCOUNTS"] == null)
