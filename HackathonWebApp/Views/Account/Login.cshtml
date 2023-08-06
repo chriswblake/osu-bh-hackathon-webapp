@@ -75,15 +75,22 @@
             // Identify submit button and form
             var btn = $(this);
             var form = btn.parent("form");
-            // Call recaptcha service
-            grecaptcha.ready(function() {
-                grecaptcha.execute('6LfvvH8mAAAAADDTVfQ4nh91t0cygR1LacVne-uZ', {action: 'login'}).then(function(token) {
-                    // Add a hidden field with the response token
-                    $(`<input type="hidden" name="g-recaptcha-token" value="${token}"/>`).insertBefore(btn);
-                    // Submit the form
-                    form.submit();
+
+            // Submit form with recaptcha token, if available   
+            if (typeof grecaptcha != "undefined") 
+            {
+                // Call recaptcha service
+                grecaptcha.ready(function() {
+                    grecaptcha.execute('6LfvvH8mAAAAADDTVfQ4nh91t0cygR1LacVne-uZ', {action: 'login'}).then(function(token) {
+                        // Add a hidden field with the response token
+                        $(`<input type="hidden" name="g-recaptcha-token" value="${token}"/>`).insertBefore(btn);
+                        // Submit the form
+                        form.submit();
+                    });
                 });
-            });
+            }else {
+                form.submit();
+            }
         })
     });
     </script>
