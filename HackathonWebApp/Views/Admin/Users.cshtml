@@ -32,7 +32,13 @@
             <td>
                 @foreach (var roleId in appUser.Roles)
                 {
+                    if (roles.ContainsKey(roleId))
+                    {
                     <div>@roles[roleId].Name</div>
+                    }
+                    else {
+                        Console.WriteLine($"Role {roleId} not found");
+                    }
                 }
             </td>
             <td><a class="btn btn-sm btn-primary" asp-action="UpdateUserRoles" asp-route-id="@appUser.Id">Update Roles</a></td>
