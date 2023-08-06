@@ -1,7 +1,8 @@
-﻿using HackathonWebApp.Models;
+using HackathonWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,14 @@ namespace HackathonWebApp.Controllers
 {
     public class HomeController : Controller
     {
+        public IConfiguration configuration { get; }
         private readonly ILogger<HomeController> _logger;
         private IMongoCollection<Organizer> organizerCollection;
         EventController eventController;
 
-        public HomeController(ILogger<HomeController> logger, IMongoDatabase database, EventController eventController)
+        public HomeController(IConfiguration configuration, ILogger<HomeController> logger, IMongoDatabase database, EventController eventController)
         {
+            this.configuration = configuration;
             _logger = logger;
             
             // Hackathon DBs
