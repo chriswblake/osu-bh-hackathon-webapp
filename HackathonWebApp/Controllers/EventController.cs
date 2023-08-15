@@ -560,9 +560,13 @@ namespace HackathonWebApp.Controllers
            var activeEventApplications = this.activeEvent.EventApplications.Values.ToList();
            return activeEventApplications;
         }
-        [Authorize]
+        [AllowAnonymous]
         public IActionResult Apply()
         {
+            //  If user is not logged in redirect to login page.
+            if (!(User?.Identity?.IsAuthenticated ?? false))
+                return RedirectToAction("Login", "Account", new { returnUrl = "/Event/Apply" });
+
             // Redirect to homepage if they try to visit this page outside of the registration period.
 		    if ( DateTime.Now.Date < activeEvent.RegistrationOpensTime.Date 
                  || DateTime.Now.Date > activeEvent.RegistrationClosesTime.Date)
@@ -587,10 +591,14 @@ namespace HackathonWebApp.Controllers
             ViewBag.RegistrationSettings = this.activeEvent.RegistrationSettings;
             return View();
         }
-        [Authorize]
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Apply(EventApplication eventApplication)
         {
+            //  If user is not logged in redirect to login page.
+            if (!(User?.Identity?.IsAuthenticated ?? false))
+                return RedirectToAction("Login", "Account", new { returnUrl = "/Event/Apply" });
+                
             // Set unique id and time for this application
             eventApplication.Id = ObjectId.GenerateNewId();
             eventApplication.CreatedOn = DateTime.Now;
