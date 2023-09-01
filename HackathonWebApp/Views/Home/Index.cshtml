@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Home";
 	HackathonEvent activeEvent = ViewBag.ActiveEvent;
 	DateTime startTime = ViewBag.StartTime;
@@ -28,10 +28,12 @@
             <a class="btn btn-primary" asp-controller="Event" asp-action="Apply">Register Now!</a>
 			<div>*Early registration and entry for raffle closes on @earlyRegistrationClosesTime.ToString("MMM. d")</div>
 			<div>*Normal registration closes on @registrationClosesTime.ToString("MMM. d")</div>
+			<div>*Walk-ins are welcome on a first-come first-serve basis.</div>
 		} else if (ViewBag.RegistrationMode == "finished")
 		{
 			<div class="btn btn-secondary" style="z-index: 1; position: relative;">Registration Closed</div><br/>
 			<div> We got @applicationsCount applications! ♥</div>
+			<div>*Walk-ins are welcome on a first-come first-servce basis.</div>
 		}
 
 		<br/>
