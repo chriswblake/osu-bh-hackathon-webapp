@@ -53,9 +53,9 @@ namespace HackathonWebApp.Controllers
         public ViewResult Index()
         {
             dynamic model = new ExpandoObject();
-            model.CountRoles = roleManager.Roles.Count();
-            model.CountUsers = userManager.Users.Count();
-            model.CountSponsors = sponsorCollection.CountDocuments(s => true);
+            ViewBag.ActiveEvent = this.activeEvent;
+            ViewBag.UsersCount = userManager.Users.Count();
+            ViewBag.NewUsers = userManager.Users.AsQueryable().Where(u => u.CreatedOn >= activeEvent.RegistrationOpensTime && u.CreatedOn <= activeEvent.RegistrationClosesTime.AddDays(0.99999)).ToList();
             return View(model);
         }
 

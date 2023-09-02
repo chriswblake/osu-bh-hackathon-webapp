@@ -1,17 +1,217 @@
 ﻿@model dynamic
+@using HackathonWebApp.Models
+@using System.Globalization
 @{
     Layout = "_AdminLayout";
     ViewBag.Title = "General Admin";
-    var countRoles = Model.CountRoles;
-    var countUsers = Model.CountUsers;
-    var countSponsors = Model.CountSponsors;
+    int usersCount = ViewBag.UsersCount;
+    HackathonEvent activeEvent = ViewBag.ActiveEvent;
+    List<ApplicationUser> newUsers = ViewBag.NewUsers;
+
+    TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 }
 
-<span class="text-white">
-    <h1>General</h1>
+<style>
+    .faq-bubble {
+        color: black;
+        text-align: center;
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        padding: 10px;
+        margin: 10px;
+    }
+</style>
 
-    <h2>Overview</h2>
-    Roles: @countRoles<br/>
-    Users: @countUsers<br/>
-    Sponsors: @countSponsors<br/>
+<span class="text-white">
+    Active Event: @activeEvent.Name<br/>
+
+    <div class="row">
+        <h1 class="col-12">@activeEvent.Name</h1>
+        <h2 class="col-12">Planning</h2>
+        
+        @* Critical Dates *@
+        <div class="col-md-4 card faq-bubble">
+            <b>Critical Dates</b>
+            <table class="text-left table table-sm">
+                <tr><td>Registration Opens</td><td>@activeEvent.RegistrationOpensTime.ToString("MMM dd (ddd)")</td></tr>
+                <tr><td>Early Bird Closes</td><td>@activeEvent.EarlyRegistrationClosesTime.ToString("MMM dd (ddd)")</td></tr>
+                <tr><td>Registration Closes</td><td>@activeEvent.RegistrationClosesTime.ToString("MMM dd (ddd)")</td></tr>
+                <tr><td>Event Start</td><td>@activeEvent.StartTime.ToString("MMM dd (ddd)")</td></tr>
+                <tr><td>Event Ends</td><td>@activeEvent.EndTime.ToString("MMM dd (ddd)")</td></tr>
+            </table>
+        </div>
+
+        @* Page Content *@
+        <div class="col-md-4 card faq-bubble">
+            <b>Page Content</b>
+            <table>
+            <tr>
+                <th>Page</th>
+                <th>Section</th>
+                <th>Status</th>
+            </tr>
+            @foreach (var pageContent in activeEvent.StaticPageSections)
+            {
+                @foreach (var sectionContent in pageContent.Value)
+                {
+                    <tr>
+                        <td>@pageContent.Key</td>
+                        <td>@sectionContent.Key</td>
+                        <td>
+                            @if (sectionContent.Value.Length > 10)
+                            {
+                                <div>✅</div>
+                            }
+                            else
+                            {
+                                <div>❌ - Missing</div>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            </table>
+        </div>
+
+        @* Sponsors *@
+        <div class="col-md-2 card faq-bubble">
+            <b>Sponsors</b>
+            <table class="table table-sm">
+                <tr><td>Visible</td><td>@activeEvent.Sponsors.Values.Where(s => s.IsVisible == true).Count()</td></tr>
+                <tr><td>Hidden</td><td>@activeEvent.Sponsors.Values.Where(s => s.IsVisible == false).Count()</td></tr>
+                <tr style="font-weight:bold;"><td>Total</td><td>@activeEvent.Sponsors.Count</td></tr>
+            </table>
+        </div>
+
+        
+        <h2 class="col-12">Registration</h2>
+
+        @* New Users + Applications *@
+        <div class="col-md-2 card faq-bubble">
+            <b>Users</b>
+            <table class="table table-sm">
+                <tr><td>New</td><td>@newUsers.Count</td></tr>
+                <tr><td>Total</td><td>@usersCount</td></tr>
+            </table>
+
+            <b>Applications</b>
+            @activeEvent.EventApplications.Count
+        </div>
+
+        @* Applications (major) *@
+        @{ var applicationsByMajor = activeEvent.EventApplications.Values.GroupBy(ea => ea.Major); }
+        <div class="col-md-4 card faq-bubble">
+            <b>Applications (major)</b>
+            <table class="table table-sm text-left">
+                @foreach (var group in applicationsByMajor)
+                {
+                    <tr><td>@textInfo.ToTitleCase(group.Key.Replace("_", " "))</td><td>@group.Count()</td></tr>
+                }
+                <tr style="font-weight:bold;"><td>Total</td><td>@activeEvent.EventApplications.Count</td></tr>
+            </table>
+        </div>
+
+        @* Applications (year) *@
+        @{ var applicationsByYear = activeEvent.EventApplications.Values.GroupBy(ea => ea.SchoolYear); }
+        <div class="col-md-3 card faq-bubble">
+            <b>Applications (year)</b>
+            <table class="table table-sm text-left">
+                @foreach (var group in applicationsByYear)
+                {
+                    <tr><td>@textInfo.ToTitleCase(group.Key.Replace("_", " "))</td><td>@group.Count()</td></tr>
+                }
+                <tr style="font-weight:bold;"><td>Total</td><td>@activeEvent.EventApplications.Count</td></tr>
+            </table>
+        </div>
+        
+        
+
+
+        <h2 class="col-12">Volunteers</h2>
+
+        @* Organizers (team) *@
+        @{ var organizersByTeam = activeEvent.Organizers.Values.GroupBy(p => p.DisplayTeam); }
+        <div class="col-md-3 card faq-bubble">
+            <b>Organizers (team)</b>
+            <table class="table table-sm text-left">
+                @foreach (var group in organizersByTeam)
+                {
+                    <tr><td>@group.Key</td><td>@group.Count()</td></tr>
+                }
+                <tr style="font-weight:bold;"><td>Total</td><td>@activeEvent.Organizers.Count</td></tr>
+            </table>
+        </div>
+
+        @* Organizers (role) *@
+        @{ var organizersByRole = activeEvent.Organizers.Values.GroupBy(p => p.Role); }
+        <div class="col-md-3 card faq-bubble">
+            <b>Organizers (role)</b>
+            <table class="table table-sm text-left">
+                @foreach (var group in organizersByRole)
+                {
+                    <tr><td>@group.Key</td><td>@group.Count()</td></tr>
+                }
+                <tr style="font-weight:bold;"><td>Total</td><td>@activeEvent.Organizers.Count</td></tr>
+            </table>
+        </div>
+
+        <h2 class="col-12">Scoring</h2>
+
+        @* Certificate Signatures  *@
+        <div class="col-md-4 card faq-bubble">
+            <b>Certificate Signatures</b>
+            <div class="text-left">
+                @activeEvent.PrimaryHost.DisplayName<br/>
+                @activeEvent.PrimaryHost.Title<br/>
+                @activeEvent.PrimaryHost.Organization<br/>
+            </div>
+            <hr/>
+            <div class="text-left">
+                @activeEvent.SecondaryHost.DisplayName<br/>
+                @activeEvent.SecondaryHost.Title<br/>
+                @activeEvent.SecondaryHost.Organization<br/>
+            </div>   
+        </div>
+
+        <h2 class="col-12">New Users</h2>
+
+        <div class="col-12">
+            * No registration might indicate user created an account but forgot to register for the event.
+            <table class="table table-sm text-white">
+                <thead class="thead-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Confirmed</th>
+                    <th>Created</th>
+                    <th>Registered</th>
+                </tr>
+                </thead>
+                @foreach(ApplicationUser newUser in newUsers)
+                {
+                    string userId = newUser.Id.ToString();
+                    EventApplication eventApp = null;
+                    if (activeEvent.EventApplications.ContainsKey(userId))
+                    {
+                        eventApp = activeEvent.EventApplications[userId];
+                    }
+                    <tr>
+                        <td>@newUser.FirstName @newUser.LastName</td>
+                        <td>@newUser.Email</td>
+                        <td>@newUser.EmailConfirmed</td>
+                        <td>@newUser.CreatedOn.ToLocalTime()</td>
+                        <td>
+                            @if (eventApp != null)
+                            {
+                                @eventApp.CreatedOn.ToLocalTime()
+                            }
+                        </td>
+                    </tr>
+
+                }
+            </table>
+
+        </div>
+
+    </div>
 </span>
