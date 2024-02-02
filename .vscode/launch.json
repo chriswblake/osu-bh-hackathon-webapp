@@ -18,7 +18,7 @@
                 "ASPNETCORE_URLS": "https://localhost:5001",
                 "ASPNETCORE_ENVIRONMENT": "Production"
             },
-            "envFile": "${workspaceFolder}/prod.env"
+            "envFile": "${workspaceFolder}/.env.prod"
         },
         {
             "name": "Launch (dev db)",
@@ -34,7 +34,7 @@
                 "ASPNETCORE_URLS": "https://localhost:5001",
                 "ASPNETCORE_ENVIRONMENT": "Development",
             },
-            "envFile": "${workspaceFolder}/develop.env"
+            "envFile": "${workspaceFolder}/.env.develop"
         }
     ]
 }
