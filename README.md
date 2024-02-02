@@ -39,10 +39,10 @@ The registered users, teams, sponsors and other event data are all stored in a M
 - If a google analytics tag is provided, usage statistics are collected via [Google Analytics](https://analytics.google.com/).
 
 Configuration for all of the above must be defined via environment variables.
-- During development this can be provided via the file `develop.env`.
-- There is also an option for the file `prod.env` for running the local app against the production database, but it is not recommended and should be avoided.
+- During development this can be provided via the file `.env.develop`.
+- There is also an option for the file `.env.prod` for running the local app against the production database, but it is not recommended and should be avoided.
 
-Example: develop.env
+Example: .env.develop
 ```
 MONGODB_URL=mongodb+srv://user-dev:pass@<datbasename>.mongodb.net
 MONGODB_IDENTITY_DB_NAME=<user collection name>
